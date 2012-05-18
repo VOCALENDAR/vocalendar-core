@@ -1,4 +1,8 @@
 VocalendarCore::Application.routes.draw do
+  get "uris/new"
+
+  get "events/show"
+
   # The priority is based upon order of creation:
   # first created -> highest priority.
 

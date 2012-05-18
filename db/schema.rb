@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20120517081103) do
+ActiveRecord::Schema.define(:version => 20120518062418) do
 
   create_table "calendars", :force => true do |t|
     t.text     "calendar"
@@ -21,6 +21,7 @@ ActiveRecord::Schema.define(:version => 20120517081103) do
   end
 
   create_table "events", :force => true do |t|
+    t.text     "kind"
     t.text     "calendar_id"
     t.text     "event"
     t.text     "etag"
@@ -29,6 +30,27 @@ ActiveRecord::Schema.define(:version => 20120517081103) do
     t.text     "summary"
     t.text     "description"
     t.text     "location"
+    t.text     "colorId"
+    t.text     "creatorEmail"
+    t.text     "creatorDisplayName"
+    t.date     "startDate"
+    t.datetime "startDateTime"
+    t.text     "startTimeZone"
+    t.date     "endDate"
+    t.datetime "endDateTime"
+    t.text     "endTimeZone"
+    t.datetime "created"
+    t.datetime "updated"
+    t.datetime "created_at",         :null => false
+    t.datetime "updated_at",         :null => false
+  end
+
+  create_table "uris", :force => true do |t|
+    t.text     "event_id"
+    t.text     "serviceName"
+    t.text     "uri"
+    t.text     "kind"
+    t.text     "body"
     t.datetime "created_at",  :null => false
     t.datetime "updated_at",  :null => false
   end
