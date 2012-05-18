@@ -1,0 +1,21 @@
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/Fixtures.html
+
+one:
+  calendar_id: MyText
+  event: MyText
+  etag: MyText
+  status: MyText
+  htmlLink: MyText
+  summary: MyText
+  description: MyText
+  location: MyText
+
+two:
+  calendar_id: MyText
+  event: MyText
+  etag: MyText
+  status: MyText
+  htmlLink: MyText
+  summary: MyText
+  description: MyText
+  location: MyText
