@@ -18,6 +18,10 @@ group :assets do
 end
 
 gem 'jquery-rails'
+gem 'rails-i18n'
+gem 'will-paginate-i18n'
+gem 'will_paginate', '~> 3.0.0'
+gem 'responders'
 
 # To use ActiveModel has_secure_password
 # gem 'bcrypt-ruby', '~> 3.0.0'
