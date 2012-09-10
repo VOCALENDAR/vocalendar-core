@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20120518062418) do
+ActiveRecord::Schema.define(:version => 20120910204947) do
 
   create_table "calendars", :force => true do |t|
     t.text     "calendar"
@@ -21,28 +21,34 @@ ActiveRecord::Schema.define(:version => 20120518062418) do
   end
 
   create_table "events", :force => true do |t|
-    t.text     "kind"
-    t.text     "calendar_id"
-    t.text     "event"
-    t.text     "etag"
-    t.text     "status"
-    t.text     "htmlLink"
+    t.string   "g_calendar_id"
+    t.string   "etag",                                            :null => false
+    t.string   "status",                 :default => "confirmed"
+    t.text     "g_html_link"
     t.text     "summary"
     t.text     "description"
     t.text     "location"
-    t.text     "colorId"
-    t.text     "creatorEmail"
-    t.text     "creatorDisplayName"
-    t.date     "startDate"
-    t.datetime "startDateTime"
-    t.text     "startTimeZone"
-    t.date     "endDate"
-    t.datetime "endDateTime"
-    t.text     "endTimeZone"
-    t.datetime "created"
-    t.datetime "updated"
-    t.datetime "created_at",         :null => false
-    t.datetime "updated_at",         :null => false
+    t.string   "g_color_id"
+    t.string   "g_creator_email"
+    t.string   "g_creator_display_name"
+    t.date     "start_date",                                      :null => false
+    t.datetime "start_datetime",                                  :null => false
+    t.date     "end_date",                                        :null => false
+    t.datetime "end_datetime",                                    :null => false
+    t.datetime "created_at",                                      :null => false
+    t.datetime "updated_at",                                      :null => false
+    t.string   "g_id"
+    t.string   "recur_string"
+    t.string   "recur_freq"
+    t.integer  "recur_count",            :default => 0,           :null => false
+    t.datetime "recur_until"
+    t.integer  "recur_interval",         :default => 1,           :null => false
+    t.string   "recur_wday"
+    t.string   "ical_uid",               :default => "",          :null => false
+    t.text     "primary_uri"
+    t.integer  "tz_min",                 :default => 540
+    t.string   "country",                :default => "jp"
+    t.string   "lang",                   :default => "ja"
   end
 
   create_table "uris", :force => true do |t|
