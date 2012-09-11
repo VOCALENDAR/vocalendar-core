@@ -4,6 +4,6 @@ class Event < ActiveRecord::Base
     :g_creator_display_name, :start_date, :start_datetime, 
     :end_date, :end_datetime, :g_id, :recur_string, :recur_freq,
     :recur_count, :recur_until, :recur_interval, :recur_wday,
-    :ical_uid, :tz_min, :country, :lang
+    :ical_uid, :tz_min, :country, :lang, :allday
   has_many :uris
 end
