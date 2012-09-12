@@ -11,14 +11,19 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20120910220511) do
+ActiveRecord::Schema.define(:version => 20120911185942) do
 
   create_table "calendars", :force => true do |t|
-    t.text     "calendar"
-    t.text     "name"
-    t.datetime "created_at", :null => false
-    t.datetime "updated_at", :null => false
+    t.string   "name",        :default => "", :null => false
+    t.datetime "created_at",                  :null => false
+    t.datetime "updated_at",                  :null => false
+    t.string   "external_id", :default => "", :null => false
+    t.datetime "synced_at"
+    t.string   "type"
   end
+
+  add_index "calendars", ["external_id"], :name => "index_calendars_on_external_id"
+  add_index "calendars", ["type"], :name => "index_calendars_on_type"
 
   create_table "events", :force => true do |t|
     t.string   "g_calendar_id"

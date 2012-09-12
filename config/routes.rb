@@ -1,5 +1,6 @@
 VocalendarCore::Application.routes.draw do
   resources :events
+  resources :calendars
 
   get "uris/new"
 
