@@ -11,39 +11,59 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20120518062418) do
+ActiveRecord::Schema.define(:version => 20120911185942) do
 
   create_table "calendars", :force => true do |t|
-    t.text     "calendar"
-    t.text     "name"
-    t.datetime "created_at", :null => false
-    t.datetime "updated_at", :null => false
+    t.string   "name",        :default => "", :null => false
+    t.datetime "created_at",                  :null => false
+    t.datetime "updated_at",                  :null => false
+    t.string   "external_id", :default => "", :null => false
+    t.datetime "synced_at"
+    t.string   "type"
   end
 
+  add_index "calendars", ["external_id"], :name => "index_calendars_on_external_id"
+  add_index "calendars", ["type"], :name => "index_calendars_on_type"
+
   create_table "events", :force => true do |t|
-    t.text     "kind"
-    t.text     "calendar_id"
-    t.text     "event"
-    t.text     "etag"
-    t.text     "status"
-    t.text     "htmlLink"
+    t.string   "g_calendar_id"
+    t.string   "etag",                                            :null => false
+    t.string   "status",                 :default => "confirmed"
+    t.text     "g_html_link"
     t.text     "summary"
     t.text     "description"
     t.text     "location"
-    t.text     "colorId"
-    t.text     "creatorEmail"
-    t.text     "creatorDisplayName"
-    t.date     "startDate"
-    t.datetime "startDateTime"
-    t.text     "startTimeZone"
-    t.date     "endDate"
-    t.datetime "endDateTime"
-    t.text     "endTimeZone"
-    t.datetime "created"
-    t.datetime "updated"
-    t.datetime "created_at",         :null => false
-    t.datetime "updated_at",         :null => false
+    t.string   "g_color_id"
+    t.string   "g_creator_email"
+    t.string   "g_creator_display_name"
+    t.date     "start_date",                                      :null => false
+    t.datetime "start_datetime",                                  :null => false
+    t.date     "end_date",                                        :null => false
+    t.datetime "end_datetime",                                    :null => false
+    t.datetime "created_at",                                      :null => false
+    t.datetime "updated_at",                                      :null => false
+    t.string   "g_id"
+    t.string   "recur_string"
+    t.string   "recur_freq"
+    t.integer  "recur_count",            :default => 0,           :null => false
+    t.datetime "recur_until"
+    t.integer  "recur_interval",         :default => 1,           :null => false
+    t.string   "recur_wday"
+    t.string   "ical_uid",               :default => "",          :null => false
+    t.text     "primary_uri"
+    t.integer  "tz_min",                 :default => 540
+    t.string   "country",                :default => "jp"
+    t.string   "lang",                   :default => "ja"
+    t.boolean  "allday",                 :default => false,       :null => false
   end
+
+  add_index "events", ["end_datetime", "status"], :name => "index_events_on_end_datetime_and_status"
+  add_index "events", ["etag"], :name => "index_events_on_etag"
+  add_index "events", ["g_calendar_id"], :name => "index_events_on_g_calendar_id"
+  add_index "events", ["g_id"], :name => "index_events_on_g_id"
+  add_index "events", ["start_datetime", "status"], :name => "index_events_on_start_datetime_and_status"
+  add_index "events", ["status"], :name => "index_events_on_status"
+  add_index "events", ["updated_at", "status"], :name => "index_events_on_updated_at_and_status"
 
   create_table "uris", :force => true do |t|
     t.text     "event_id"
