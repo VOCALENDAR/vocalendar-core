@@ -4,6 +4,9 @@ class SettingsController < ApplicationController
     respond_with @settings
   end
 
-  def update
+  def destroy
+    @setting = Setting.find(params[:id])
+    @setting.destroy
+    respond_with @setting
   end
 end
