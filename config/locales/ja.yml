@@ -9,13 +9,25 @@ ja:
       setting:
         var: 名前
         value: 値
-
+      calendar:
+        name: 名前
+        external_id: カレンダーID
+        io_type: 種別
+        io_type_src: 取り込み
+        io_type_dst: 書き出し
+        synced_at: 最終同期時刻
   helpers:
     label:
       setting:
         google_api_client_id: API クライアント ID
         google_api_secret: API Secret
 
+  general:
+      add: 追加
+      delete: 削除
+      edit: 編集
+      new: 新規
+      delete_confirm: 本当に %{name} を削除してよろしいですか？
   admin:
     set_appid:
       title: Google API アプリケーション ID の設定
@@ -35,4 +47,7 @@ ja:
   settings:
     index:
       title: 全体設定一覧
+  calendars:
+    index:
+      title: 連携カレンダー一覧
     
