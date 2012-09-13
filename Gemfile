@@ -22,8 +22,11 @@ gem 'rails-i18n'
 gem 'will-paginate-i18n'
 gem 'will_paginate', '~> 3.0.0'
 gem 'responders'
-
 gem 'rails-settings-cached'
+gem 'google-api-client', :require => 'google/api_client'
+gem 'omniauth', '~> 1.0.0'
+gem 'omniauth-google-oauth2'
+
 
 # To use ActiveModel has_secure_password
 # gem 'bcrypt-ruby', '~> 3.0.0'
