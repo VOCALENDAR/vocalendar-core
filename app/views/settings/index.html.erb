@@ -1,0 +1,25 @@
+<h2><%= t ".title" %></h2>
+<table>
+  <thead>
+    <tr>
+      <th class="var"><%= t "activerecord.attributes.setting.var" %></th>
+      <th class="value"><%= t "activerecord.attributes.setting.value" %></th>
+      <th class="updated_at date"><%= t "activerecord.attributes.setting.updated_at" %></th>
+    </tr>
+  </thead>
+  <tbody>
+    <% @settings.each do |setting| %>
+    <tr id="s-<%= setting.var %>">
+      <td class="var">
+        <%= setting.var %>
+      </td>
+      <td class="value">
+        <%= setting.value %>
+      </td>
+      <td class="updated_at date">
+        <%= l setting.updated_at %>
+      </td>
+    </tr>
+    <% end %>
+  </tbody>
+</table>
