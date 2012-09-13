@@ -16,7 +16,7 @@ class AdminController < ApplicationController
       Setting.google_api_secret = params[:setting][:google_api_secret]
     end
 
-    redirect_to({:action => Setting.google_api_master_auth ? :index : :set_master_auth}, :notice => t(".restart_notice"))
+    redirect_to({:action => Setting.master_auth_email ? :index : :set_master_auth}, :notice => t("admin.update_appid.restart_notice"))
   end
 
   def set_master_auth
@@ -30,6 +30,6 @@ class AdminController < ApplicationController
     end
     Setting.master_auth_email = @auth["extra"]["raw_info"]["email"]
 
-    redirect_to({:action => :index}, :notice => t(".success"))
+    redirect_to({:action => :index}, :notice => t("admin.auth_callback.success"))
   end
 end
