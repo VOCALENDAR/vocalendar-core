@@ -1,0 +1,25 @@
+ja:
+  activerecord:
+    models:
+      event: イベント
+      calendar: カレンダー
+      setting: 設定
+      settings: 設定
+    attributes:
+      setting:
+        var: 名前
+        value: 値
+
+  helpers:
+    label:
+      setting:
+        google_api_client_id: API クライアント ID
+        google_api_secret: API Secret
+
+  admin:
+    set_appid:
+      title: Google API アプリケーション ID の設定
+      description: 最初に Google API のアプリケーションクライアントIDおよび、そのシークレット文字列を設定する必要があります。
+  settings:
+    index:
+      title: 全体設定一覧

@@ -74,6 +74,8 @@ GEM
       railties (= 3.2.8)
     rails-i18n (0.6.6)
       i18n (~> 0.5)
+    rails-settings-cached (0.2.2)
+      rails (>= 3.0.0)
     railties (3.2.8)
       actionpack (= 3.2.8)
       activesupport (= 3.2.8)
@@ -121,6 +123,7 @@ DEPENDENCIES
   mysql2
   rails (= 3.2.8)
   rails-i18n
+  rails-settings-cached
   responders
   sass-rails (~> 3.2.3)
   sqlite3

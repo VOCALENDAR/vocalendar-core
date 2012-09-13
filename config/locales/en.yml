@@ -2,4 +2,19 @@
 # See https://github.com/svenfuchs/rails-i18n/tree/master/rails%2Flocale for starting points.
 
 en:
-  hello: "Hello world"
+  activerecord:
+    models:
+    attributes:
+  helpers:
+    label:
+      setting:
+        google_api_client_id: API Client ID
+        google_api_secret: API Secret
+        
+  admin:
+    set_appid:
+      title: Set Google API App ID
+      description:  In first, you need to set google API client ID and secret.
+  settings:
+    index:
+      title: Listing global settings

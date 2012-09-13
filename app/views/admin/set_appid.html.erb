@@ -1,0 +1,10 @@
+<h2><%= t(".title") %></h2>
+<p><%= t(".description")%></p>
+
+<%= form_tag url_for(:action => 'update_appid') do %>
+  <%= label :setting, :google_api_client_id %>
+  <%= text_field :setting, :google_api_client_id %>
+  <%= label :setting, :google_api_secret %>
+  <%= text_field :setting, :google_api_secret %>
+  <%= submit_tag %>
+<% end %>

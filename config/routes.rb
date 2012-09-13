@@ -4,6 +4,11 @@ VocalendarCore::Application.routes.draw do
 
   get "uris/new"
 
+  scope '/admin' do
+    resources :settings
+    match "(/:action)", :controller => 'admin'
+  end
+
   # The priority is based upon order of creation:
   # first created -> highest priority.
 
