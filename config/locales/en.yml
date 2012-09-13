@@ -2,4 +2,32 @@
 # See https://github.com/svenfuchs/rails-i18n/tree/master/rails%2Flocale for starting points.
 
 en:
-  hello: "Hello world"
+  activerecord:
+    models:
+    attributes:
+  helpers:
+    label:
+      setting:
+        google_api_client_id: API Client ID
+        google_api_secret: API Secret
+        
+  admin:
+    set_appid:
+      title: Set Google API App ID
+      description:  In first, you need to set google API client ID and secret.
+      change_notice: 'Notice: When you change this setting, you NEED TO RESTART Rails environment.'
+      set_redirect_url: Confirm redirect URL on Google API console is matched with following
+    update_appid:
+      restart_notice: Google API information has been changed. You need to restart Rais.
+    set_master_auth:
+      title: Set master auth information
+      description: You need to set a google account as master. Vocalendar use the account infomation to access all associated calendars. The google account must have enough privilidge to read/write all associated calendars.
+      update_auth: Update Auth info
+      current: Current assosiated account
+      noauthinfo: (none)
+    auth_callback:
+      success: Auth information has been updated successfully
+  settings:
+    index:
+      title: Listing global settings
+

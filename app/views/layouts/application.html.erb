@@ -8,6 +8,14 @@
 </head>
 <body>
 
+<% [:error, :alert, :notice].each do |level| %>
+  <% flash[level].blank? and next %>
+  <p class="fade in alert alert-<%= {:notcie => 'info', :error => 'error', :alert => 'warning'}[level]%>">
+    <a class="close" data-dismiss="alert" href="#">&times;</a>
+    <%= flash[level] %>
+  </p>
+<% end %>
+
 <%= yield %>
 
 </body>
