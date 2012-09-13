@@ -10,10 +10,10 @@
 
 <% [:error, :alert, :notice].each do |level| %>
   <% flash[level].blank? and next %>
-  <div class="alert alert-<%= {:notcie => 'info', :error => 'error', :alert => 'warning'}[level]%>">
+  <p class="fade in alert alert-<%= {:notcie => 'info', :error => 'error', :alert => 'warning'}[level]%>">
     <a class="close" data-dismiss="alert" href="#">&times;</a>
-    <%= content_tag :p, flash[level] %>
-  </div>
+    <%= flash[level] %>
+  </p>
 <% end %>
 
 <%= yield %>
