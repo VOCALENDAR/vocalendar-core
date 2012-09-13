@@ -11,18 +11,25 @@ class AdminController < ApplicationController
   end
 
   def update_appid
-    Setting.google_api_client_id = params[:setting][:google_api_client_id]
-    Setting.google_api_secret = params[:setting][:google_api_secret]
+    if params[:setting]
+      Setting.google_api_client_id = params[:setting][:google_api_client_id]
+      Setting.google_api_secret = params[:setting][:google_api_secret]
+    end
 
-    redirect_to :action => Setting.google_api_master_auth ? :index : :set_master_auth
+    redirect_to({:action => Setting.google_api_master_auth ? :index : :set_master_auth}, :notice => t(".restart_notice"))
   end
 
   def set_master_auth
-    
+    @auth_info = Setting.master_auth_email
   end
 
-  def update_master_auth
+  def auth_callback
+    @auth = request.env["omniauth.auth"]
+    %w(refresh_token expires_at token).each do |attr|
+      Setting.__send__ "master_auth_#{attr}=", @auth["credentials"][attr]
+    end
+    Setting.master_auth_email = @auth["extra"]["raw_info"]["email"]
+
+    redirect_to({:action => :index}, :notice => t(".success"))
   end
-
-
 end

@@ -9,6 +9,8 @@ VocalendarCore::Application.routes.draw do
     match "(/:action)", :controller => 'admin'
   end
 
+  match "/auth/:provider/callback" => "admin#auth_callback"
+
   # The priority is based upon order of creation:
   # first created -> highest priority.
 
