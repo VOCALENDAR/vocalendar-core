@@ -1,0 +1,15 @@
+<%= form_for @calendar do |f| %>
+
+<%= f.label :name %>
+<%= f.text_field :name %>
+<%= f.label :external_id %>
+<%= f.text_field :external_id %>
+<%= f.label :io_type %>
+<%= f.radio_button :io_type, "src" %>
+<%= f.label :io_type_src, :style => 'display: inline' %>
+<%= f.radio_button :io_type, "dst" %>
+<%= f.label :io_type_dst, :style => 'display: inline' %><br>
+
+<%= f.submit :class => 'btn' %>
+
+<% end %>
