@@ -2,7 +2,7 @@ class Event < ActiveRecord::Base
   default_scope order('start_datetime')
   has_many :uris
 
-  attr_accessible :g_calendar_id, :description, :etag, :g_html_ink,
+  attr_accessible :g_calendar_id, :description, :etag, :g_html_link,
     :location, :status, :summary, :g_color_id, :g_creator_email,
     :g_creator_display_name, :start_date, :start_datetime, 
     :end_date, :end_datetime, :g_id, :recur_string, :recur_freq,
@@ -10,18 +10,30 @@ class Event < ActiveRecord::Base
     :ical_uid, :tz_min, :country, :lang, :allday
 
   validates :g_id, :uniqueness => true
-  validates :etag, :uniqueness => true, :presence => true
-  validates :summary, :presence => true
-  validates :start_datetime, :presence => true
-  validates :end_datetime, :presence => true
-  validates :start_date, :presence => true
-  validates :end_date, :presence => true
+  validates :etag, :presence => true
+  validates :summary, :presence => true, :if => :active?
+  validates :start_datetime, :presence => true, :if => :active?
+  validates :end_datetime, :presence => true, :if => :active?
+  validates :start_date, :presence => true, :if => :active?
+  validates :end_date, :presence => true, :if => :active?
+  validates :ical_uid, :presence => true, :if => :active?
   validates :recur_count, :numericality => {:only_integer => true}
   validates :recur_interval, :numericality => {:only_integer => true}
-  validates :ical_uid, :presence => true
   validates :tz_min, :numericality => {:only_integer => true}
+  validates :status, :inclusion => {:in => %w(confirmed cancelled)}
 
-  before_validation :cascade_start_date, :cascade_end_datetime, :cascade_end_date
+  before_validation :set_dummy_values_for_cancelled,
+    :cascade_start_date, :cascade_end_datetime, :cascade_end_date,
+    :mangle_tentative_status
+
+  def cancelled?
+    status == "cancelled"
+  end
+  alias_method :deleted?, :cancelled?
+
+  def active?
+    !cancelled?
+  end
 
   def zone
     tz_min or return nil
@@ -50,14 +62,24 @@ class Event < ActiveRecord::Base
 
   private
   def cascade_start_date
-    start_date ||= start_datetime.try(:to_date)
+    self[:start_date] ||= start_datetime.try(:to_date)
   end
 
   def cascade_end_datetime
-    end_datetime ||= start_datetime
+    self[:end_datetime] ||= start_datetime
   end
 
   def cascade_end_date
-    end_date ||= end_datetime.try(:to_date)
+    self[:end_date] ||= end_datetime.try(:to_date)
+  end
+
+  def mangle_tentative_status
+    self.status == "tentative" or return true
+    self[:status] = "confirmed"
+  end
+
+  def set_dummy_values_for_cancelled
+    self.status == "cancelled" or return true
+    self[:start_datetime] ||= DateTime.new(1970, 1, 1, 0, 0, 0, 0)
   end
 end
