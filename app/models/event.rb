@@ -1,6 +1,7 @@
 class Event < ActiveRecord::Base
   default_scope order('start_datetime')
   has_many :uris, :autosave => true, :dependent => :destroy
+  has_and_belongs_to_many :tags
   accepts_nested_attributes_for :uris
 
   attr_accessible :g_calendar_id, :description, :etag, :g_html_link,
@@ -87,6 +88,14 @@ class Event < ActiveRecord::Base
     end
     appends.blank? or ret += " - #{appends}"
     ret
+  end
+
+  def tag_names
+    self.tags.map {|t| t.name }
+  end
+
+  def tag_names=(v)
+    self.tags = v.map {|t| Tag.find_by_name(t) || Tag.create(:name => t) }
   end
 
   private
