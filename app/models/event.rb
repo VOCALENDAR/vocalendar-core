@@ -1,13 +1,14 @@
 class Event < ActiveRecord::Base
   default_scope order('start_datetime')
-  has_many :uris
+  has_many :uris, :autosave => true, :dependent => :destroy
+  accepts_nested_attributes_for :uris
 
   attr_accessible :g_calendar_id, :description, :etag, :g_html_link,
     :location, :status, :summary, :g_color_id, :g_creator_email,
-    :g_creator_display_name, :start_date, :start_datetime, 
+    :g_creator_display_name, :start_date, :start_datetime,
     :end_date, :end_datetime, :g_id, :recur_string, :recur_freq,
     :recur_count, :recur_until, :recur_interval, :recur_wday,
-    :ical_uid, :tz_min, :country, :lang, :allday
+    :ical_uid, :tz_min, :country, :lang, :allday, :uris_attributes
 
   validates :g_id, :uniqueness => true
   validates :etag, :presence => true
