@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20120913075350) do
+ActiveRecord::Schema.define(:version => 20120914174856) do
 
   create_table "calendars", :force => true do |t|
     t.string   "name",        :default => "", :null => false
@@ -58,7 +58,6 @@ ActiveRecord::Schema.define(:version => 20120913075350) do
   end
 
   add_index "events", ["end_datetime", "status"], :name => "index_events_on_end_datetime_and_status"
-  add_index "events", ["etag"], :name => "index_events_on_etag"
   add_index "events", ["g_calendar_id"], :name => "index_events_on_g_calendar_id"
   add_index "events", ["g_id"], :name => "index_events_on_g_id"
   add_index "events", ["start_datetime", "status"], :name => "index_events_on_start_datetime_and_status"
