@@ -4,7 +4,12 @@ class EventsController < ApplicationController
   # GET /events
   # GET /events.json
   def index
-    @events = Event.all
+    @events = Event.paginate(:page => params[:page], :per_page => 50)
+    if params[:tag_id]
+      @events = @events.
+        joins('inner join events_tags on events.id = events_tags.event_id').
+        where('events_tags.tag_id' => params[:tag_id])
+    end
     respond_with @events
   end
 
@@ -19,7 +24,7 @@ class EventsController < ApplicationController
   # GET /events/new.json
   def new
     @event = Event.new
-   @event.uris.build
+    @event.uris.build
     respond_with @event
   end
 
