@@ -33,7 +33,9 @@ class Calendar < ActiveRecord::Base
       :headers => {'Content-Type' => 'application/json'},
       :api_method => service.events.list,
       :parameters => {
-        :calendarId => self.external_id
+        :calendarId => self.external_id,
+        :singleEvents => true,
+        :showDeleted => true,
       }
     }
 
