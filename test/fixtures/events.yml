@@ -2,6 +2,7 @@
 
 one:
   etag: <%= SecureRandom.hex(16) %>
+  g_id: <%= SecureRandom.hex(16) %>
   status: "confirmed"
   summary: "Miku love party"
   description: "Yeah, everyone loves Miku."
@@ -10,5 +11,28 @@ one:
   start_date: <%= Date.today %>
   end_datetime: <%= DateTime.now %>
   end_date: <%= Date.today %>
-  allday: false
+  allday: true
   
+two_days:
+  etag: <%= SecureRandom.hex(16) %>
+  status: "confirmed"
+  summary: "Miku love party"
+  description: "Yeah, everyone loves Miku."
+  ical_uid: <%= SecureRandom.hex(16) %>
+  start_datetime: 2010-03-09 00:00:00
+  start_date: 2010-03-09
+  end_datetime: 2010-03-10 23:59:59
+  end_date: 2010-03-10
+  allday: true
+  
+two_hours:
+  etag: <%= SecureRandom.hex(16) %>
+  status: "confirmed"
+  summary: "Miku love party"
+  description: "Yeah, everyone loves Miku."
+  ical_uid: <%= SecureRandom.hex(16) %>
+  start_datetime: 2010-03-09 03:09:00
+  start_date: 2010-03-09
+  end_datetime: 2010-03-09 05:09:00
+  end_date: 2010-03-09
+  allday: false

@@ -2,19 +2,24 @@
 
 <table>
   <tr>
-    <th></th>
-    <th></th>
-    <th></th>
+    <th><%= Event.human_attribute_name :id %></th>
+    <th><%= Event.human_attribute_name :summary %></th>
+    <th><%= Event.human_attribute_name :term %></th>
   </tr>
 
 <% @events.each do |event| %>
   <tr>
+    <td><%= event.id %></td>
+    <td><%= event.summary %></td>
+    <td><%= event.term_str %></td>
     <td><%= link_to 'Show', event %></td>
     <td><%= link_to 'Edit', edit_event_path(event) %></td>
-    <td><%= link_to 'Destroy', event, method: :delete, data: { confirm: 'Are you sure?' } %></td>
+    <td><%= link_to 'Destroy', event, method: :delete, data: { confirm: t('general.delete_confirm', name: event.summary) } %></td>
   </tr>
 <% end %>
 </table>
+
+<%= will_paginate @events %>
 
 <br />
 
