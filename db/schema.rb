@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20120914174856) do
+ActiveRecord::Schema.define(:version => 20120914213842) do
 
   create_table "calendars", :force => true do |t|
     t.string   "name",        :default => "", :null => false
@@ -64,6 +64,14 @@ ActiveRecord::Schema.define(:version => 20120914174856) do
   add_index "events", ["status"], :name => "index_events_on_status"
   add_index "events", ["updated_at", "status"], :name => "index_events_on_updated_at_and_status"
 
+  create_table "events_tags", :id => false, :force => true do |t|
+    t.integer "event_id"
+    t.integer "tag_id"
+  end
+
+  add_index "events_tags", ["event_id", "tag_id"], :name => "index_events_tags_on_event_id_and_tag_id"
+  add_index "events_tags", ["tag_id", "event_id"], :name => "index_events_tags_on_tag_id_and_event_id"
+
   create_table "settings", :force => true do |t|
     t.string   "var",                      :null => false
     t.text     "value"
@@ -74,6 +82,16 @@ ActiveRecord::Schema.define(:version => 20120914174856) do
   end
 
   add_index "settings", ["thing_type", "thing_id", "var"], :name => "index_settings_on_thing_type_and_thing_id_and_var", :unique => true
+
+  create_table "tags", :force => true do |t|
+    t.string   "name",        :default => "",    :null => false
+    t.boolean  "is_category", :default => false, :null => false
+    t.datetime "created_at",                     :null => false
+    t.datetime "updated_at",                     :null => false
+  end
+
+  add_index "tags", ["is_category"], :name => "index_tags_on_is_category"
+  add_index "tags", ["name"], :name => "index_tags_on_name", :unique => true
 
   create_table "uris", :force => true do |t|
     t.text     "event_id"

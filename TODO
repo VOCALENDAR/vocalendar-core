@@ -1,2 +1,4 @@
  * /auth/failure にエラー表示
  * 再起動せずに Rack middleware の設定を変える方法をチェック
+ * 同期時にイベントの繰り返し情報を入れる
+ * COPYING ファイルを整備

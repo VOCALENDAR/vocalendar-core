@@ -1,3 +1,4 @@
+# -*- encoding: utf-8 -*-
 class Calendar < ActiveRecord::Base
   include VocalendarCore::Utils
   default_scope order('io_type desc, name')
@@ -12,16 +13,16 @@ class Calendar < ActiveRecord::Base
 
   before_validation :trim_attrs
 
-  def sync_events
-    io_type == 'dst' and publish_events
-    io_type == 'src' and feed_events
+  def sync_events(force = false)
+    io_type == 'dst' and publish_events(force)
+    io_type == 'src' and feed_events(force)
   end
 
-  def publish_events
+  def publish_events(force = false)
     raise NotImplementedError, "TODO"
   end
 
-  def feed_events
+  def feed_events(force = false)
     logger.info "Start event sync for calendar '#{name}' (##{id})"
     count = 0
 
@@ -34,12 +35,12 @@ class Calendar < ActiveRecord::Base
       :api_method => service.events.list,
       :parameters => {
         :calendarId => self.external_id,
-        :singleEvents => true,
+        :singleEvents => false,
         :showDeleted => true,
       }
     }
 
-    self.synced_at and
+    self.synced_at && !force and
       listparams[:parameters][:updatedMin] = (self.synced_at - 5.minute).utc.strftime("%Y-%m-%dT%H:%M:%SZ")
 
     default_tz_min = (Time.now.to_datetime.offset * 60 * 24).to_i
@@ -59,12 +60,20 @@ class Calendar < ActiveRecord::Base
 
       result.data.items.each do |eitem|
         event = Event.find_by_g_id(eitem.id) || Event.new
+
+        summary = eitem["summary"].to_s.strip
+        tag_names = []
+        while summary.sub!(/^【(.*?)】/, '')
+          tag_names += $1.split(%r{[/／]}).map {|t| t.strip }
+        end
+        event.tag_names = tag_names
+
         begin
           event.attributes = {
             g_id: eitem.id,
             etag: eitem.etag,
             status: eitem.status,
-            summary: eitem["summary"],
+            summary: summary.strip,
             description: eitem["description"],
             location: eitem["location"],
             g_html_link: eitem["htmlLink"],

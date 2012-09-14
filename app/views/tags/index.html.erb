@@ -1,0 +1,24 @@
+<h1>Listing tags</h1>
+
+<table>
+  <tr>
+    <th><%= Tag.human_attribute_name :id %></th>
+    <th><%= Tag.human_attribute_name :name %></th>
+    <th><%= Tag.human_attribute_name :count %></th>
+  </tr>
+
+<% @tags.each do |tag| %>
+  <tr>
+    <td>#<%= tag.id %></td>
+    <td><%= tag.name %></td>
+    <td><%= tag.events.count %></td>
+    <td><%= link_to 'Show', tag %></td>
+    <td><%= link_to 'Edit', edit_tag_path(tag) %></td>
+    <td><%= link_to 'Destroy', tag, method: :delete, data: { confirm: 'Are you sure?' } %></td>
+  </tr>
+<% end %>
+</table>
+
+<br />
+
+<%= link_to 'New Tag', new_tag_path %>
