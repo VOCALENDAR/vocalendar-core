@@ -1,21 +1,14 @@
 # Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/Fixtures.html
 
 one:
-  calendar_id: MyText
-  event: MyText
-  etag: MyText
-  status: MyText
-  htmlLink: MyText
-  summary: MyText
-  description: MyText
-  location: MyText
-
-two:
-  calendar_id: MyText
-  event: MyText
-  etag: MyText
-  status: MyText
-  htmlLink: MyText
-  summary: MyText
-  description: MyText
-  location: MyText
+  etag: <%= SecureRandom.hex(16) %>
+  status: "confirmed"
+  summary: "Miku love party"
+  description: "Yeah, everyone loves Miku."
+  ical_uid: <%= SecureRandom.hex(16) %>
+  start_datetime: <%= DateTime.now %>
+  start_date: <%= Date.today %>
+  end_datetime: <%= DateTime.now %>
+  end_date: <%= Date.today %>
+  allday: false
+  
