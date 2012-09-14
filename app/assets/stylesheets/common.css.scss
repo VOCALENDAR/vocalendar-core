@@ -1,0 +1,15 @@
+.field_with_errors {
+	display: inline;
+	input[type="text"], textarea, select {
+		background-color: #FFD5D5;
+		border-color: red;
+	}
+	input[type="radio"] {
+		outline: 1px solid red;
+	}
+	label {
+		color: #7A0000;
+		font-weight: bold;
+	}
+}
+

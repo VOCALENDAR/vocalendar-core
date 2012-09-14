@@ -11,6 +11,12 @@ en:
         google_api_client_id: API Client ID
         google_api_secret: API Secret
         
+  general:
+    add: Add
+    delete: Delete
+    edit: Edit
+    new: New
+    delete_confirm: Are you sure to delete %{name}?
   admin:
     set_appid:
       title: Set Google API App ID

@@ -5,6 +5,7 @@
       <th class="var"><%= t "activerecord.attributes.setting.var" %></th>
       <th class="value"><%= t "activerecord.attributes.setting.value" %></th>
       <th class="updated_at date"><%= t "activerecord.attributes.setting.updated_at" %></th>
+      <th></th>
     </tr>
   </thead>
   <tbody>
@@ -18,6 +19,9 @@
       </td>
       <td class="updated_at date">
         <%= l setting.updated_at %>
+      </td>
+      <td>
+        <%= link_to %Q{<i class="icon-trash" title="#{t 'general.delete'}"></i>}.html_safe, setting, confirm: t("general.delete_confirm", name: setting.var), method: :delete %>
       </td>
     </tr>
     <% end %>
