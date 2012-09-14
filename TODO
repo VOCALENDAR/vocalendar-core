@@ -1,1 +1,2 @@
  * /auth/failure にエラー表示
+ * 再起動せずに Rack middleware の設定を変える方法をチェック
