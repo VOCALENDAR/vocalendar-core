@@ -37,7 +37,7 @@ class Event < ActiveRecord::Base
 
   def zone
     tz_min or return nil
-    "#{tz_min < 0 ? '-' : '+'}$#{"%02d" % (tz_min / 60).to_i}:#{"%02d" % "tz_min % 60"}"
+    "#{tz_min < 0 ? '-' : '+'}#{"%02d" % (tz_min / 60).to_i.abs}:#{"%02d" % (tz_min % 60)}"
   end
 
   def zone=(v)
@@ -45,7 +45,7 @@ class Event < ActiveRecord::Base
     unless v.to_s =~ /^([+-])([0-9][0-9]):([0-9][0-9])$/
       raise "Invalid TimeZone format: #{v}"
     end
-    tz_min = ($1 == "-" ? -1 : 1) * $2.to_i * 60 + $3.to_i
+    self[:tz_min] = ($1 == "-" ? -1 : 1) * ($2.to_i * 60 + $3.to_i)
     return v
   end
 
@@ -56,7 +56,7 @@ class Event < ActiveRecord::Base
 
   def offset=(v)
     v.blank? && tz_min = nil and return v
-    tz_min = (v * 24 * 60).to_i
+    self[:tz_min] = (v * 24 * 60).to_i
     return v
   end
 
