@@ -11,6 +11,32 @@
     </div>
   <% end %>
 
+  <div class="event">
+
+	    <%= f.label :description %><br />
+	    <%= f.text_field :description %>
+
+
+  </div>
+
+  <div class="uris">
+  	<%= f.fields_for :uris do |uri| %>
+
+	    <%= uri.label :serviceName %><br />
+	    <%= uri.text_field :serviceName %>
+
+	    <%= uri.label :uri %><br />
+	    <%= uri.text_field :uri %>
+
+	    <%= uri.label :body %><br />
+	    <%= uri.text_area :body %>
+
+  	<% end %>
+  </div>
+
+
+
+
   <div class="actions">
     <%= f.submit %>
   </div>
