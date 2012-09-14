@@ -19,6 +19,7 @@ class EventsController < ApplicationController
   # GET /events/new.json
   def new
     @event = Event.new
+   @event.uris.build
     respond_with @event
   end
 
