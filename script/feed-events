@@ -1,0 +1,17 @@
+require 'pp'
+include VocalendarCore::Utils
+
+client = gapi_client
+service = client.discovered_api('calendar', 'v3')
+
+cal = Calendar.all.first
+
+result = client.execute(
+                        :headers => {'Content-Type' => 'application/json'},
+                        :api_method => service.events.list,
+                        :parameters => {
+                          :calendarId => cal.external_id,
+                          :orderBy => 'updated',
+                        })
+pp result
+

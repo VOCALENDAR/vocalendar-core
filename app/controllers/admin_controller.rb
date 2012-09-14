@@ -19,19 +19,22 @@ class AdminController < ApplicationController
       f.puts params[:setting][:google_api_client_id]
       f.puts params[:setting][:google_api_secret]
     end
-    redirect_to({:action => Setting.master_auth_email ? :index : :set_master_auth}, :notice => t("admin.update_appid.restart_notice"))
+    redirect_to({:action => Setting.master_auth_uid ? :index : :set_master_auth}, :notice => t("admin.update_appid.restart_notice"))
   end
 
   def set_master_auth
-    @auth_info = Setting.master_auth_email
+    @auth_info = Setting.master_auth_uid
   end
 
   def auth_callback
     @auth = request.env["omniauth.auth"]
-    %w(refresh_token expires_at token).each do |attr|
-      Setting.__send__ "master_auth_#{attr}=", @auth["credentials"][attr]
+    Setting.transaction do
+      %w(refresh_token expires_at token).each do |attr|
+        Setting.__send__ "master_auth_#{attr}=", @auth["credentials"][attr]
+      end
+      Setting.master_auth_issued_at = Time.now.to_i
+      Setting.master_auth_uid = @auth.uid
     end
-    Setting.master_auth_email = @auth["extra"]["raw_info"]["email"]
 
     redirect_to({:action => :index}, :notice => t("admin.auth_callback.success"))
   end
