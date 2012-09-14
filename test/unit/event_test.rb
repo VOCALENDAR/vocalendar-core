@@ -6,11 +6,8 @@ class EventTest < ActiveSupport::TestCase
   # end
 
   test "simple save" do
-    assert events(:one).save
-  end
-
-  test "simple save2" do
-    assert events(:one).save
+    e = events(:one)
+    assert e.save, "Simple save failed: #{e.errors.full_messages.join(', ')}"
   end
 
   test "mangle tentative status" do
@@ -75,5 +72,11 @@ class EventTest < ActiveSupport::TestCase
     assert_equal 90, e.tz_min
     e.zone = "-09:30"
     assert_equal -570, e.tz_min
+  end
+
+  test "term string" do
+    assert_equal Date.today.strftime("%m-%d"), events(:one).term_str
+    assert_equal "2010-03-09 12:09 - 14:09", events(:two_hours).term_str
+    assert_equal "2010-03-09 - 2010-03-10", events(:two_days).term_str
   end
 end
