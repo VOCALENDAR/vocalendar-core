@@ -5,7 +5,7 @@ class Calendar < ActiveRecord::Base
 
   has_many :events, :foreign_key => 'g_calendar_id', :primary_key => 'external_id'
 
-  attr_accessible :name, :external_id, :synced_at, :io_type
+  attr_accessible :name, :external_id, :io_type, :sync_started_at, :sync_finished_at, :latest_synced_item_updated_at
 
   validates :name, :presence => true
   validates :external_id, :presence => true, :uniqueness => true
@@ -22,11 +22,13 @@ class Calendar < ActiveRecord::Base
     raise NotImplementedError, "TODO"
   end
 
-  def feed_events(force = false)
+  def feed_events(opts = {})
+    opts = {:force => false, :maxitem => 2000}.merge opts
     logger.info "Start event sync for calendar '#{name}' (##{id})"
     count = 0
 
-    sync_start_time = DateTime.now
+    self.update_attributes! :sync_started_at => DateTime.now
+
     client = gapi_client
     service = client.discovered_api('calendar', 'v3')
 
@@ -41,8 +43,8 @@ class Calendar < ActiveRecord::Base
       }
     }
 
-    self.synced_at && !force and
-      listparams[:parameters][:updatedMin] = (self.synced_at - 5.minute).utc.strftime("%Y-%m-%dT%H:%M:%SZ")
+    self.latest_synced_item_updated_at && !opts[:force] and
+      listparams[:parameters][:updatedMin] = (self.latest_synced_item_updated_at - 5.minute).utc.strftime("%Y-%m-%dT%H:%M:%SZ")
 
     default_tz_min = (Time.now.to_datetime.offset * 60 * 24).to_i
 
@@ -59,6 +61,7 @@ class Calendar < ActiveRecord::Base
 
       default_tz_min = TZInfo::Timezone.get(result.data.timeZone).current_period.utc_offset / 60
 
+      result.data["items"] or break
       result.data.items.each do |eitem|
         event = Event.find_by_g_id(eitem.id) || Event.new
 
@@ -98,7 +101,7 @@ class Calendar < ActiveRecord::Base
           logger.info "Event sync: #{event.new_record? ? "create new event" : "update event ##{event.id}"}: #{event.summary}"
           event.save!
           count += 1
-          self.update_attributes! :synced_at => eitem["updated"]
+          self.update_attributes! :latest_synced_item_updated_at => eitem["updated"]
         rescue => e
           logger.error "Failed to sync event: #{e.class.name}: #{e.to_s} (#{e.backtrace.first})"
           logger.error "Failed item: #{eitem.inspect}"
@@ -109,7 +112,8 @@ class Calendar < ActiveRecord::Base
       listparams[:parameters][:pageToken] = result.next_page_token
     end
 
-    logger.info "Event sync completed for calendar '#{name}' (##{id}): #{count} events has been updated (#{DateTime.now.to_i - sync_start_time.to_i} secs)."
+    self.update_attributes! :sync_finished_at => DateTime.now
+    logger.info "Event sync completed for calendar '#{name}' (##{id}): #{count} events has been updated (#{DateTime.now.to_i - self.sync_started_at.to_i} secs)."
   end
 
   private

@@ -4,11 +4,11 @@ status = 0
 
 Calendar.where(:io_type => 'src').each do |cal|
   begin
-    cal.sync_events(force)
+    cal.sync_events(:force => force)
   rescue => e
     msg = "Failed to sync calendar '#{cal.name}' (##{cal.id}): #{e.class.name}: #{e.to_s} (#{e.backtrace.first})"
     Rails.logger.error msg
-    $stderr.puts e
+    $stderr.puts msg
     status = 1
   end
 end
