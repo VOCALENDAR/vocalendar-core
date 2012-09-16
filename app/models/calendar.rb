@@ -37,6 +37,7 @@ class Calendar < ActiveRecord::Base
         :calendarId => self.external_id,
         :singleEvents => false,
         :showDeleted => true,
+        :orderBy => 'updated',
       }
     }
 
@@ -97,6 +98,7 @@ class Calendar < ActiveRecord::Base
           logger.info "Event sync: #{event.new_record? ? "create new event" : "update event ##{event.id}"}: #{event.summary}"
           event.save!
           count += 1
+          self.update_attributes! :synced_at => eitem["updated"]
         rescue => e
           logger.error "Failed to sync event: #{e.class.name}: #{e.to_s} (#{e.backtrace.first})"
           logger.error "Failed item: #{eitem.inspect}"
@@ -107,8 +109,7 @@ class Calendar < ActiveRecord::Base
       listparams[:parameters][:pageToken] = result.next_page_token
     end
 
-    logger.info "Event sync completed for calendar '#{name}' (##{id}): #{count} events has been updated."
-    self.update_attributes! :synced_at => sync_start_time
+    logger.info "Event sync completed for calendar '#{name}' (##{id}): #{count} events has been updated (#{DateTime.now.to_i - sync_start_time.to_i} secs)."
   end
 
   private
