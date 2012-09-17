@@ -1,3 +1,4 @@
+# -*- mode: ruby -*-
 force = ARGV.first == '-f'
 
 status = 0

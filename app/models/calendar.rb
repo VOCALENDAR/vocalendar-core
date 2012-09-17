@@ -23,7 +23,7 @@ class Calendar < ActiveRecord::Base
   end
 
   def feed_events(opts = {})
-    opts = {:force => false, :maxitem => 2000}.merge opts
+    opts = {:force => false, :max => 2000}.merge opts
     logger.info "Start event sync for calendar '#{name}' (##{id})"
     count = 0
 
@@ -102,13 +102,14 @@ class Calendar < ActiveRecord::Base
           event.save!
           count += 1
           self.update_attributes! :latest_synced_item_updated_at => eitem["updated"]
+          opts[:max] <= count and break
         rescue => e
           logger.error "Failed to sync event: #{e.class.name}: #{e.to_s} (#{e.backtrace.first})"
           logger.error "Failed item: #{eitem.inspect}"
           raise e
         end
       end
-      result.next_page_token or break
+      !result.next_page_token || opts[:max] <= count and break
       listparams[:parameters][:pageToken] = result.next_page_token
     end
 
