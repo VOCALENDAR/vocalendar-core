@@ -13,12 +13,12 @@ class Calendar < ActiveRecord::Base
 
   before_validation :trim_attrs
 
-  def sync_events(force = false)
-    io_type == 'dst' and publish_events(force)
-    io_type == 'src' and feed_events(force)
+  def sync_events(opts = {})
+    io_type == 'dst' and publish_events(opts)
+    io_type == 'src' and feed_events(opts)
   end
 
-  def publish_events(force = false)
+  def publish_events(opts = {})
     raise NotImplementedError, "TODO"
   end
 
