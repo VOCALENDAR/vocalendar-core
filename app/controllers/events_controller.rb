@@ -1,4 +1,4 @@
-# coding: utf-8
+﻿# coding: utf-8
 
 class EventsController < ApplicationController
   # GET /events
@@ -10,21 +10,23 @@ class EventsController < ApplicationController
         joins('inner join events_tags on events.id = events_tags.event_id').
         where('events_tags.tag_id' => params[:tag_id])
     end
-    respond_with @events
+    respond_with @events, :include=> [:tags,  :uris]
   end
 
   # GET /events/1
   # GET /events/1.json
   def show
     @event = Event.find(params[:id])
-    respond_with @event
+    respond_with @event, :include=> [:tags,  :uris]
   end
 
   # GET /events/new
   # GET /events/new.json
   def new
     @event = Event.new
-    @event.uris.build
+    # TODO 回数はとりあえず固定
+    2.times { @event.uris.build }
+    2.times { @event.tags.build }
     respond_with @event
   end
 
@@ -37,6 +39,9 @@ class EventsController < ApplicationController
   # POST /events.json
   def create
     @event = Event.new(params[:event])
+    # TODO Googleに一度登録してからデータを流用とか？
+    @event.etag='etag'
+    @event.ical_uid='ical_uid'
     @event.save
     respond_with @event
   end
