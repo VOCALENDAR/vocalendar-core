@@ -47,13 +47,7 @@ class Calendar < ActiveRecord::Base
         logger.error "Sync skip! Event ##{event.id} don't have g_calendar_id & event.ical_uid"
         next
       end
-      params[:body] = {
-        :iCalUID => event.ical_uid,
-        :attendees => [],
-        :reminders => {:overrides => []},
-        :start => event.allday? ? {:date => event.start_date} : {:dateTime => event.start_datetime},
-        :end => event.allday? ? {:date => event.end_date} : {:dateTime => event.end_datetime},
-      }.to_json
+      params[:body] = event.to_exfmt(:google_v3).to_json
       result = client.execute(params)
       if result.status != 200
         msg = "Error on import event (Status=#{result.status}): #{result.body}"
@@ -112,40 +106,8 @@ class Calendar < ActiveRecord::Base
       result.data["items"] or break
       result.data.items.each do |eitem|
         event = Event.find_by_g_id(eitem.id) || Event.new
-
-        summary = eitem["summary"].to_s.strip
-        tag_names = []
-        while summary.sub!(/^【(.*?)】/, '')
-          tag_names += $1.split(%r{[/／]}).map {|t| t.strip }
-        end
-        event.tag_names = tag_names
-
         begin
-          event.attributes = {
-            g_id: eitem.id,
-            etag: eitem.etag,
-            status: eitem.status,
-            summary: summary.strip,
-            description: eitem["description"],
-            location: eitem["location"],
-            g_html_link: eitem["htmlLink"],
-            g_calendar_id: self.external_id,
-            g_creator_email: eitem["creator"].try(:email),
-            ical_uid: eitem["iCalUID"].to_s,
-          }
-          if eitem["start"] 
-            event.attributes = {
-              start_datetime: eitem.start["dateTime"] || eitem.start.date.to_time.to_datetime,
-              start_date: eitem.start["date"] || eitem.start.dateTime.to_date,
-              end_datetime: eitem.end["dateTime"] || eitem.end.date.to_time.to_datetime,
-              end_date: eitem.end["date"] || eitem.end.dateTime.to_date,
-              tz_min: eitem.start["date"] ? default_tz_min : (eitem.start.dateTime.to_datetime.offset * 60 * 24).to_i,
-              allday: !!eitem.start["date"],
-              # TODO: recurrent support MUST!!!
-              # TODO: support color_id support or drop 
-              # TODO: support g_creator_display_name or drop
-            }
-          end
+          event.load_attrs :google_v3, eitem, :calendar_id => self.external_id, :default_tz_min => default_tz_min
           logger.info "Event sync: #{event.new_record? ? "create new event" : "update event ##{event.id}"}: #{event.summary}"
           event.save!
           count += 1
