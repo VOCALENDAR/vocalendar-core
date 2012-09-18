@@ -3,9 +3,11 @@ class Calendar < ActiveRecord::Base
   include VocalendarCore::Utils
   default_scope order('io_type desc, name')
 
-  has_many :events, :foreign_key => 'g_calendar_id', :primary_key => 'external_id'
+  has_many :fetched_events, :class_name => 'Event', :foreign_key => 'g_calendar_id', :primary_key => 'external_id'
+  has_and_belongs_to_many :tags
+  has_many :target_events, :through => :tags, :source => :events
 
-  attr_accessible :name, :external_id, :io_type, :sync_started_at, :sync_finished_at, :latest_synced_item_updated_at
+  attr_accessible :name, :external_id, :io_type, :sync_started_at, :sync_finished_at, :latest_synced_item_updated_at, :tag_ids
 
   validates :name, :presence => true
   validates :external_id, :presence => true, :uniqueness => true
@@ -19,7 +21,53 @@ class Calendar < ActiveRecord::Base
   end
 
   def publish_events(opts = {})
-    raise NotImplementedError, "TODO"
+    opts = {:force => false, :max => 2000}.merge opts
+    logger.info "Start event sync for calendar '#{name}' (##{id})"
+    count = 0
+
+    self.update_attributes! :sync_started_at => DateTime.now
+
+    client = gapi_client
+    service = client.discovered_api('calendar', 'v3')
+
+    params = {
+      :headers => {'Content-Type' => 'application/json'},
+      :api_method => service.events.import,
+      :parameters => {
+        :calendarId => self.external_id,
+      }
+    }
+
+    target_events = self.target_events.reorder('events.updated_at')
+    self.latest_synced_item_updated_at && !opts[:force] and
+      target_events = target_events.where('events.updated_at >= ?', self.latest_synced_item_updated_at)
+
+    target_events.each do |event|
+      if event.g_calendar_id.blank? || event.ical_uid.blank?
+        logger.error "Sync skip! Event ##{event.id} don't have g_calendar_id & event.ical_uid"
+        next
+      end
+      params[:body] = {
+        :iCalUID => event.ical_uid,
+        :attendees => [],
+        :reminders => {:overrides => []},
+        :start => event.allday? ? {:date => event.start_date} : {:dateTime => event.start_datetime},
+        :end => event.allday? ? {:date => event.end_date} : {:dateTime => event.end_datetime},
+      }.to_json
+      result = client.execute(params)
+      if result.status != 200
+        msg = "Error on import event (Status=#{result.status}): #{result.body}"
+        logger.error msg
+        raise msg
+      end
+      count += 1
+      self.update_attributes! :latest_synced_item_updated_at => event.updated_at
+      logger.info "Event '#{event.summary}' (##{event.id}) has been published to calendar '#{self.name}' (##{self.id}) successfully."
+      count >= opts[:max] and break
+    end
+
+    self.update_attributes! :sync_finished_at => DateTime.now
+    logger.info "Event sync completed for calendar '#{name}' (##{id}): #{count} events has been updated (#{DateTime.now.to_i - self.sync_started_at.to_i} secs)."
   end
 
   def feed_events(opts = {})
