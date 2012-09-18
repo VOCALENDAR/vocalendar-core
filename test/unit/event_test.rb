@@ -79,4 +79,39 @@ class EventTest < ActiveSupport::TestCase
     assert_equal "2010-03-09 12:09 - 14:09", events(:two_hours).term_str
     assert_equal "2010-03-09 - 2010-03-10", events(:two_days).term_str
   end
+
+  test "load google v3 data" do
+    hh = {
+      "kind"=>"calendar#event",
+      "etag"=>"\"VPgt7A32MKJjP8Bq493zO-MXswA/Q09EbXdxZWRKeEVBQUFBQUFBQUFBQT09\"",
+      "id"=>"h@00d8590b768fd9797c5c4f31d6596efba9d4a251",
+      "status"=>"confirmed",
+      "htmlLink"=>
+      "https://www.google.com/calendar/event?eid=aEAwMGQ4NTkwYjc2OGZkOTc5N2M1YzRmMzFkNjU5NmVmYmE5ZDRhMjUxIGphcGFuZXNlQGg",
+      "created"=>DateTime.parse("2012-09-17T15:55:08.000Z"),
+      "updated"=>DateTime.parse("2012-09-17T15:55:08.000Z"),
+      "summary"=>"Children's Day",
+      "creator"=>
+      {"email"=>"japanese@holiday.calendar.google.com",
+        "displayName"=>"Japanese Holidays",
+        "self"=>true},
+      "organizer"=>
+      {"email"=>"japanese@holiday.calendar.google.com",
+        "displayName"=>"Japanese Holidays",
+        "self"=>true},
+      "start"=>{"date"=>Date.parse("2011-05-05")},
+      "end"=>{"date"=>Date.parse("2011-05-06")},
+      "visibility"=>"public",
+      "iCalUID"=>"h@00d8590b768fd9797c5c4f31d6596efba9d4a251@google.com",
+      "sequence"=>1}
+    ha = hash_to_struct hh
+    e = events(:one)
+    e.load_exfmt :google_v3, ha, :calendar_id => 'dummy_gcal_id'
+    assert_equal ha["htmlLink"], e.g_html_link
+    assert_equal ha["status"], e.status
+    assert_equal ha["etag"], e.etag
+    assert_equal ha["iCalUID"], e.ical_uid
+    assert_equal 'dummy_gcal_id', e.g_calendar_id
+  end
+    
 end

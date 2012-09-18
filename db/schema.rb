@@ -11,19 +11,26 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20120914213842) do
+ActiveRecord::Schema.define(:version => 20120917185129) do
 
   create_table "calendars", :force => true do |t|
-    t.string   "name",        :default => "", :null => false
-    t.datetime "created_at",                  :null => false
-    t.datetime "updated_at",                  :null => false
-    t.string   "external_id", :default => "", :null => false
-    t.datetime "synced_at"
-    t.string   "io_type",     :default => "", :null => false
+    t.string   "name",                          :default => "", :null => false
+    t.datetime "created_at",                                    :null => false
+    t.datetime "updated_at",                                    :null => false
+    t.string   "external_id",                   :default => "", :null => false
+    t.datetime "sync_started_at"
+    t.string   "io_type",                       :default => "", :null => false
+    t.datetime "latest_synced_item_updated_at"
+    t.datetime "sync_finished_at"
   end
 
   add_index "calendars", ["external_id"], :name => "index_calendars_on_external_id"
   add_index "calendars", ["io_type"], :name => "index_calendars_on_type"
+
+  create_table "calendars_tags", :id => false, :force => true do |t|
+    t.integer "calendar_id"
+    t.integer "tag_id"
+  end
 
   create_table "events", :force => true do |t|
     t.string   "g_calendar_id"
@@ -59,7 +66,7 @@ ActiveRecord::Schema.define(:version => 20120914213842) do
 
   add_index "events", ["end_datetime", "status"], :name => "index_events_on_end_datetime_and_status"
   add_index "events", ["g_calendar_id"], :name => "index_events_on_g_calendar_id"
-  add_index "events", ["g_id"], :name => "index_events_on_g_id"
+  add_index "events", ["g_id"], :name => "index_events_on_g_id", :unique => true
   add_index "events", ["start_datetime", "status"], :name => "index_events_on_start_datetime_and_status"
   add_index "events", ["status"], :name => "index_events_on_status"
   add_index "events", ["updated_at", "status"], :name => "index_events_on_updated_at_and_status"

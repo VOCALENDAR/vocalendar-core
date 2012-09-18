@@ -11,7 +11,14 @@
     </div>
   <% end %>
 
+  <div>
+    <%= f.label :name %>
+    <%= f.text_field :name %>
+    <%= f.label :is_category %>
+    <%= f.check_box :is_category %>
+  </div>
+
   <div class="actions">
-    <%= f.submit %>
+    <%= f.submit :class => 'btn btn-primary'%>
   </div>
 <% end %>

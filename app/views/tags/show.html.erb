@@ -1,5 +1,14 @@
-<p id="notice"><%= notice %></p>
+<h2>Tag: <%= @tag.name %></h2>
 
+<h3>Event count: <%= link_to @tag.events.count, events_path(:tag_id => @tag.id) %></h3>
+
+<h3>Recent Events</h3>
+
+<ul>
+<% @tag.events.where('? < start_date', Date.today + 1.month).order('start_date desc').limit(10).each do |event| %>
+   <li>[<%= event.term_str %>] <%= link_to event.summary, event_path(event) %></li>
+<% end %>
+</ul>
 
 <%= link_to 'Edit', edit_tag_path(@tag) %> |
 <%= link_to 'Back', tags_path %>
