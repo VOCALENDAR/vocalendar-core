@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20120918133131) do
+ActiveRecord::Schema.define(:version => 20120918191001) do
 
   create_table "calendars", :force => true do |t|
     t.string   "name",                          :default => "", :null => false
@@ -33,6 +33,9 @@ ActiveRecord::Schema.define(:version => 20120918133131) do
     t.integer "calendar_id"
     t.integer "tag_id"
   end
+
+  add_index "calendars_tags", ["calendar_id"], :name => "index_calendars_tags_on_calendar_id"
+  add_index "calendars_tags", ["tag_id"], :name => "index_calendars_tags_on_tag_id"
 
   create_table "events", :force => true do |t|
     t.string   "g_calendar_id"
