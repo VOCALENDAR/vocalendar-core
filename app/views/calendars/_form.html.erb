@@ -9,6 +9,16 @@
 <%= f.label :io_type_src, :style => 'display: inline' %>
 <%= f.radio_button :io_type, "dst" %>
 <%= f.label :io_type_dst, :style => 'display: inline' %><br>
+<%= f.label :tags %> 
+<div class="tag-check-list">
+<% Tag.all.each do |tag| %>
+  <span style="white-space: nowrap; margin-right: 1em;">
+    <%= f.check_box :tag_ids, {:name => "calendar[tag_ids][]", :id => "calendar_tag_ids_#{tag.id}"}, tag.id, nil %>
+    <%= f.label "tag_ids_#{tag.id}", tag.name, :style => 'display: inline' %>
+  </span>
+<% end %>
+</div>
+<p class="note">target events to sync (output mode only)</p>
 
 <%= f.submit :class => 'btn' %>
 
