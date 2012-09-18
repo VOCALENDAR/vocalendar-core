@@ -1,7 +1,7 @@
 class AdminController < ApplicationController
   def index
     if !Setting.google_api_client_id || !Setting.google_api_secret
-      redirec_to :action => :set_appid
+      redirect_to :action => :set_appid
     end
   end
 

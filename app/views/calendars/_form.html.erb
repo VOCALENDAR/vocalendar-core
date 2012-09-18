@@ -20,6 +20,12 @@
 </div>
 <p class="note">target events to sync (output mode only)</p>
 
+<%= f.label :tag_names_append_str %>
+<%= f.text_field :tag_names_append_str %>
+<%= f.label :tag_names_remove_str %>
+<%= f.text_field :tag_names_remove_str %>
+
+<br>
 <%= f.submit :class => 'btn' %>
 
 <% end %>
