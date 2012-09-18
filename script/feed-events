@@ -1,17 +1,15 @@
-require 'pp'
-include VocalendarCore::Utils
+force = ARGV.first == '-f'
 
-client = gapi_client
-service = client.discovered_api('calendar', 'v3')
+status = 0
 
-cal = Calendar.all.first
-
-result = client.execute(
-                        :headers => {'Content-Type' => 'application/json'},
-                        :api_method => service.events.list,
-                        :parameters => {
-                          :calendarId => cal.external_id,
-                          :orderBy => 'updated',
-                        })
-pp result
-
+Calendar.where(:io_type => 'src').each do |cal|
+  begin
+    cal.sync_events(force)
+  rescue => e
+    msg = "Failed to sync calendar '#{cal.name}' (##{cal.id}): #{e.class.name}: #{e.to_s} (#{e.backtrace.first})"
+    Rails.logger.error msg
+    $stderr.puts e
+    status = 1
+  end
+end
+exit status

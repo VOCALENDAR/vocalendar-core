@@ -1,9 +1,2 @@
 # Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/Fixtures.html
 
-one:
-  calendar: MyText
-  name: MyText
-
-two:
-  calendar: MyText
-  name: MyText
