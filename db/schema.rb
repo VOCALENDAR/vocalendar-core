@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20120917185129) do
+ActiveRecord::Schema.define(:version => 20120918133131) do
 
   create_table "calendars", :force => true do |t|
     t.string   "name",                          :default => "", :null => false
@@ -22,6 +22,8 @@ ActiveRecord::Schema.define(:version => 20120917185129) do
     t.string   "io_type",                       :default => "", :null => false
     t.datetime "latest_synced_item_updated_at"
     t.datetime "sync_finished_at"
+    t.string   "tag_names_append_str"
+    t.string   "tag_names_remove_str"
   end
 
   add_index "calendars", ["external_id"], :name => "index_calendars_on_external_id"
