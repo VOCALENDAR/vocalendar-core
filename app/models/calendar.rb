@@ -34,8 +34,12 @@ class Calendar < ActiveRecord::Base
   end
 
   def sync_events(opts = {})
-    io_type == 'dst' and publish_events(opts)
-    io_type == 'src' and fetch_events(opts)
+    if io_type == 'dst'
+      publish_events opts
+      cleanup_published_events opts
+    elsif io_type == 'src'
+      fetch_events opts
+    end
   end
 
   def publish_events(opts = {})
@@ -82,50 +86,30 @@ class Calendar < ActiveRecord::Base
     logger.info "Event sync completed for calendar '#{name}' (##{id}): #{count} events has been updated (#{DateTime.now.to_i - self.sync_started_at.to_i} secs)."
   end
 
+  def cleanup_published_events(opts = {})
+    
+  end
+
   def fetch_events(opts = {})
     opts = {:force => false, :max => 2000}.merge opts
     logger.info "Start event sync for calendar '#{name}' (##{id})"
     count = 0
+    default_tz_min = (Time.now.to_datetime.offset * 60 * 24).to_i
 
     self.update_attributes! :sync_started_at => DateTime.now
 
-    client = gapi_client
-    service = client.discovered_api('calendar', 'v3')
-
-    listparams = {
-      :headers => {'Content-Type' => 'application/json'},
-      :api_method => service.events.list,
-      :parameters => {
-        :calendarId => self.external_id,
-        :singleEvents => false,
-        :showDeleted => true,
-        :orderBy => 'updated',
-      }
-    }
-
+    query_params = {}
     self.latest_synced_item_updated_at && !opts[:force] and
-      listparams[:parameters][:updatedMin] = (self.latest_synced_item_updated_at - 5.minute).utc.strftime("%Y-%m-%dT%H:%M:%SZ")
+      query_params[:updatedMin] = (self.latest_synced_item_updated_at - 5.minute).utc.strftime("%Y-%m-%dT%H:%M:%SZ")
 
-    default_tz_min = (Time.now.to_datetime.offset * 60 * 24).to_i
-
-    while true
-      logger.debug "Getting event list via Google API: #{listparams.inspect}"
-      result = client.execute(listparams)
-      if result.status != 200
-        msg = "Error on getting event list (Status=#{result.status}): #{result.body}"
-        logger.error msg
-        #logger.error result.inspect
-        raise msg
-      end
-      logger.debug 'Get event list successfully'
-
+    self.gapi_list_each_page(query_params) do |result|
       default_tz_min = TZInfo::Timezone.get(result.data.timeZone).current_period.utc_offset / 60
 
       result.data["items"] or break
       result.data.items.each do |eitem|
         event = Event.find_by_g_id(eitem.id) || Event.new
         begin
-          event.load_attrs :google_v3, eitem,
+          event.load_exfmt :google_v3, eitem,
             :calendar_id => self.external_id, :default_tz_min => default_tz_min,
             :tag_names_append => self.tag_names_append,
             :tag_names_remove => self.tag_names_remove
@@ -140,12 +124,42 @@ class Calendar < ActiveRecord::Base
           raise e
         end
       end
-      !result.next_page_token || opts[:max] <= count and break
-      listparams[:parameters][:pageToken] = result.next_page_token
     end
 
     self.update_attributes! :sync_finished_at => DateTime.now
     logger.info "Event sync completed for calendar '#{name}' (##{id}): #{count} events has been updated (#{DateTime.now.to_i - self.sync_started_at.to_i} secs)."
+  end
+
+  def gapi_list_each_page(query_params = {}, &block)
+    client = gapi_client
+    service = client.discovered_api('calendar', 'v3')
+    params = {
+      :headers => {'Content-Type' => 'application/json'},
+      :api_method => service.events.list,
+      :parameters => {
+        :calendarId => self.external_id,
+        :singleEvents => false,
+        :showDeleted => true,
+        :orderBy => 'updated',
+      }.merge(query_params)
+    }
+
+    while true
+      logger.debug "Getting event list via Google API: #{params.inspect}"
+      result = client.execute(params)
+      if result.status != 200
+        msg = "Error on getting event list (Status=#{result.status}): #{result.body}"
+        logger.error msg
+        #logger.error result.inspect
+        raise msg
+      end
+      logger.debug 'Get event list successfully'
+
+      yield result
+
+      result.next_page_token or break
+      params[:parameters][:pageToken] = result.next_page_token
+    end
   end
 
   private
