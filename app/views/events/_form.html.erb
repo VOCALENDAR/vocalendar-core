@@ -13,25 +13,40 @@
 
   <div class="event">
 
-	    <%= f.label :description %><br />
-	    <%= f.text_field :description %>
+	    <%= f.label :summary %>
+	    <%= f.text_field :summary %>
+	    <%= f.label :start_datetime %>
+	    <%= f.text_field :start_datetime %>
+	    <%= f.label :end_datetime %>
+	    <%= f.text_field :end_datetime %>
+
+	    <%= f.label :description %>
+	    <%= f.text_area :description %>
+
 
 
   </div>
 
+  <div class="tags">
+  <%= Tag.human_attribute_name :name %>
+  	<%= f.fields_for :tags do |tag| %>
+	    <%= tag.text_field :name %>
+  	<% end %>
+  </div>
+
   <div class="uris">
+  <%= Uri.human_attribute_name :serviceName %>
+  <%= Uri.human_attribute_name :uri %>
+  <%= Uri.human_attribute_name :body %>
+  <br />
   	<%= f.fields_for :uris do |uri| %>
 
-	    <%= uri.label :serviceName %><br />
 	    <%= uri.text_field :serviceName %>
-
-	    <%= uri.label :uri %><br />
 	    <%= uri.text_field :uri %>
-
-	    <%= uri.label :body %><br />
-	    <%= uri.text_area :body %>
-
+	    <%= uri.text_field :body %>
+    <br />
   	<% end %>
+  
   </div>
 
 
