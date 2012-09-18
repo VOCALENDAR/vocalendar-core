@@ -10,4 +10,17 @@ class ActiveSupport::TestCase
   fixtures :all
 
   # Add more helper methods to be used by all tests here...
+
+
+  def hash_to_struct(h)
+    h.each do |k, v|
+      Hash === v or next
+      h[k] = hash_to_struct(v)
+    end
+    s = OpenStruct.new(h)
+    def s.[](k)
+      self.__send__ k
+    end
+    s
+  end
 end

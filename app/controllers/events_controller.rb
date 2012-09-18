@@ -10,7 +10,7 @@ class EventsController < ApplicationController
         joins('inner join events_tags on events.id = events_tags.event_id').
         where('events_tags.tag_id' => params[:tag_id])
     end
-    respond_with @events, :include=> [:tags,  :uris] 
+    respond_with @events, :include=> [:tags,  :uris]
   end
 
   # GET /events/1
