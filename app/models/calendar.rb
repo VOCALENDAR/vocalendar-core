@@ -17,7 +17,7 @@ class Calendar < ActiveRecord::Base
 
   def sync_events(opts = {})
     io_type == 'dst' and publish_events(opts)
-    io_type == 'src' and feed_events(opts)
+    io_type == 'src' and fetch_events(opts)
   end
 
   def publish_events(opts = {})
@@ -64,7 +64,7 @@ class Calendar < ActiveRecord::Base
     logger.info "Event sync completed for calendar '#{name}' (##{id}): #{count} events has been updated (#{DateTime.now.to_i - self.sync_started_at.to_i} secs)."
   end
 
-  def feed_events(opts = {})
+  def fetch_events(opts = {})
     opts = {:force => false, :max => 2000}.merge opts
     logger.info "Start event sync for calendar '#{name}' (##{id})"
     count = 0
