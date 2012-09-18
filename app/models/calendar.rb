@@ -3,9 +3,11 @@ class Calendar < ActiveRecord::Base
   include VocalendarCore::Utils
   default_scope order('io_type desc, name')
 
-  has_many :events, :foreign_key => 'g_calendar_id', :primary_key => 'external_id'
+  has_many :fetched_events, :class_name => 'Event', :foreign_key => 'g_calendar_id', :primary_key => 'external_id'
+  has_and_belongs_to_many :tags
+  has_many :target_events, :through => :tags, :source => :events
 
-  attr_accessible :name, :external_id, :synced_at, :io_type
+  attr_accessible :name, :external_id, :io_type, :sync_started_at, :sync_finished_at, :latest_synced_item_updated_at, :tag_ids
 
   validates :name, :presence => true
   validates :external_id, :presence => true, :uniqueness => true
@@ -13,20 +15,62 @@ class Calendar < ActiveRecord::Base
 
   before_validation :trim_attrs
 
-  def sync_events(force = false)
-    io_type == 'dst' and publish_events(force)
-    io_type == 'src' and feed_events(force)
+  def sync_events(opts = {})
+    io_type == 'dst' and publish_events(opts)
+    io_type == 'src' and fetch_events(opts)
   end
 
-  def publish_events(force = false)
-    raise NotImplementedError, "TODO"
-  end
-
-  def feed_events(force = false)
+  def publish_events(opts = {})
+    opts = {:force => false, :max => 2000}.merge opts
     logger.info "Start event sync for calendar '#{name}' (##{id})"
     count = 0
 
-    sync_start_time = DateTime.now
+    self.update_attributes! :sync_started_at => DateTime.now
+
+    client = gapi_client
+    service = client.discovered_api('calendar', 'v3')
+
+    params = {
+      :headers => {'Content-Type' => 'application/json'},
+      :api_method => service.events.import,
+      :parameters => {
+        :calendarId => self.external_id,
+      }
+    }
+
+    target_events = self.target_events.reorder('events.updated_at')
+    self.latest_synced_item_updated_at && !opts[:force] and
+      target_events = target_events.where('events.updated_at >= ?', self.latest_synced_item_updated_at)
+
+    target_events.each do |event|
+      if event.g_calendar_id.blank? || event.ical_uid.blank?
+        logger.error "Sync skip! Event ##{event.id} don't have g_calendar_id & event.ical_uid"
+        next
+      end
+      params[:body] = event.to_exfmt(:google_v3).to_json
+      result = client.execute(params)
+      if result.status != 200
+        msg = "Error on import event (Status=#{result.status}): #{result.body}"
+        logger.error msg
+        raise msg
+      end
+      count += 1
+      self.update_attributes! :latest_synced_item_updated_at => event.updated_at
+      logger.info "Event '#{event.summary}' (##{event.id}) has been published to calendar '#{self.name}' (##{self.id}) successfully."
+      count >= opts[:max] and break
+    end
+
+    self.update_attributes! :sync_finished_at => DateTime.now
+    logger.info "Event sync completed for calendar '#{name}' (##{id}): #{count} events has been updated (#{DateTime.now.to_i - self.sync_started_at.to_i} secs)."
+  end
+
+  def fetch_events(opts = {})
+    opts = {:force => false, :max => 2000}.merge opts
+    logger.info "Start event sync for calendar '#{name}' (##{id})"
+    count = 0
+
+    self.update_attributes! :sync_started_at => DateTime.now
+
     client = gapi_client
     service = client.discovered_api('calendar', 'v3')
 
@@ -37,11 +81,12 @@ class Calendar < ActiveRecord::Base
         :calendarId => self.external_id,
         :singleEvents => false,
         :showDeleted => true,
+        :orderBy => 'updated',
       }
     }
 
-    self.synced_at && !force and
-      listparams[:parameters][:updatedMin] = (self.synced_at - 5.minute).utc.strftime("%Y-%m-%dT%H:%M:%SZ")
+    self.latest_synced_item_updated_at && !opts[:force] and
+      listparams[:parameters][:updatedMin] = (self.latest_synced_item_updated_at - 5.minute).utc.strftime("%Y-%m-%dT%H:%M:%SZ")
 
     default_tz_min = (Time.now.to_datetime.offset * 60 * 24).to_i
 
@@ -58,57 +103,28 @@ class Calendar < ActiveRecord::Base
 
       default_tz_min = TZInfo::Timezone.get(result.data.timeZone).current_period.utc_offset / 60
 
+      result.data["items"] or break
       result.data.items.each do |eitem|
         event = Event.find_by_g_id(eitem.id) || Event.new
-
-        summary = eitem["summary"].to_s.strip
-        tag_names = []
-        while summary.sub!(/^【(.*?)】/, '')
-          tag_names += $1.split(%r{[/／]}).map {|t| t.strip }
-        end
-        event.tag_names = tag_names
-
         begin
-          event.attributes = {
-            g_id: eitem.id,
-            etag: eitem.etag,
-            status: eitem.status,
-            summary: summary.strip,
-            description: eitem["description"],
-            location: eitem["location"],
-            g_html_link: eitem["htmlLink"],
-            g_calendar_id: self.external_id,
-            g_creator_email: eitem["creator"].try(:email),
-            ical_uid: eitem["iCalUID"].to_s,
-          }
-          if eitem["start"] 
-            event.attributes = {
-              start_datetime: eitem.start["dateTime"] || eitem.start.date.to_time.to_datetime,
-              start_date: eitem.start["date"] || eitem.start.dateTime.to_date,
-              end_datetime: eitem.end["dateTime"] || eitem.end.date.to_time.to_datetime,
-              end_date: eitem.end["date"] || eitem.end.dateTime.to_date,
-              tz_min: eitem.start["date"] ? default_tz_min : (eitem.start.dateTime.to_datetime.offset * 60 * 24).to_i,
-              allday: !!eitem.start["date"],
-              # TODO: recurrent support MUST!!!
-              # TODO: support color_id support or drop 
-              # TODO: support g_creator_display_name or drop
-            }
-          end
+          event.load_attrs :google_v3, eitem, :calendar_id => self.external_id, :default_tz_min => default_tz_min
           logger.info "Event sync: #{event.new_record? ? "create new event" : "update event ##{event.id}"}: #{event.summary}"
           event.save!
           count += 1
+          self.update_attributes! :latest_synced_item_updated_at => eitem["updated"]
+          opts[:max] <= count and break
         rescue => e
           logger.error "Failed to sync event: #{e.class.name}: #{e.to_s} (#{e.backtrace.first})"
           logger.error "Failed item: #{eitem.inspect}"
           raise e
         end
       end
-      result.next_page_token or break
+      !result.next_page_token || opts[:max] <= count and break
       listparams[:parameters][:pageToken] = result.next_page_token
     end
 
-    logger.info "Event sync completed for calendar '#{name}' (##{id}): #{count} events has been updated."
-    self.update_attributes! :synced_at => sync_start_time
+    self.update_attributes! :sync_finished_at => DateTime.now
+    logger.info "Event sync completed for calendar '#{name}' (##{id}): #{count} events has been updated (#{DateTime.now.to_i - self.sync_started_at.to_i} secs)."
   end
 
   private
