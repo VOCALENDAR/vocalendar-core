@@ -1,19 +1,37 @@
-# -*- encoding: utf-8 -*-
 class Calendar < ActiveRecord::Base
   include VocalendarCore::Utils
   default_scope order('io_type desc, name')
 
-  has_many :fetched_events, :class_name => 'Event', :foreign_key => 'g_calendar_id', :primary_key => 'external_id'
+  has_many :fetched_events, :class_name => 'Event',
+    :foreign_key => 'g_calendar_id', :primary_key => 'external_id'
   has_and_belongs_to_many :tags
   has_many :target_events, :through => :tags, :source => :events
 
-  attr_accessible :name, :external_id, :io_type, :sync_started_at, :sync_finished_at, :latest_synced_item_updated_at, :tag_ids
+  attr_accessible :name, :external_id, :io_type, :sync_started_at,
+    :sync_finished_at, :latest_synced_item_updated_at, :tag_ids,
+    :tag_names_append_str, :tag_names_remove_str
 
   validates :name, :presence => true
   validates :external_id, :presence => true, :uniqueness => true
   validates :io_type, :presence => true, :inclusion => {:in => %w(src dst)}
 
   before_validation :trim_attrs
+
+  def tag_names_append
+    self.tag_names_append_str.to_s.strip.split(%r{(?:\s|/)+})
+  end
+
+  def tag_names_append=(v)
+    self.tag_names_append_str = v.join(' ')
+  end
+
+  def tag_names_remove
+    self.tag_names_remove_str.to_s.strip.split(%r{(?:\s|/)+})
+  end
+
+  def tag_names_remove=(v)
+    self.tag_names_remove_str = v.join(' ')
+  end
 
   def sync_events(opts = {})
     io_type == 'dst' and publish_events(opts)
@@ -47,7 +65,7 @@ class Calendar < ActiveRecord::Base
         logger.error "Sync skip! Event ##{event.id} don't have g_calendar_id & event.ical_uid"
         next
       end
-      params[:body] = event.to_exfmt(:google_v3).to_json
+      params[:body] = event.to_exfmt(:google_v3, :tag_names_append => self.tag_names_append, :tag_names_remove => self.tag_names_remove).to_json
       result = client.execute(params)
       if result.status != 200
         msg = "Error on import event (Status=#{result.status}): #{result.body}"
@@ -107,7 +125,10 @@ class Calendar < ActiveRecord::Base
       result.data.items.each do |eitem|
         event = Event.find_by_g_id(eitem.id) || Event.new
         begin
-          event.load_attrs :google_v3, eitem, :calendar_id => self.external_id, :default_tz_min => default_tz_min
+          event.load_attrs :google_v3, eitem,
+            :calendar_id => self.external_id, :default_tz_min => default_tz_min,
+            :tag_names_append => self.tag_names_append,
+            :tag_names_remove => self.tag_names_remove
           logger.info "Event sync: #{event.new_record? ? "create new event" : "update event ##{event.id}"}: #{event.summary}"
           event.save!
           count += 1
@@ -132,5 +153,8 @@ class Calendar < ActiveRecord::Base
     self[:name].strip!
     self[:external_id].strip!
     self[:io_type].strip!
+    self[:tag_names_append_str].try(:strip!)
+    self[:tag_names_remove_str].try(:strip!)
   end
 end
+
