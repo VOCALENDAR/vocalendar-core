@@ -47,6 +47,9 @@ ja:
         updated_at: 更新日時
         created_at: 作成日時
         name: 名前
+        event_count: イベント数
+        count: カウント
+        events: イベント
       calendar:
         updated_at: 更新日時
         created_at: 作成日時
