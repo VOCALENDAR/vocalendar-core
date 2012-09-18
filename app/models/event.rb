@@ -92,8 +92,16 @@ class Event < ActiveRecord::Base
     ret
   end
 
+  def tag_names_str
+    self.tag_names.join(' ')
+  end
+
+  def tag_names_str=(v)
+    self.tag_names = v.strip.split(%r{(?:\s|/)+})
+  end
+
   def tag_names
-    self.tags.map {|t| t.name }
+    self.tags.map {|t| t.try(:name) }.compact
   end
 
   def tag_names=(v)
@@ -108,16 +116,17 @@ class Event < ActiveRecord::Base
   end
 
   def load_exfmt_google_v3(attrs, opts = {})
+    opts = {:tag_names_remove => [], :tag_names_append => []}.merge opts
     default_tz_min = opts[:default_tz_min] || (Time.now.to_datetime.offset * 60 * 24).to_i
     opts[:calendar_id].blank? and
       raise ArgumentError, "Need to specify :calendar_id as option"
 
     summary = attrs["summary"].to_s.strip
-    tag_names = []
+    tag_names = opts[:tag_names_append]
     while summary.sub!(/^【(.*?)】/, '')
       tag_names += $1.split(%r{[/／]+}).map {|t| t.strip }.compact
     end
-    self.tag_names = tag_names
+    self.tag_names = (tag_names - opts[:tag_names_remove]).uniq
 
     self.attributes = {
       g_id: attrs.id,
@@ -153,7 +162,8 @@ class Event < ActiveRecord::Base
   end
 
   def to_exfmt_google_v3(opts = {})
-    tag_str = self.tag_names.join('/')
+    opts = {:tag_names_remove => [], :tag_names_append => []}.merge opts
+    tag_str = (self.tag_names + opts[:tag_names_append] - opts[:tag_names_remove]).uniq.join('/')
     tag_str.blank? or tag_str = "【#{tag_str}】 "
     summary = tag_str.to_s + self.summary
     {

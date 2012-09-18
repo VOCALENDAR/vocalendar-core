@@ -4,9 +4,7 @@
   <thead>
     <tr>
       <th><%= Calendar.human_attribute_name :name %></th>
-      <th><%= Calendar.human_attribute_name :external_id %></th>
       <th><%= Calendar.human_attribute_name :io_type %></th>
-      <th><%= Calendar.human_attribute_name :sync_started_at %></th>
       <th><%= Calendar.human_attribute_name :sync_finished_at %></th>
       <th><%= Calendar.human_attribute_name :fetched_events %></th>
       <th><%= Calendar.human_attribute_name :target_events %></th>
@@ -16,9 +14,7 @@
     <% @calendars.each do |cal| %>
     <tr>
       <td><%= link_to cal.name, edit_calendar_path(cal) %></td>
-      <td><%= cal.external_id %></td>
       <td><%= t "activerecord.attributes.calendar.io_type_#{cal.io_type}" %></td>
-      <td><%= cal.sync_started_at.blank? ? '' : l(cal.sync_started_at) %></td>
       <td><%= cal.sync_finished_at.blank? ? '' : l(cal.sync_finished_at) %></td>
       <td><%= cal.fetched_events.count %></td>
       <td><%= cal.target_events.count %></td>
