@@ -1,4 +1,4 @@
-# coding: utf-8
+﻿# coding: utf-8
 
 class EventsController < ApplicationController
   # GET /events
@@ -24,7 +24,9 @@ class EventsController < ApplicationController
   # GET /events/new.json
   def new
     @event = Event.new
-    @event.uris.build
+    # TODO 回数はとりあえず固定
+    2.times { @event.uris.build }
+    2.times { @event.tags.build }
     respond_with @event
   end
 
@@ -37,6 +39,9 @@ class EventsController < ApplicationController
   # POST /events.json
   def create
     @event = Event.new(params[:event])
+    # TODO Googleに一度登録してからデータを流用とか？
+    @event.etag='etag'
+    @event.ical_uid='ical_uid'
     @event.save
     respond_with @event
   end
