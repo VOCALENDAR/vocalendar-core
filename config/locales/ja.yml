@@ -9,13 +9,63 @@ ja:
       setting:
         var: 名前
         value: 値
-      calendar:
+        updated_at: 更新日時
+        created_at: 作成日時
+      event:
+        updated_at: 更新日時
+        created_at: 作成日時
+        g_calendar_id: GoogleカレンダーID
+        status: ステータス
+        g_html_link: Googleカレンダーリンク
+        summary: タイトル
+        description: 説明
+        location: 場所
+        start_date: 開始日
+        start_datetime: 開始日時
+        end_date: 終了日
+        end_datetime: 終了日時
+        start_at: 開始
+        end_at: 終了
+        term_str: 期間
+        g_id: GoogleイベントアイテムID
+        ical_uid: iCalUID
+        tz_min: タイムゾーン(分)
+        country: 国コード
+        lang: 言語コード
+        allday: 全日
+        allday?: 全日
+        tags: タグ
+        tag_names: タグ
+        tag_name_str: タグ
+        active: 有効
+        active?: 有効
+        cancelled: 削除済み
+        cancelled?: 削除済み
+        zone: タイムゾーン
+        offset: タイムゾーンオフセット
+      tag:
+        updated_at: 更新日時
+        created_at: 作成日時
         name: 名前
-        external_id: カレンダーID
+      calendar:
+        updated_at: 更新日時
+        created_at: 作成日時
+        name: 名前
+        external_id: カレンダー外部ID
         io_type: 種別
         io_type_src: 取り込み
         io_type_dst: 書き出し
-        synced_at: 最終同期時刻
+        sync_started_at: 同期開始日時
+        sync_finished_at: 同期完了日時
+        latest_synced_item_updated_at: 最終同期イベント更新日時
+        tag_names_append: 同期時追加タグ
+        tag_names_append_str: 同期時追加タグ
+        tag_names_remove: 同期時削除タグ
+        tag_names_remove_str: 同期時削除タグ
+        tags: 同期対象タグ
+        tag_ids: 同期対象タグ
+        target_events: 出力対象イベント
+        fetched_events: 取得済みイベント
   helpers:
     label:
       setting:
