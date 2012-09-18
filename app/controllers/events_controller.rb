@@ -10,14 +10,14 @@ class EventsController < ApplicationController
         joins('inner join events_tags on events.id = events_tags.event_id').
         where('events_tags.tag_id' => params[:tag_id])
     end
-    respond_with @events
+    respond_with @events, :include=> [:tags,  :uris] 
   end
 
   # GET /events/1
   # GET /events/1.json
   def show
     @event = Event.find(params[:id])
-    respond_with @event
+    respond_with @event, :include=> [:tags,  :uris]
   end
 
   # GET /events/new
