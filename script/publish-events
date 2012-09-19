@@ -7,7 +7,7 @@ Calendar.where(:io_type => 'dst').each do |cal|
   begin
     cal.sync_events(:force => force)
   rescue => e
-    msg = "Failed to sync calendar '#{cal.name}' (##{cal.id}): #{e.class.name}: #{e.to_s} (#{e.backtrace.first})"
+    msg = "Failed to sync calendar '#{cal.name}' (##{cal.id}): #{e.class.name}: #{e.to_s} (#{e.backtrace.join(' > ')})"
     Rails.logger.error msg
     $stderr.puts msg
     status = 1
