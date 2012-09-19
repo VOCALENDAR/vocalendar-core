@@ -27,6 +27,7 @@ ja:
         start_at: 開始
         end_at: 終了
         term_str: 期間
+        term: 期間
         g_id: GoogleイベントアイテムID
         ical_uid: iCalUID
         tz_min: タイムゾーン(分)
