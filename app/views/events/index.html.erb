@@ -11,7 +11,7 @@
 <% @events.each do |event| %>
   <tr>
     <td><%= event.id %></td>
-    <td><%= event.summary %></td>
+    <td><%= link_to_if(!event.g_html_link.blank?, event.summary, event.g_html_link, :target => '_blank') { event.summary } %></td>
     <td><%= event.term_str %></td>
     <td>
       <% event.tags.each do |tag| %>
