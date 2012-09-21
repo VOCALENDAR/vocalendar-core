@@ -35,7 +35,7 @@ module VocalendarCore
       auth.update_token!({
         :access_token => Setting.master_auth_token,
         :refresh_token => Setting.master_auth_refresh_token,
-        :expires_in => (Setting.master_auth_expires_at.to_i - Setting.master_auth_issued_at.to_i),
+        :expires_in => (Setting.master_auth_expires_at.to_i - Setting.master_auth_issued_at.to_i - 30), # -30 sec for early refresh...
         :issued_at => Time.at(Setting.master_auth_issued_at.to_i),
       })
       update_gapi_client_token(gac)
