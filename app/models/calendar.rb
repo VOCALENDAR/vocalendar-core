@@ -117,7 +117,12 @@ class Calendar < ActiveRecord::Base
             :tag_names_append => self.tag_names_append,
             :tag_names_remove => self.tag_names_remove
           logger.info "Event sync: #{event.new_record? ? "create new event" : "update event ##{event.id}"}: #{event.summary}"
-          event.save!
+          begin
+            event.save!
+          rescue ActiveRecord::RecordInvalid => e
+            logger.error "Failed to save with validation: #{e.message} on #{eitem["htmlLink"]}"
+            event.save :validate => false
+          end
           count += 1
           self.update_attributes! :latest_synced_item_updated_at => eitem["updated"]
           opts[:max] <= count and break

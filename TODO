@@ -5,3 +5,6 @@
  * cancelled イベントの削除処理
  * タグの名前が直接変更された時に、何らかの方法で書き出し先を更新する
  * import でやってるので同じイベントの更新がちゃんといってない？ 要確認
+ * sanity check
+   * empty title
+   * non-word char in tag name 
