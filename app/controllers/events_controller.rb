@@ -4,13 +4,25 @@ class EventsController < ApplicationController
   # GET /events
   # GET /events.json
   def index
-    @events = Event.paginate(:page => params[:page], :per_page => 50)
+    @events = Event.paginate(:page => params[:page], :per_page => 50, :include => [:tags,  :uris])
     if params[:tag_id]
       @events = @events.
         joins('inner join events_tags on events.id = events_tags.event_id').
         where('events_tags.tag_id' => params[:tag_id])
     end
-    respond_with @events, :include=> [:tags,  :uris]
+
+    respond_to do |format|
+      format.html
+      format.xml  { render :xml  => @events }
+      format.json {
+
+        # Change to Google JSON
+        # 試してみた。
+        render :json => {:items =>[{:event=> "あ", :time=>"2012-12-02"}, {:event=> "あ", :time=>"2012-12-03"}] }
+
+      }
+    end
+
   end
 
   # GET /events/1
