@@ -1,14 +1,18 @@
-if File.readable? "#{Rails.root}/tmp/google-api-client-info"
-  client_info = IO.readlines "#{Rails.root}/tmp/google-api-client-info"
-  client_id = client_info[0].chomp
-  client_sec = client_info[1].chomp
-  if !client_id.blank? && !client_sec.blank?
-    Rails.application.config.middleware.use OmniAuth::Builder do
-      provider :google_oauth2, client_id, client_sec, {
-        access_type: 'offline',
-        scope: 'https://www.googleapis.com/auth/userinfo.email https://www.googleapis.com/auth/calendar',
-        # redirect_uri:'http://localhost:3000/auth/google_oauth2/callback'
-      }
-    end
+Rails.configuration.google_client_configured = false
+
+begin
+  gsetting = YAML.load_file "#{Rails.root}/config/google-api.yml"
+  gsetting["client_id"].blank?  and raise Errno::ENOENT
+  gsetting["api_secret"].blank? and raise Errno::ENOENT
+
+  Rails.application.config.middleware.use OmniAuth::Builder do
+    provider :google_oauth2, gsetting["client_id"], gsetting["api_secret"], {
+      access_type: 'offline',
+      scope: 'https://www.googleapis.com/auth/userinfo.email https://www.googleapis.com/auth/calendar',
+      # redirect_uri:'http://localhost:3000/auth/google_oauth2/callback'
+    }
+    Rails.configuration.google_client_configured = true
   end
+rescue Errno::ENOENT
+  # ignore
 end

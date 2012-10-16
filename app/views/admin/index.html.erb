@@ -1,3 +1,7 @@
+<% unless Rails.configuration.google_client_configured.inspect %>
+<p class="error">Google APPID IS NOT CONFIGURED!</p>
+<% end %>
+
 <h2>Admin Index Stub!!!</h2>
 
 <ul>
@@ -6,7 +10,6 @@
   <li><%= link_to 'Tags', tags_path %></li>
   <li><%= link_to 'Settings', settings_path %></li>
   <ul>
-    <li><%= link_to 'Set App ID', :action => 'set_appid' %></li>
     <li><%= link_to 'Set Master Auth ID', :action => 'set_master_auth' %></li>
   </ul>
 </ul>

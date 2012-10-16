@@ -1,25 +1,5 @@
 class AdminController < ApplicationController
   def index
-    if !Setting.google_api_client_id || !Setting.google_api_secret
-      redirect_to :action => :set_appid
-    end
-  end
-
-  def set_appid
-    s = Struct.new(:google_api_client_id, :google_api_secret)
-    @setting = s.new(Setting.google_api_client_id, Setting.google_api_secret)
-  end
-
-  def update_appid
-    if params[:setting]
-      Setting.google_api_client_id = params[:setting][:google_api_client_id]
-      Setting.google_api_secret = params[:setting][:google_api_secret]
-    end
-    open("#{Rails.root}/tmp/google-api-client-info", "w", 0600) do |f|
-      f.puts params[:setting][:google_api_client_id]
-      f.puts params[:setting][:google_api_secret]
-    end
-    redirect_to({:action => Setting.master_auth_uid ? :index : :set_master_auth}, :notice => t("admin.update_appid.restart_notice"))
   end
 
   def set_master_auth
