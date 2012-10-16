@@ -1,4 +1,6 @@
 class AdminController < ApplicationController
+  before_filter :check_gclient_info, :check_master_auth
+
   def index
   end
 
@@ -17,5 +19,18 @@ class AdminController < ApplicationController
     end
 
     redirect_to({:action => :index}, :notice => t("admin.auth_callback.success"))
+  end
+
+  private
+  def check_gclient_info
+    Rails.configuration.google_client_configured and return true
+    add_cur_flash_msg :alert, I18n.t("admin.set_appid.missing")
+    true
+  end
+
+  def check_master_auth
+    Setting.master_auth_uid and return true
+    add_cur_flash_msg :alert, I18n.t("admin.set_master_auth.notify")
+    true
   end
 end
