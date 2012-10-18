@@ -17,8 +17,44 @@ class EventsController < ApplicationController
       format.json {
 
         # Change to Google JSON
-        # 試してみた。
-        render :json => {:items =>[{:event=> "あ", :time=>"2012-12-02"}, {:event=> "あ", :time=>"2012-12-03"}] }
+        # TOP
+        json = {:version => "1.0", :encoding => "UTF-8"}
+        # TODO feed情報
+        feed = {}
+        # entry( イベント情報 )
+        entry = []
+        entry[0] = {
+                    :id => {:$t => "feed URI"},
+                    :published => {:$t => "登録時間"},
+                    :updated => {:$t => "更新時間"},
+                    :category => [{ :scheme => "",
+                                    :term => ""
+                                  }],
+                    :title => {:$t => "【タグ】タイトル", :type => "text"},
+                    :content => {:$t => "", :type => "text"},
+                    :link => [
+                                {:rel => "alternate", :type => "text/html", :href => "eventid url"},
+                                {:rel => "self", :type => "aplication/atom+xml", :href => "feed url"}
+                            ],
+                    :author => [{:name => {:$t => "VOCALENDAR # メイン"}}],
+                    :gd_comments => {:gd_feedLink => {:href => "feed URI"}},
+                    :gd_eventStatus => { :value => "http://schemas.google.com/g/2005#event.confirmed" },
+                    :gd_where => [{:valueString => ""}],
+                    :gd_whoo => [:email => "email"],
+                    :rel => "http://schemas.google.com/g/2005#event.organizer",
+                    :valueString => "VOCALENDAR # メイン",
+                    :gd_when => [
+                                {:endtime => "日付"},
+                                {:startTime => "日付"}
+                    ],
+
+        }
+
+        feed[:entry] = entry
+        json[:feed] = feed
+
+        # TODO 日本語がエスケープされちゃう。
+        render :json => json
 
       }
     end
