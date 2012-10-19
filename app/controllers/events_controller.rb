@@ -17,43 +17,69 @@ class EventsController < ApplicationController
       format.json {
 
         # Change to Google JSON
-        # TOP
-        json = {:version => "1.0", :encoding => "UTF-8"}
+        # TOP level
+        calendarid = @events == nil ? 'null' : @events[0].g_calendar_id
+        @calendars = Calendar.joins('inner join calendar on calendar_id = ').where('' => @events[0].calendarid)
+
+        json = {:version => '1.0', :encoding => 'UTF-8'}
         # TODO feed情報
-        feed = {}
+        feed = {
+
+            :xmlns => 'http://www.w3.org/2005/Atom',
+            'xmlns$openSearch' => 'http://a9.com/-/spec/opensearchrss/1.0/',
+            'xmlns$gCal' => 'http://schemas.google.com/gCal/2005',
+            'xmlns$gd' => 'http://schemas.google.com/g/2005',
+            :id => 'http://www.google.com/calendar/feeds/' + @calendar[0].external_id + '/public/full',
+            :updated => {:$t => @calendar[0].latest_synced_item_updated_at},
+            :category => [{ :scheme => 'http://schemas.google.com/g/2005#kind',
+                            :term => 'http://schemas.google.com/g/2005#event'
+                          }],
+            :title => { :$t => @calendar[0].name, :type => 'text'},
+            :subtitle => { :$t => '', :type => 'text'},
+
+
+
+        }
         # entry( イベント情報 )
         entry = []
-        entry[0] = {
-                    :id => {:$t => "feed URI"},
-                    :published => {:$t => "登録時間"},
-                    :updated => {:$t => "更新時間"},
-                    :category => [{ :scheme => "",
-                                    :term => ""
-                                  }],
-                    :title => {:$t => "【タグ】タイトル", :type => "text"},
-                    :content => {:$t => "", :type => "text"},
-                    :link => [
-                                {:rel => "alternate", :type => "text/html", :href => "eventid url"},
-                                {:rel => "self", :type => "aplication/atom+xml", :href => "feed url"}
-                            ],
-                    :author => [{:name => {:$t => "VOCALENDAR # メイン"}}],
-                    :gd_comments => {:gd_feedLink => {:href => "feed URI"}},
-                    :gd_eventStatus => { :value => "http://schemas.google.com/g/2005#event.confirmed" },
-                    :gd_where => [{:valueString => ""}],
-                    :gd_whoo => [:email => "email"],
-                    :rel => "http://schemas.google.com/g/2005#event.organizer",
-                    :valueString => "VOCALENDAR # メイン",
-                    :gd_when => [
-                                {:endtime => "日付"},
-                                {:startTime => "日付"}
-                    ],
+        @events.each_with_index { |event, i|
+
+          feedurl = 'http://www.google.com/calendar/feeds/' + event.g_calendar_id + '/public/full' + event.g_id
+          entry[i] = {
+                      :id => {:$t => feedurl},
+                      :published => {:$t => event.created_at},
+                      :updated => {:$t => event.updated_at},
+                      :category => [{ :scheme => 'http://schemas.google.com/g/2005#kind',
+                                      :term => 'http://schemas.google.com/g/2005#event'
+                                    }],
+                      :title => {:$t => event.summary, :type => 'text'},
+                      :content => {:$t => event.description, :type => 'text'},
+                      :link => [
+                                  {:rel => 'alternate', :type => 'text/html', :href => event.g_html_link },
+                                  {:rel => 'self', :type => 'aplication/atom+xml', :href => feedurl}
+                              ],
+                      :author => [{:name => {:$t => 'VOCALENDAR # メイン'}}],
+                      'gd$comments' => {'gd$feedLink' => {:href => feedurl + '/comments'}},
+                      'gd$eventStatus' => { :value => 'http://schemas.google.com/g/2005#event.' + event.status },
+                      'gd$where' => [{:valueString => event.location}],
+                      'gd$who' => [:email => event.g_creator],
+                      :rel => 'http://schemas.google.com/g/2005#event.organizer',
+                      :valueString => 'VOCALENDAR # メイン',
+                      'gd$when' => [
+                                  {:endtime => event.end_datetime},
+                                  {:startTime => event.start_datestarS}
+                      ],
+
+                      # original columns
+                      :allday => {:$t => event.allday},
+
+          }
 
         }
 
         feed[:entry] = entry
         json[:feed] = feed
 
-        # TODO 日本語がエスケープされちゃう。
         render :json => json
 
       }
