@@ -7,8 +7,7 @@ class Calendar < ActiveRecord::Base
   has_and_belongs_to_many :tags
   has_many :target_events, :through => :tags, :source => :events
 
-  attr_accessible :name, :external_id, :io_type, :sync_started_at,
-    :sync_finished_at, :latest_synced_item_updated_at, :tag_ids,
+  attr_accessible :name, :external_id, :io_type, :tag_ids,
     :tag_names_append_str, :tag_names_remove_str
 
   validates :name, :presence => true
@@ -47,7 +46,7 @@ class Calendar < ActiveRecord::Base
     logger.info "Start event publish for calendar '#{name}' (##{id})"
     count = 0
 
-    self.update_attributes! :sync_started_at => DateTime.now
+    self.update_attribute :sync_started_at, DateTime.now
 
     target_events = self.target_events.reorder('events.updated_at')
     self.latest_synced_item_updated_at && !opts[:force] and
@@ -63,12 +62,12 @@ class Calendar < ActiveRecord::Base
         :tag_names_remove => self.tag_names_remove
       result = gapi_request :import, {}, body.to_json
       count += 1
-      self.update_attributes! :latest_synced_item_updated_at => event.updated_at
+      self.update_attribute :latest_synced_item_updated_at, event.updated_at
       logger.info "Event '#{event.summary}' (##{event.id}) has been published to calendar '#{self.name}' (##{self.id}) successfully."
       count >= opts[:max] and break
     end
 
-    self.update_attributes! :sync_finished_at => DateTime.now
+    self.update_attribute :sync_finished_at, DateTime.now
     logger.info "Event publish completed for calendar '#{name}' (##{id}): #{count} events has been updated (#{DateTime.now.to_f - self.sync_started_at.to_f} secs)."
   end
 
@@ -99,7 +98,7 @@ class Calendar < ActiveRecord::Base
     count = 0
     default_tz_min = (Time.now.to_datetime.offset * 60 * 24).to_i
 
-    self.update_attributes! :sync_started_at => DateTime.now
+    self.update_attribute :sync_started_at, DateTime.now
 
     query_params = {}
     self.latest_synced_item_updated_at && !opts[:force] and
@@ -124,7 +123,7 @@ class Calendar < ActiveRecord::Base
             event.save :validate => false
           end
           count += 1
-          self.update_attributes! :latest_synced_item_updated_at => eitem["updated"]
+          self.update_attribute :latest_synced_item_updated_at, eitem["updated"]
           opts[:max] <= count and break
         rescue => e
           logger.error "Failed to sync event: #{e.class.name}: #{e.to_s} (#{e.backtrace.join(' > ')})"
@@ -134,7 +133,7 @@ class Calendar < ActiveRecord::Base
       end
     end
 
-    self.update_attributes! :sync_finished_at => DateTime.now
+    self.update_attribute :sync_finished_at, DateTime.now
     logger.info "Event sync completed for calendar '#{name}' (##{id}): #{count} events has been updated (#{DateTime.now.to_f - self.sync_started_at.to_f} secs)."
   end
 
