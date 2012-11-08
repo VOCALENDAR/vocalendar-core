@@ -5,16 +5,17 @@ class GoogleResponder < AppResponder
   def to_json
 
     puts 'to_json'
+    puts options
 
-    # 引数が渡ってこないので、動かない！
-    if type != 'Google'
-      super
+
+    if options[:type] != 'Google'
+      to_format
       return
     end
 
     # Change to Google JSON
     # TOP level
-    @events = response
+    @events = @resource
     calendarid = @events == nil ? 'null' : @events[0].g_calendar_id
     @calendars = Calendar.where('external_id' => calendarid)
     @calendar = @calendars == nil ? 'null' : @calendars[0]

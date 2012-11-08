@@ -12,7 +12,7 @@ class EventsController < ApplicationController
         where('events_tags.tag_id' => params[:tag_id])
     end
     puts 'index'
-    respond_with(@events, :responder => GoogleResponder)
+    respond_with(@events, :responder => GoogleResponder, :type => params[:type] )
     # respond_with do |format|
       # format.json {
 
