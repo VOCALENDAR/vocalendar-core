@@ -4,7 +4,32 @@
  * COPYING ファイルを整備
  * cancelled イベントの削除処理
  * タグの名前が直接変更された時に、何らかの方法で書き出し先を更新する
+   * タグ名変更不能にしておいたほうがいいか？
  * import でやってるので同じイベントの更新がちゃんといってない？ 要確認
  * sanity check
    * empty title
    * non-word char in tag name 
+
+ * rspec に移行
+ * devise の omniauth backend に移行
+ * cancan 追加
+ * ユーザテーブル追加
+   * omniauth から自動的にユーザ作成する
+     * twitter と google をバックエンド
+   * メンバーは google calendar への権限をチェック
+ * layout 外すモードで UI の出力
+ * タグとイベントの関連を独立モデルに
+ * タグとイベントの関連モデルにターゲットと順序を追加
+ * タグモデルに URI 追加
+ * イベントに twitter hashtag 追加
+
+ * アクションヒストリ的なモデルと、記録を追加
+
+ * タグにシステム属性フラグを追加?
+   * 「メイン」「新曲はっぴょう予定」などだが、国際化をどうするか……
+ * イベントモデルのURI属性を整理
+
+ * will_pagenate から kaminari に移行
+
+ * イベントインスタンスに画像を付けられるように
+
