@@ -4,7 +4,7 @@ class EventsController < ApplicationController
   # GET /events
   # GET /events.json
   def index
-    @events = Event.paginate(:page => params[:page], :per_page => 50)
+    @events = Event.page(params[:page]).per(50)
     if params[:tag_id]
       @events = @events.
         joins('inner join events_tags on events.id = events_tags.event_id').

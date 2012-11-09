@@ -19,8 +19,8 @@ end
 
 gem 'jquery-rails'
 gem 'rails-i18n'
-gem 'will-paginate-i18n'
-gem 'will_paginate', '~> 3.0.0'
+gem 'kaminari'
+gem 'kaminari-i18n'
 gem 'responders'
 gem 'rails-settings-cached'
 gem 'google-api-client', :require => 'google/api_client'

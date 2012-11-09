@@ -1,6 +1,6 @@
 class TagsController < ApplicationController
   def index
-    @tags = Tag.paginate(:page => params[:page], :per_page => 50)
+    @tags = Tag.page(params[:page]).per(50)
     respond_with(@tags)
   end
 
