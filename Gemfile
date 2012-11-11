@@ -27,6 +27,10 @@ gem 'google-api-client', :require => 'google/api_client'
 gem 'omniauth', '~> 1.0.0'
 gem 'omniauth-google-oauth2'
 
+group :development, :test do
+  gem 'rspec-rails'
+  gem 'webrat'
+end
 
 # To use ActiveModel has_secure_password
 # gem 'bcrypt-ruby', '~> 3.0.0'
