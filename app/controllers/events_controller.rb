@@ -7,8 +7,8 @@ class EventsController < ApplicationController
     @events = Event.page(params[:page]).per(50)
     if params[:tag_id]
       @events = @events.
-        joins('inner join events_tags on events.id = events_tags.event_id').
-        where('events_tags.tag_id' => params[:tag_id])
+        joins('inner join event_tag_relations on events.id = event_tag_relations.event_id').
+        where('event_tag_relations.tag_id' => params[:tag_id])
     end
     respond_with @events, :include=> [:tags,  :uris]
   end

@@ -1,4 +1,6 @@
 VocalendarCore::Application.routes.draw do
+  resources :event_tag_relations
+
   resources :tags
   resources :events
   resources :calendars

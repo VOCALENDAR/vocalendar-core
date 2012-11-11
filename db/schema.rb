@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20120918215514) do
+ActiveRecord::Schema.define(:version => 20121111053438) do
 
   create_table "calendars", :force => true do |t|
     t.string   "name",                          :default => "", :null => false
@@ -37,6 +37,17 @@ ActiveRecord::Schema.define(:version => 20120918215514) do
   add_index "calendars_tags", ["calendar_id"], :name => "index_calendars_tags_on_calendar_id"
   add_index "calendars_tags", ["tag_id"], :name => "index_calendars_tags_on_tag_id"
 
+  create_table "event_tag_relations", :force => true do |t|
+    t.integer "event_id"
+    t.integer "tag_id"
+    t.integer "pos",          :default => 1, :null => false
+    t.string  "target_field"
+    t.text    "uri"
+  end
+
+  add_index "event_tag_relations", ["event_id"], :name => "index_event_tag_relations_on_event_id"
+  add_index "event_tag_relations", ["tag_id"], :name => "index_event_tag_relations_on_tag_id"
+
   create_table "events", :force => true do |t|
     t.string   "g_calendar_id"
     t.string   "etag",                                            :null => false
@@ -56,11 +67,6 @@ ActiveRecord::Schema.define(:version => 20120918215514) do
     t.datetime "updated_at",                                      :null => false
     t.string   "g_id"
     t.string   "recur_string"
-    t.string   "recur_freq"
-    t.integer  "recur_count",            :default => 0,           :null => false
-    t.datetime "recur_until"
-    t.integer  "recur_interval",         :default => 1,           :null => false
-    t.string   "recur_wday"
     t.string   "ical_uid",               :default => "",          :null => false
     t.text     "primary_uri"
     t.integer  "tz_min",                 :default => 540
@@ -75,14 +81,6 @@ ActiveRecord::Schema.define(:version => 20120918215514) do
   add_index "events", ["start_datetime", "status"], :name => "index_events_on_start_datetime_and_status"
   add_index "events", ["status"], :name => "index_events_on_status"
   add_index "events", ["updated_at", "status"], :name => "index_events_on_updated_at_and_status"
-
-  create_table "events_tags", :id => false, :force => true do |t|
-    t.integer "event_id"
-    t.integer "tag_id"
-  end
-
-  add_index "events_tags", ["event_id"], :name => "index_events_tags_on_event_id"
-  add_index "events_tags", ["tag_id"], :name => "index_events_tags_on_tag_id"
 
   create_table "settings", :force => true do |t|
     t.string   "var",                      :null => false

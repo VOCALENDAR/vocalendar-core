@@ -2,7 +2,8 @@
 class Event < ActiveRecord::Base
   default_scope order('start_datetime')
   has_many :uris, :autosave => true, :dependent => :destroy
-  has_and_belongs_to_many :tags
+  has_many :tag_relations, :class_name => 'EventTagRelation', :order => 'pos', :dependent => :delete_all
+  has_many :tags, :through => :tag_relations, :order => 'event_tag_relations.pos, tags.name'
   accepts_nested_attributes_for :uris, :tags
 
   attr_accessible :g_calendar_id, :description, :etag, :g_html_link,
@@ -20,12 +21,14 @@ class Event < ActiveRecord::Base
   validates :start_date, :presence => true, :if => :active?
   validates :end_date, :presence => true, :if => :active?
   validates :ical_uid, :presence => true, :if => :active?
-  validates :tz_min, :numericality => {:only_integer => true}
-  validates :status, :inclusion => {:in => %w(confirmed cancelled)}
+  validates :tz_min, :numericality => {:only_integer => true}, :allow_nil => true
+  validates :status, :presence => true, :inclusion => {:in => %w(confirmed cancelled)}
 
   before_validation :set_dummy_values_for_cancelled,
     :cascade_start_date, :cascade_end_datetime, :cascade_end_date,
     :mangle_tentative_status
+
+  after_save :save_tag_order
 
   def cancelled?
     status == "cancelled"
@@ -102,7 +105,7 @@ class Event < ActiveRecord::Base
   end
 
   def tag_names=(v)
-    self.tags = v.map {|t| Tag.find_by_name(t) || Tag.create(:name => t) }
+    self.tags = v.compact.map {|t| Tag.find_by_name(t) || Tag.create(:name => t) }
   end
 
   # Load attribute has from externel exchange format (e.g. google API)
@@ -159,7 +162,7 @@ class Event < ActiveRecord::Base
 
   def to_exfmt_google_v3(opts = {})
     opts = {:tag_names_remove => [], :tag_names_append => []}.merge opts
-    tag_str = (self.tag_names + opts[:tag_names_append] - opts[:tag_names_remove]).uniq.join('/')
+    tag_str = (opts[:tag_names_append] + self.tag_names - opts[:tag_names_remove]).uniq.join('/')
     tag_str.blank? or tag_str = "【#{tag_str}】 "
     summary = tag_str.to_s + self.summary
     {
@@ -195,5 +198,14 @@ class Event < ActiveRecord::Base
   def set_dummy_values_for_cancelled
     self.status == "cancelled" or return true
     self[:start_datetime] ||= DateTime.new(1970, 1, 1, 0, 0, 0, 0)
+  end
+
+  def save_tag_order
+    self.tags.each_with_index do |t, i|
+      self.tag_relations.each do |r|
+        r.tag_id == t.id or next
+        r.update_attribute :pos, i+1
+      end
+    end
   end
 end
