@@ -12,6 +12,6 @@ class DropRecurAttrsFromEvents < ActiveRecord::Migration
     add_column :events, :recur_count,    :integer, :default => 0, :null => false
     add_column :events, :recur_until,    :string
     add_column :events, :recur_interval, :integer, :default => 1, :null => false
-    add_column :events, :recur_wday      :string
+    add_column :events, :recur_wday,     :string
   end
 end
