@@ -8,8 +8,7 @@ class Event < ActiveRecord::Base
   attr_accessible :g_calendar_id, :description, :etag, :g_html_link,
     :location, :status, :summary, :g_color_id, :g_creator_email,
     :g_creator_display_name, :start_date, :start_datetime,
-    :end_date, :end_datetime, :g_id, :recur_string, :recur_freq,
-    :recur_count, :recur_until, :recur_interval, :recur_wday,
+    :end_date, :end_datetime, :g_id, :recur_string,
     :ical_uid, :tz_min, :country, :lang, :allday,
     :uris_attributes, :tags_attributes
 
@@ -21,8 +20,6 @@ class Event < ActiveRecord::Base
   validates :start_date, :presence => true, :if => :active?
   validates :end_date, :presence => true, :if => :active?
   validates :ical_uid, :presence => true, :if => :active?
-  validates :recur_count, :numericality => {:only_integer => true}
-  validates :recur_interval, :numericality => {:only_integer => true}
   validates :tz_min, :numericality => {:only_integer => true}
   validates :status, :inclusion => {:in => %w(confirmed cancelled)}
 
@@ -149,8 +146,7 @@ class Event < ActiveRecord::Base
         end_date: attrs.end["date"] || attrs.end.dateTime.to_date,
         tz_min: attrs.start["date"] ? default_tz_min : (attrs.start.dateTime.to_datetime.offset * 60 * 24).to_i,
         allday: !!attrs.start["date"],
-        # TODO: recurrent support MUST!!!
-        # TODO: support color_id support or drop 
+        recur_string: attrs.recurrence.to_a.join("\n"),
       }
     end
   end
@@ -174,7 +170,7 @@ class Event < ActiveRecord::Base
       :description => self.description,
       :location => self.location,
       :status => self.status,
-      # TODO: recurrence support!!
+      :recurrence => self.recur_string.split("\n"),
     }
   end
 

@@ -19,14 +19,18 @@ end
 
 gem 'jquery-rails'
 gem 'rails-i18n'
-gem 'will-paginate-i18n'
-gem 'will_paginate', '~> 3.0.0'
+gem 'kaminari'
+gem 'kaminari-i18n'
 gem 'responders'
 gem 'rails-settings-cached'
 gem 'google-api-client', :require => 'google/api_client'
 gem 'omniauth', '~> 1.0.0'
 gem 'omniauth-google-oauth2'
 
+group :development, :test do
+  gem 'rspec-rails'
+  gem 'webrat'
+end
 
 # To use ActiveModel has_secure_password
 # gem 'bcrypt-ruby', '~> 3.0.0'
