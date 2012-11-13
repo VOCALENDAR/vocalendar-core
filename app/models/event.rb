@@ -64,6 +64,26 @@ class Event < ActiveRecord::Base
     return v
   end
 
+  def start_datetime=(v)
+    self[:start_datetime] = v
+    self[:start_date] = v.to_date
+  end
+
+  def end_datetime=(v)
+    self[:end_datetime] = v
+    self[:end_date] = v.to_date
+  end
+
+  def start_date=(v)
+    self[:start_date] = v
+    self[:start_datetime] = Time.new(v.year, v.mon, v.day).to_datetime
+  end
+
+  def end_date=(v)
+    self[:end_date] = v
+    self[:end_datetime] = Time.new(v.year, v.mon, v.day).to_datetime
+  end
+
   def start_at
     allday? ? start_date : start_datetime
   end
