@@ -1,5 +1,4 @@
  * /auth/failure にエラー表示
- * COPYING ファイルを整備
  * cancelled イベントの削除処理
  * タグの名前が直接変更された時に、何らかの方法で書き出し先を更新する
    * タグ名変更不能にしておいたほうがいいか？
@@ -8,7 +7,7 @@
    * empty title
    * non-word char in tag name 
 
- * rspec に移行
+ * 記念日マーカーのハンドリング (同期時に特殊展開するタグ?)
  * devise の omniauth backend に移行
  * cancan 追加
  * ユーザテーブル追加
