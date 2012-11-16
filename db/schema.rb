@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20121111053438) do
+ActiveRecord::Schema.define(:version => 20121113063106) do
 
   create_table "calendars", :force => true do |t|
     t.string   "name",                          :default => "", :null => false
@@ -110,5 +110,35 @@ ActiveRecord::Schema.define(:version => 20121111053438) do
     t.datetime "created_at",  :null => false
     t.datetime "updated_at",  :null => false
   end
+
+  create_table "users", :force => true do |t|
+    t.string   "name",                    :default => "",    :null => false
+    t.string   "email"
+    t.string   "google_account"
+    t.string   "google_auth_token"
+    t.string   "google_refresh_token"
+    t.string   "google_token_expires_at"
+    t.string   "google_token_issued_at"
+    t.boolean  "google_auth_valid",       :default => false, :null => false
+    t.string   "twitter_uid"
+    t.string   "twitter_nick"
+    t.string   "twitter_name"
+    t.string   "twitter_token"
+    t.string   "twitter_secret"
+    t.boolean  "twitter_auth_valid",      :default => false, :null => false
+    t.integer  "sign_in_count",           :default => 0
+    t.datetime "current_sign_in_at"
+    t.datetime "last_sign_in_at"
+    t.string   "current_sign_in_ip"
+    t.string   "last_sign_in_ip"
+    t.string   "role"
+    t.datetime "created_at",                                 :null => false
+    t.datetime "updated_at",                                 :null => false
+  end
+
+  add_index "users", ["email"], :name => "index_users_on_email", :unique => true
+  add_index "users", ["google_account"], :name => "index_users_on_google_account", :unique => true
+  add_index "users", ["role"], :name => "index_users_on_role"
+  add_index "users", ["twitter_uid"], :name => "index_users_on_twitter_uid", :unique => true
 
 end

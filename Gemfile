@@ -26,6 +26,12 @@ gem 'rails-settings-cached'
 gem 'google-api-client', :require => 'google/api_client'
 gem 'omniauth', '~> 1.0.0'
 gem 'omniauth-google-oauth2'
+gem 'omniauth-twitter'
+gem 'devise'
+gem 'devise-i18n'
+gem 'cancan'
+gem 'enumerated_attribute', :git => "git://github.com/jeffp/enumerated_attribute.git" # use git for https://github.com/jeffp/enumerated_attribute/pull/9
+
 
 group :development, :test do
   gem 'rspec-rails'

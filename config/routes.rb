@@ -1,18 +1,21 @@
 VocalendarCore::Application.routes.draw do
-  resources :event_tag_relations
+  devise_for :users, :controllers => { :omniauth_callbacks => "users/omniauth_callbacks" }
+  devise_scope :user do
+    get 'sign_in', :to => 'devise/sessions#new', :as => :new_user_session
+    get 'sign_out', :to => 'devise/sessions#destroy', :as => :destroy_user_session
+  end
 
   resources :tags
   resources :events
   resources :calendars
+  resources :users
 
-  get "uris/new"
+  get "uris/new" # TODO: fix!
 
   scope '/admin' do
     resources :settings
     match "(/:action)", :controller => 'admin'
   end
-
-  match "/auth/:provider/callback" => "admin#auth_callback"
 
   # The priority is based upon order of creation:
   # first created -> highest priority.
