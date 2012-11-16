@@ -10,6 +10,7 @@
    * empty title
    * non-word char in tag name 
 
+ * 記念日マーカーのハンドリング (同期時に特殊展開するタグ?)
  * cancan 追加
    * アビリティの設定
  * layout 外すモードで UI の出力
