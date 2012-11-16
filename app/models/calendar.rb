@@ -8,8 +8,11 @@ class Calendar < ActiveRecord::Base
   has_many :target_events, :through => :tags, :source => :events
   belongs_to :user
 
-  attr_accessible :name, :external_id, :io_type, :tag_ids,
-    :tag_names_append_str, :tag_names_remove_str
+  basic_allowed_attrs = [:name, :external_id, :io_type, :tag_ids,
+                         :tag_names_append_str,
+                         :tag_names_remove_str]
+  attr_accessible *basic_allowed_attrs
+  attr_accessible *(basic_allowed_attrs + [:user_id]), :as => :admin
 
   validates :name, :presence => true
   validates :external_id, :presence => true, :uniqueness => true

@@ -4,6 +4,7 @@
   <thead>
     <tr>
       <th><%= Calendar.human_attribute_name :name %></th>
+      <th><%= Calendar.human_attribute_name :user %></th>
       <th><%= Calendar.human_attribute_name :io_type %></th>
       <th><%= Calendar.human_attribute_name :sync_finished_at %></th>
       <th><%= Calendar.human_attribute_name :fetched_events %></th>
@@ -14,6 +15,7 @@
     <% @calendars.each do |cal| %>
     <tr>
       <td><%= link_to cal.name, "https://www.google.com/calendar/embed?src=#{cal.external_id}&ctz=Asia/Tokyo", :target => '_blank' %></td>
+      <td><%= link_to_if cal.user, cal.user.try(:name), cal.user %></td>
       <td><%= t "activerecord.attributes.calendar.io_type_#{cal.io_type}" %></td>
       <td><%= cal.sync_finished_at.blank? ? '' : l(cal.sync_finished_at) %></td>
       <td><%= cal.fetched_events.count %></td>

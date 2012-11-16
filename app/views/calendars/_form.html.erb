@@ -2,6 +2,8 @@
 
 <%= f.label :name %>
 <%= f.text_field :name %>
+<%= f.label :user %>
+<%= f.collection_select :user_id, User.all, :id, :name %>
 <%= f.label :external_id %>
 <%= f.text_field :external_id %>
 <%= f.label :io_type %>

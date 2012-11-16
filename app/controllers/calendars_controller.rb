@@ -28,7 +28,7 @@ class CalendarsController < ApplicationController
   # POST /calendars
   # POST /calendars.json
   def create
-    @calendar = Calendar.new(params[:calendar])
+    @calendar = Calendar.new(params[:calendar], :as => current_user.role)
     @calendar.save
     respond_with @calendar, :location => calendars_path
   end
@@ -37,7 +37,7 @@ class CalendarsController < ApplicationController
   # PUT /calendars/1.json
   def update
     @calendar = Calendar.find(params[:id])
-    @calendar.update_attributes(params[:calendar])
+    @calendar.update_attributes(params[:calendar], :as => current_user.role)
     respond_with @calendar, :location => calendars_path
   end
 
