@@ -21,7 +21,8 @@ class User < ActiveRecord::Base
         :google_token_issued_at  => DateTime.now,
         :google_auth_valid       => true,
       }, :without_protection => true)
-      u.email.blank? && auth["info"]["email"] and u.email = auth.info.email
+      u.email.blank? and u.email = auth["info"]["email"]
+      u.name.blank?  and u.name  = auth["info"]["email"]
       u.auto_created = u.new_record?
       u.role = count < 1 ? :admin : nil
       if u.auto_created?
@@ -42,6 +43,7 @@ class User < ActiveRecord::Base
         :twitter_auth_valid => true,
       }, :without_protection => true)
       u.auto_created = u.new_record?
+      u.name.blank? and u.name = auth["info"]["name"]
       u.role = count < 1 ? :admin : nil
       u.save!
       u
