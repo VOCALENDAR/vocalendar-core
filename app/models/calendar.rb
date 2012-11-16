@@ -6,6 +6,7 @@ class Calendar < ActiveRecord::Base
     :foreign_key => 'g_calendar_id', :primary_key => 'external_id'
   has_and_belongs_to_many :tags
   has_many :target_events, :through => :tags, :source => :events
+  belongs_to :user
 
   attr_accessible :name, :external_id, :io_type, :tag_ids,
     :tag_names_append_str, :tag_names_remove_str

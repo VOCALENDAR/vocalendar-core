@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20121113063106) do
+ActiveRecord::Schema.define(:version => 20121116181038) do
 
   create_table "calendars", :force => true do |t|
     t.string   "name",                          :default => "", :null => false
@@ -24,10 +24,12 @@ ActiveRecord::Schema.define(:version => 20121113063106) do
     t.datetime "sync_finished_at"
     t.string   "tag_names_append_str"
     t.string   "tag_names_remove_str"
+    t.integer  "user_id"
   end
 
   add_index "calendars", ["external_id"], :name => "index_calendars_on_external_id"
   add_index "calendars", ["io_type"], :name => "index_calendars_on_type"
+  add_index "calendars", ["user_id"], :name => "index_calendars_on_user_id"
 
   create_table "calendars_tags", :id => false, :force => true do |t|
     t.integer "calendar_id"
@@ -42,7 +44,6 @@ ActiveRecord::Schema.define(:version => 20121113063106) do
     t.integer "tag_id"
     t.integer "pos",          :default => 1, :null => false
     t.string  "target_field"
-    t.text    "uri"
   end
 
   add_index "event_tag_relations", ["event_id"], :name => "index_event_tag_relations_on_event_id"
@@ -97,6 +98,7 @@ ActiveRecord::Schema.define(:version => 20121113063106) do
     t.string   "name",       :default => "", :null => false
     t.datetime "created_at",                 :null => false
     t.datetime "updated_at",                 :null => false
+    t.text     "uri"
   end
 
   add_index "tags", ["name"], :name => "index_tags_on_name", :unique => true
