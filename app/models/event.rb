@@ -150,6 +150,7 @@ class Event < ActiveRecord::Base
     while summary.sub!(/^【(.*?)】/, '')
       tag_names += $1.split(%r{[/／]+}).map {|t| t.strip }.compact
     end
+    summary.sub!(/^★/, '') and tag_names << '記念日'
     self.tag_names = (tag_names - opts[:tag_names_remove]).uniq
 
     self.attributes = {
@@ -186,8 +187,12 @@ class Event < ActiveRecord::Base
 
   def to_exfmt_google_v3(opts = {})
     opts = {:tag_names_remove => [], :tag_names_append => []}.merge opts
-    tag_str = (opts[:tag_names_append] + self.tag_names - opts[:tag_names_remove]).uniq.join('/')
-    tag_str.blank? or tag_str = "【#{tag_str}】 "
+    tag_names = self.tag_names
+    has_anniversary = tag_names.delete '記念日'
+    tag_str = (opts[:tag_names_append] + tag_names - opts[:tag_names_remove]).uniq.join('/')
+    tag_str.blank?  or  tag_str = "【#{tag_str}】"
+    has_anniversary and tag_str = "★#{tag_str}"
+    tag_str.blank?  or  tag_str += " "
     summary = tag_str.to_s + self.summary
     {
       :iCalUID => self.ical_uid,
