@@ -1,10 +1,11 @@
 ﻿# coding: utf-8
-
 class EventsController < ApplicationController
+  load_and_authorize_resource
+
   # GET /events
   # GET /events.json
   def index
-    @events = Event.page(params[:page]).per(50)
+    @events = @events.page(params[:page]).per(50)
     if params[:tag_id]
       @events = @events.
         joins('inner join event_tag_relations on events.id = event_tag_relations.event_id').
@@ -19,15 +20,14 @@ class EventsController < ApplicationController
   # GET /events/1
   # GET /events/1.json
   def show
-    @event = Event.find(params[:id])
     respond_with @event, :include=> [:tags,  :uris]
   end
 
   # GET /events/new
   # GET /events/new.json
   def new
-    @event = Event.new
     # TODO 回数はとりあえず固定
+    # TODO: これはやめよう。動的に作るべき。 (gull08)
     2.times { @event.uris.build }
     2.times { @event.tags.build }
     respond_with @event
@@ -35,14 +35,14 @@ class EventsController < ApplicationController
 
   # GET /events/1/edit
   def edit
-    @event = Event.find(params[:id])
   end
 
   # POST /events
   # POST /events.json
   def create
-    @event = Event.new(params[:event])
     # TODO Googleに一度登録してからデータを流用とか？
+    # TODO: etag は SecureRandom でもなんでも適当に生成すればいいとおもう (gull08)
+    # TODO: そして、ここじゃなくてモデルでやるべき (gull08)
     @event.etag='etag'
     @event.ical_uid='ical_uid'
     @event.save
@@ -52,7 +52,6 @@ class EventsController < ApplicationController
   # PUT /events/1
   # PUT /events/1.json
   def update
-    @event = Event.find(params[:id])
     @event.update_attributes(params[:event])
     respond_with @event
   end
@@ -60,7 +59,6 @@ class EventsController < ApplicationController
   # DELETE /events/1
   # DELETE /events/1.json
   def destroy
-    @event = Event.find(params[:id])
     @event.destroy
     respond_with @event
   end

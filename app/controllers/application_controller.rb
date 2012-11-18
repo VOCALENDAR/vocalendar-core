@@ -60,7 +60,12 @@ class ApplicationController < ActionController::Base
   end
 
   def render_cancan_error(e)
-    render_error :message => e.message, :status => 403
+    if user_signed_in?
+      render_error :message => e.message, :status => 403
+    else
+      session[:"user_return_to"] = request.fullpath
+      redirect_to new_user_session_path
+    end
   end
 
 end

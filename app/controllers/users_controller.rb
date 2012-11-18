@@ -1,37 +1,33 @@
 class UsersController < ApplicationController
+  load_and_authorize_resource
+
   def index
-    @users = User.all
     respond_with(@users)
   end
 
   def show
-    @user = User.find(params[:id])
     respond_with(@user)
   end
 
   def new
-    @user = User.new
     respond_with(@user)
   end
 
   def edit
-    @user = User.find(params[:id])
   end
 
   def create
-    @user = User.new(params[:user])
+    @user = User.new(params[:user], :as => current_user.role)
     @user.save
     respond_with(@user)
   end
 
   def update
-    @user = User.find(params[:id])
-    @user.update_attributes(params[:user])
+    @user.update_attributes(params[:user], :as => current_user.role)
     respond_with(@user)
   end
 
   def destroy
-    @user = User.find(params[:id])
     @user.destroy
     respond_with(@user)
   end

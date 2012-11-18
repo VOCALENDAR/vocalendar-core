@@ -1,11 +1,11 @@
 class SettingsController < ApplicationController
+  load_and_authorize_resource
+
   def index
-    @settings = Setting.where(:thing_type => nil).order('var')
     respond_with @settings
   end
 
   def destroy
-    @setting = Setting.find(params[:id])
     @setting.destroy
     respond_with @setting
   end
