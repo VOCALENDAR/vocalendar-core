@@ -34,6 +34,9 @@ gem 'enumerated_attribute', :git => "git://github.com/jeffp/enumerated_attribute
 gem 'rails_admin'
 #gem 'rails_admin-i18n'
 gem 'rails_admin-i18n', :git => 'git://github.com/sugi/rails_admin-i18n.git'
+gem 'carrierwave'
+gem 'mime-types'
+gem 'rmagick'
 
 group :development, :test do
   gem 'rspec-rails'

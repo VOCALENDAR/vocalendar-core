@@ -6,6 +6,8 @@ class Event < ActiveRecord::Base
   has_many :tags, :through => :tag_relations, :order => 'event_tag_relations.pos, tags.name'
   accepts_nested_attributes_for :uris, :tags
 
+  mount_uploader :image, EventImageUploader
+
   attr_accessible :g_calendar_id, :description, :etag, :g_html_link,
     :location, :status, :summary, :g_color_id, :g_creator_email,
     :g_creator_display_name, :start_date, :start_datetime,
