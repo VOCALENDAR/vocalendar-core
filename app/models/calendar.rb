@@ -120,6 +120,7 @@ class Calendar < ActiveRecord::Base
       default_tz_min = TZInfo::Timezone.get(result.data.timeZone).current_period.utc_offset / 60
 
       result.data["items"] or break
+<<<<<<< HEAD
 
       begin
         new_item_stamp = nil
@@ -145,6 +146,29 @@ class Calendar < ActiveRecord::Base
             log :error, "Failed item: #{eitem.inspect}"
             raise e
           end
+=======
+      result.data.items.each do |eitem|
+        event = Event.find_by_g_id(eitem.id) || Event.new
+        begin
+          event.load_exfmt :google_v3, eitem,
+            :calendar_id => self.external_id, :default_tz_min => default_tz_min,
+            :tag_names_append => self.tag_names_append,
+            :tag_names_remove => self.tag_names_remove
+          log :info, "Event sync: #{event.new_record? ? "create new event" : "update event ##{event.id}"}: #{event.summary}"
+          begin
+            event.save!
+          rescue ActiveRecord::RecordInvalid => e
+            log :error, "Failed to save with validation: #{e.message} on #{eitem["htmlLink"]}"
+            event.save :validate => false
+          end
+          count += 1
+          self.update_attribute :latest_synced_item_updated_at, eitem["updated"]
+          opts[:max] <= count and break
+        rescue => e
+          log :error, "Failed to sync event: #{e.class.name}: #{e.to_s} (#{e.backtrace.join(' > ')})"
+          log :error, "Failed item: #{eitem.inspect}"
+          raise e
+>>>>>>> 885b41e04a885371d439e3a4323821725b54d950
         end
       ensure
         new_item_stamp and
