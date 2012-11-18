@@ -25,7 +25,7 @@ class User < ActiveRecord::Base
       u.email.blank? and u.email = auth["info"]["email"]
       u.name.blank?  and u.name  = auth["info"]["email"]
       u.auto_created = u.new_record?
-      u.role = count < 1 ? :admin : nil
+      u.new_record? && count < 1 and u.role = :admin
       u.save!
       u.adhoc_update_editor_role_by_calendar_membership_info
       u
@@ -76,9 +76,9 @@ class User < ActiveRecord::Base
     # TODO: REMOVE HARD-CODED Calendar ID
     ret = gapi_request("calendar_list.list")
     if ret && ret.data.items.find {|c| c.id == "pcg8ct8ulj96ptvqhllgcc181o@group.calendar.google.com" }
-      u.update_attribute :role, :editor
+      update_attribute :role, :editor
     else
-      u.update_attribute :role, nil
+      update_attribute :role, nil
     end
   end
 
