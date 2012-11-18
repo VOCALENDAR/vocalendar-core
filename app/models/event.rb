@@ -10,7 +10,7 @@ class Event < ActiveRecord::Base
     :location, :status, :summary, :g_color_id, :g_creator_email,
     :g_creator_display_name, :start_date, :start_datetime,
     :end_date, :end_datetime, :g_id, :recur_string,
-    :ical_uid, :tz_min, :country, :lang, :allday,
+    :ical_uid, :tz_min, :country, :lang, :allday, :twitter_hash,
     :uris_attributes, :tags_attributes
 
   validates :g_id, :uniqueness => true, :allow_nil => true

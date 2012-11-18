@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20121118080228) do
+ActiveRecord::Schema.define(:version => 20121118122807) do
 
   create_table "calendars", :force => true do |t|
     t.string   "name",                          :default => "", :null => false
@@ -74,6 +74,7 @@ ActiveRecord::Schema.define(:version => 20121118080228) do
     t.string   "country",                :default => "jp"
     t.string   "lang",                   :default => "ja"
     t.boolean  "allday",                 :default => false,       :null => false
+    t.string   "twitter_hash"
   end
 
   add_index "events", ["end_datetime", "status"], :name => "index_events_on_end_datetime_and_status"
@@ -81,6 +82,7 @@ ActiveRecord::Schema.define(:version => 20121118080228) do
   add_index "events", ["g_id"], :name => "index_events_on_g_id", :unique => true
   add_index "events", ["start_datetime", "status"], :name => "index_events_on_start_datetime_and_status"
   add_index "events", ["status"], :name => "index_events_on_status"
+  add_index "events", ["twitter_hash"], :name => "index_events_on_twitter_hash"
   add_index "events", ["updated_at", "status"], :name => "index_events_on_updated_at_and_status"
 
   create_table "settings", :force => true do |t|
