@@ -1,4 +1,5 @@
 class User < ActiveRecord::Base
+  include VocalendarCore::ModelLogUtils
   devise :trackable, :omniauthable
 
   enum_attr :role, %w(admin editor)
@@ -85,22 +86,21 @@ class User < ActiveRecord::Base
     @gapi_client or return false
     auth = @gapi_client.authorization
     auth.expired? or return
-    logger.debug "[User #{id}] Google API: access token has been expired, trying refresh..."
+    log :debug, "Google API: access token has been expired, trying refresh..."
     begin
       auth.fetch_access_token!
     rescue Signet::AuthorizationError => e
       update_attribute :google_auth_valid, true
       raise e
     end
-    c = auth.credentials
-    self.assign_attributes!({
-      :google_auth_token       => c.token,
-      :google_refresh_token    => c.refresh_token,
-      :google_token_expires_at => Time.at(c.expires_at).to_datetime,
-      :google_token_issued_at  => DateTime.now,
+    self.update_attributes!({
+      :google_auth_token       => auth.access_token,
+      :google_refresh_token    => auth.refresh_token,
+      :google_token_expires_at => auth.expires_at,
+      :google_token_issued_at  => auth.issued_at,
       :google_auth_valid       => true,
     }, :without_protection => true)
-    logger.debug "[User ##{id}] Google API: access token refresh success."
+    log :debug, "Google API: access token refresh success."
   end
 
   def gapi_client
@@ -138,7 +138,7 @@ class User < ActiveRecord::Base
     }
     body and greq[:body] = body
     greq_orig = greq.dup
-    logger.debug "[User #{id}] Execute Google API request #{api_method.id}"
+    log :debug, "Execute Google API request #{api_method.id}"
     result = client.execute(greq)
     if result.status == 401
       # Tring to reload token forcely to make sure.
@@ -150,10 +150,10 @@ class User < ActiveRecord::Base
       return gapi_request method, params, body
     elsif result.status < 200 || result.status >= 300
       msg = "Error on Google API request '#{method}': status=#{result.status}, request=#{greq_orig.inspect} response=#{result.body}"
-      logger.error "[User #{id}] #{msg}"
-      raise GoogleAPIError.new(result, msg)
+      log :error, msg
+      raise VocalendarCore::GoogleAPIError.new(result, msg)
     end
-    logger.debug "[User #{id}] Google API request #{greq[:api_method].id} success (status=#{result.status})"
+    log :debug, "Google API request #{greq[:api_method].id} success (status=#{result.status})"
     result
   end
 end
