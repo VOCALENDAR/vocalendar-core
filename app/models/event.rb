@@ -41,7 +41,7 @@ class Event < ActiveRecord::Base
 
   def zone
     tz_min or return nil
-    "#{tz_min < 0 ? '-' : '+'}#{"%02d" % (tz_min / 60).to_i.abs}:#{"%02d" % (tz_min % 60)}"
+    "#{tz_min < 0 ? '-' : '+'}#{"%02d" % (tz_min.abs / 60).to_i}:#{"%02d" % (tz_min % 60)}"
   end
 
   def zone=(v)
@@ -66,12 +66,14 @@ class Event < ActiveRecord::Base
 
   def start_datetime=(v)
     v = convert_to_datetime v
+    self.offset = v.offset
     self[:start_datetime] = v
     self[:start_date] = v.to_date
   end
 
   def end_datetime=(v)
     v = convert_to_datetime v
+    self.offset = v.offset
     self[:end_datetime] = v
     self[:end_date] = v.to_date
   end
@@ -246,6 +248,6 @@ class Event < ActiveRecord::Base
   def convert_to_datetime(v)
     v.kind_of?(DateTime) and return v
     v.kind_of?(Time) and return v.to_datetime
-    Time.parse(v.to_s).to_datetime
+    DateTime.parse("#{v.to_s} #{Time.zone}")
   end
 end

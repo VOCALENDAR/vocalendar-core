@@ -99,8 +99,14 @@ describe Event do
     e.zone.should == "+00:00"
     e.tz_min = 30
     e.zone.should == "+00:30"
+    e.tz_min = -30
+    e.zone.should == "-00:30"
     e.tz_min = 90
     e.zone.should == "+01:30"
+    e.tz_min = -90
+    e.zone.should == "-01:30"
+    e.tz_min = 540
+    e.zone.should == "+09:00"
     e.tz_min = -540
     e.zone.should == "-09:00"
   end
@@ -115,6 +121,16 @@ describe Event do
     e.tz_min.should == 90
     e.zone = "-09:30"
     e.tz_min.should == -570
+  end
+
+  it ": Set offset" do
+    e = an_event
+    e.offset = Rational(9, 24)
+    e.tz_min.should == 540
+    e.zone.should == "+09:00"
+    e.offset = Rational(-0.5, 24)
+    e.tz_min.should == -30
+    e.zone.should == "-00:30"
   end
 
   it ": Term string formatting" do
