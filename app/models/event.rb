@@ -30,6 +30,10 @@ class Event < ActiveRecord::Base
 
   after_save :save_tag_order
 
+  def name
+    summary
+  end
+
   def cancelled?
     status == "cancelled"
   end

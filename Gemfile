@@ -31,7 +31,9 @@ gem 'devise'
 gem 'devise-i18n'
 gem 'cancan'
 gem 'enumerated_attribute', :git => "git://github.com/jeffp/enumerated_attribute.git" # use git for https://github.com/jeffp/enumerated_attribute/pull/9
-
+gem 'rails_admin'
+#gem 'rails_admin-i18n'
+gem 'rails_admin-i18n', :git => 'git://github.com/sugi/rails_admin-i18n.git'
 
 group :development, :test do
   gem 'rspec-rails'
