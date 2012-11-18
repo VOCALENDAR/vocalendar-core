@@ -24,7 +24,7 @@ class User < ActiveRecord::Base
       u.email.blank? and u.email = auth["info"]["email"]
       u.name.blank?  and u.name  = auth["info"]["email"]
       u.auto_created = u.new_record?
-      #u.role = count < 1 ? :admin : nil
+      u.role = count < 1 ? :admin : nil
       u.save!
       u.adhoc_update_editor_role_by_calendar_membership_info
       u
