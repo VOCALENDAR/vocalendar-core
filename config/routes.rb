@@ -7,10 +7,12 @@ VocalendarCore::Application.routes.draw do
     get 'sign_out', :to => 'devise/sessions#destroy', :as => :destroy_user_session
   end
 
-  resources :tags
   resources :events
   resources :calendars
   resources :users
+  resources :tags do
+    resources :events
+  end
 
   scope '/admin' do
     resources :settings

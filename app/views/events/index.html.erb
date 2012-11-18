@@ -15,7 +15,7 @@
     <td><%= event.term_str %></td>
     <td>
       <% event.tags.each do |tag| %>
-      <%= link_to tag.name, events_path(:tag_id => tag.id) %>
+      <%= link_to tag.name, tag_events_path(tag.id) %>
       <% end %>
     </td>
     <td><%= link_to 'Show', event %></td>
