@@ -65,21 +65,25 @@ class Event < ActiveRecord::Base
   end
 
   def start_datetime=(v)
+    v = convert_to_datetime v
     self[:start_datetime] = v
     self[:start_date] = v.to_date
   end
 
   def end_datetime=(v)
+    v = convert_to_datetime v
     self[:end_datetime] = v
     self[:end_date] = v.to_date
   end
 
   def start_date=(v)
+    v = convert_to_date v
     self[:start_date] = v
     self[:start_datetime] = Time.new(v.year, v.mon, v.day).to_datetime
   end
 
   def end_date=(v)
+    v = convert_to_date v
     self[:end_date] = v
     self[:end_datetime] = Time.new(v.year, v.mon, v.day).to_datetime
   end
@@ -227,5 +231,16 @@ class Event < ActiveRecord::Base
         r.update_attribute :pos, i+1
       end
     end
+  end
+
+  def convert_to_date(v)
+    v.kind_of?(Date) || v.kind_of?(Time) and return v.to_date
+    Date.parse(v.to_s)
+  end
+
+  def convert_to_datetime(v)
+    v.kind_of?(DateTime) and return v
+    v.kind_of?(Time) and return v.to_datetime
+    Time.parse(v.to_s).to_datetime
   end
 end
