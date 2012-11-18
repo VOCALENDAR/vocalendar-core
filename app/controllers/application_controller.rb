@@ -7,8 +7,6 @@ class ApplicationController < ActionController::Base
     attr_accessor :status
   end
 
-  include VocalendarCore::Utils
-
   protect_from_forgery
   self.responder = AppResponder
   respond_to :html, :xml, :json

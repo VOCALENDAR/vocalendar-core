@@ -1,5 +1,5 @@
 class Calendar < ActiveRecord::Base
-  include VocalendarCore::Utils
+  include VocalendarCore::ModelLogUtils
   default_scope order('io_type desc, name')
 
   has_many :fetched_events, :class_name => 'Event',
@@ -47,7 +47,7 @@ class Calendar < ActiveRecord::Base
 
   def publish_events(opts = {})
     opts = {:force => false, :max => 2000}.merge opts
-    logger.info "Start event publish for calendar '#{name}' (##{id})"
+    log :info, "Start event publish"
     count = 0
 
     self.update_attribute :sync_started_at, DateTime.now
@@ -58,7 +58,7 @@ class Calendar < ActiveRecord::Base
 
     target_events.each do |event|
       if event.g_calendar_id.blank? || event.ical_uid.blank?
-        logger.error "Sync skip! Event ##{event.id} don't have g_calendar_id & event.ical_uid"
+        log :error, "Sync skip! Event ##{event.id} don't have g_calendar_id & event.ical_uid"
         next
       end
       body = event.to_exfmt :google_v3,
@@ -67,16 +67,16 @@ class Calendar < ActiveRecord::Base
       result = gapi_request :import, {}, body.to_json
       count += 1
       self.update_attribute :latest_synced_item_updated_at, event.updated_at
-      logger.info "Event '#{event.summary}' (##{event.id}) has been published to calendar '#{self.name}' (##{self.id}) successfully."
+      log :info, "Event '#{event.summary}' (##{event.id}) has been published successfully."
       count >= opts[:max] and break
     end
 
     self.update_attribute :sync_finished_at, DateTime.now
-    logger.info "Event publish completed for calendar '#{name}' (##{id}): #{count} events has been updated (#{DateTime.now.to_f - self.sync_started_at.to_f} secs)."
+    log :info, "Event publish completed. #{count} events has been updated (#{DateTime.now.to_f - self.sync_started_at.to_f} secs)."
   end
 
   def cleanup_published_events(opts = {})
-    logger.info "Start published event cleanup for calendar '#{name}' (##{id})"
+    log :info, "Start published event cleanup"
     start_time = DateTime.now.to_f
     remote_eids = []
     self.gapi_list_each_page(:showDeleted => false) do |result|
@@ -90,23 +90,26 @@ class Calendar < ActiveRecord::Base
     end
     delete_eids = remote_eids - local_eids
     delete_eids.each do |eid|
-      logger.info "Delete event from calendar '#{self.name}' (##{self.id}): google event ID=#{eid}"
+      log :info, "Delete event: google event ID=#{eid}"
       gapi_request :delete, {:eventId => eid}
     end
-    logger.info "Event cleanup completed: #{delete_eids.size} events has been deleted (#{DateTime.now.to_f - start_time} secs)"
+    log :info, "Event cleanup completed: #{delete_eids.size} events has been deleted (#{DateTime.now.to_f - start_time} secs)"
   end
 
   def fetch_events(opts = {})
     opts = {:force => false, :max => 2000}.merge opts
-    logger.info "Start event sync for calendar '#{name}' (##{id})"
+    log :info, "Start event sync"
     count = 0
     default_tz_min = (Time.now.to_datetime.offset * 60 * 24).to_i
 
     self.update_attribute :sync_started_at, DateTime.now
 
     query_params = {}
-    self.latest_synced_item_updated_at && !opts[:force] and
-      query_params[:updatedMin] = (self.latest_synced_item_updated_at - 5.minute).utc.strftime("%Y-%m-%dT%H:%M:%SZ")
+    if !opts[:force] && self.latest_synced_item_updated_at &&
+        self.latest_synced_item_updated_at > (DateTime.now - 20.days)
+      # Google limit updatedMin to 20 days. Drop the parameter if it's over 20 days to avoid error.
+      query_params[:updatedMin] = self.latest_synced_item_updated_at.utc.strftime("%Y-%m-%dT%H:%M:%SZ")
+    end
 
     self.gapi_list_each_page(query_params) do |result|
       default_tz_min = TZInfo::Timezone.get(result.data.timeZone).current_period.utc_offset / 60
@@ -119,26 +122,26 @@ class Calendar < ActiveRecord::Base
             :calendar_id => self.external_id, :default_tz_min => default_tz_min,
             :tag_names_append => self.tag_names_append,
             :tag_names_remove => self.tag_names_remove
-          logger.info "Event sync: #{event.new_record? ? "create new event" : "update event ##{event.id}"}: #{event.summary}"
+          log :info, "Event sync: #{event.new_record? ? "create new event" : "update event ##{event.id}"}: #{event.summary}"
           begin
             event.save!
           rescue ActiveRecord::RecordInvalid => e
-            logger.error "Failed to save with validation: #{e.message} on #{eitem["htmlLink"]}"
+            log :error, "Failed to save with validation: #{e.message} on #{eitem["htmlLink"]}"
             event.save :validate => false
           end
           count += 1
           self.update_attribute :latest_synced_item_updated_at, eitem["updated"]
           opts[:max] <= count and break
         rescue => e
-          logger.error "Failed to sync event: #{e.class.name}: #{e.to_s} (#{e.backtrace.join(' > ')})"
-          logger.error "Failed item: #{eitem.inspect}"
+          log :error, "Failed to sync event: #{e.class.name}: #{e.to_s} (#{e.backtrace.join(' > ')})"
+          log :error, "Failed item: #{eitem.inspect}"
           raise e
         end
       end
     end
 
     self.update_attribute :sync_finished_at, DateTime.now
-    logger.info "Event sync completed for calendar '#{name}' (##{id}): #{count} events has been updated (#{DateTime.now.to_f - self.sync_started_at.to_f} secs)."
+    log :info, "Event sync completed: #{count} events has been updated (#{DateTime.now.to_f - self.sync_started_at.to_f} secs)."
   end
 
   def gapi_list_each_page(params = {}, &block)
@@ -149,7 +152,7 @@ class Calendar < ActiveRecord::Base
     }.merge(params)
 
     while true
-      logger.debug "Getting event list via Google API: #{params.inspect}"
+      log :debug, "Getting event list via Google API: #{params.inspect}"
       result = gapi_request :list, params
       yield result
       result.next_page_token or break
@@ -157,9 +160,9 @@ class Calendar < ActiveRecord::Base
     end
   end
 
-  alias_method :_gapi_request, :gapi_request
   def gapi_request(method, params = {}, body = nil)
-    _gapi_request(method, {:calendarId => self.external_id}.merge(params), body)
+    assert_user_gauth
+    user.gapi_request("events.#{method}", {:calendarId => self.external_id}.merge(params), body)
   end
 
   private
@@ -169,6 +172,17 @@ class Calendar < ActiveRecord::Base
     self[:io_type].strip!
     self[:tag_names_append_str].try(:strip!)
     self[:tag_names_remove_str].try(:strip!)
+  end
+
+  def assert_user_gauth
+    msg = nil
+    self.user or
+      msg = "Calendar ##{id} (#{name}) has no owner! Skip publish."
+    self.user && !self.user.google_auth_valid? and
+      msg = "Calendar owner ##{self.user.id} has no valid google auth information! Skip publish."
+    msg or return true
+    log :error, msg
+    raise VocalendarCore::CalendarSyncError.new(msg)
   end
 end
 

@@ -6,4 +6,6 @@ module VocalendarCore
     end
     attr_accessor :api_result
   end
+
+  class CalendarSyncError < StandardError; end
 end
