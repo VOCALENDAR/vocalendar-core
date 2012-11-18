@@ -56,19 +56,24 @@ class Calendar < ActiveRecord::Base
     self.latest_synced_item_updated_at && !opts[:force] and
       target_events = target_events.where('events.updated_at >= ?', self.latest_synced_item_updated_at)
 
-    target_events.each do |event|
-      if event.g_calendar_id.blank? || event.ical_uid.blank?
-        log :error, "Sync skip! Event ##{event.id} don't have g_calendar_id & event.ical_uid"
-        next
+    begin
+      last_event_updated_at = nil
+      target_events.each do |event|
+        if event.g_calendar_id.blank? || event.ical_uid.blank?
+          log :error, "Sync skip! Event ##{event.id} don't have g_calendar_id & event.ical_uid"
+          next
+        end
+        body = event.to_exfmt :google_v3,
+          :tag_names_append => self.tag_names_append,
+          :tag_names_remove => self.tag_names_remove
+        result = gapi_request :import, {}, body.to_json
+        count += 1
+        last_event_updated_at = event.updated_at
+        log :info, "Event '#{event.summary}' (##{event.id}) has been published successfully."
+        count >= opts[:max] and break
       end
-      body = event.to_exfmt :google_v3,
-        :tag_names_append => self.tag_names_append,
-        :tag_names_remove => self.tag_names_remove
-      result = gapi_request :import, {}, body.to_json
-      count += 1
-      self.update_attribute :latest_synced_item_updated_at, event.updated_at
-      log :info, "Event '#{event.summary}' (##{event.id}) has been published successfully."
-      count >= opts[:max] and break
+    ensure
+      self.update_attribute :latest_synced_item_updated_at, last_event_updated_at
     end
 
     self.update_attribute :sync_finished_at, DateTime.now
@@ -115,28 +120,35 @@ class Calendar < ActiveRecord::Base
       default_tz_min = TZInfo::Timezone.get(result.data.timeZone).current_period.utc_offset / 60
 
       result.data["items"] or break
-      result.data.items.each do |eitem|
-        event = Event.find_by_g_id(eitem.id) || Event.new
-        begin
-          event.load_exfmt :google_v3, eitem,
-            :calendar_id => self.external_id, :default_tz_min => default_tz_min,
-            :tag_names_append => self.tag_names_append,
-            :tag_names_remove => self.tag_names_remove
-          log :info, "Event sync: #{event.new_record? ? "create new event" : "update event ##{event.id}"}: #{event.summary}"
+
+      begin
+        new_item_stamp = nil
+        result.data.items.each do |eitem|
+          event = Event.find_by_g_id(eitem.id) || Event.new
           begin
-            event.save!
-          rescue ActiveRecord::RecordInvalid => e
-            log :error, "Failed to save with validation: #{e.message} on #{eitem["htmlLink"]}"
-            event.save :validate => false
+            event.load_exfmt :google_v3, eitem,
+              :calendar_id => self.external_id, :default_tz_min => default_tz_min,
+              :tag_names_append => self.tag_names_append,
+              :tag_names_remove => self.tag_names_remove
+            log :info, "Event sync: #{event.new_record? ? "create new event" : "update event ##{event.id}"}: #{event.summary}"
+            begin
+              event.save!
+            rescue ActiveRecord::RecordInvalid => e
+              log :error, "Failed to save with validation: #{e.message} on #{eitem["htmlLink"]}"
+              event.save :validate => false
+            end
+            count += 1
+            new_item_stamp = eitem["updated"]
+            opts[:max] <= count and break
+          rescue => e
+            log :error, "Failed to sync event: #{e.class.name}: #{e.to_s} (#{e.backtrace.join(' > ')})"
+            log :error, "Failed item: #{eitem.inspect}"
+            raise e
           end
-          count += 1
-          self.update_attribute :latest_synced_item_updated_at, eitem["updated"]
-          opts[:max] <= count and break
-        rescue => e
-          log :error, "Failed to sync event: #{e.class.name}: #{e.to_s} (#{e.backtrace.join(' > ')})"
-          log :error, "Failed item: #{eitem.inspect}"
-          raise e
         end
+      ensure
+        new_item_stamp and
+          self.update_attribute :latest_synced_item_updated_at, new_item_stamp
       end
     end
 
@@ -177,7 +189,7 @@ class Calendar < ActiveRecord::Base
   def assert_user_gauth
     msg = nil
     self.user or
-      msg = "Calendar ##{id} (#{name}) has no owner! Skip publish."
+      msg = "Calendar has no owner! Skip publish."
     self.user && !self.user.google_auth_valid? and
       msg = "Calendar owner ##{self.user.id} has no valid google auth information! Skip publish."
     msg or return true
