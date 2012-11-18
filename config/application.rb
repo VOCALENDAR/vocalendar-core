@@ -59,3 +59,4 @@ module VocalendarCore
 end
 
 require "#{Rails.root}/extras/vocalendar_core/base.rb"
+require 'pp'

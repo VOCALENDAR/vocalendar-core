@@ -1,0 +1,18 @@
+<% if Rails.env == "development" %>
+<h3>Params</h3>
+<pre>
+<%= params.pretty_inspect %>
+</pre>
+<h3>Current User</h3>
+<pre>
+<%= current_user.pretty_inspect %>
+</pre>
+<h3>Session</h3>
+<pre>
+<%= session.pretty_inspect %>
+</pre>
+<h3>request</h3>
+<pre>
+<%= request.pretty_inspect %>
+</pre>
+<% end %>
