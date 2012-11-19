@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 class Event < ActiveRecord::Base
   default_scope order('start_datetime')
+  scope :active, where(:status => 'confirmed')
   has_many :uris, :autosave => true, :dependent => :destroy
   has_many :tag_relations, :class_name => 'EventTagRelation', :order => 'pos', :dependent => :delete_all
   has_many :tags, :through => :tag_relations, :order => 'event_tag_relations.pos, tags.name'

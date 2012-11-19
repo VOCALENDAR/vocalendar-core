@@ -11,7 +11,7 @@
   <tr>
     <td>#<%= tag.id %></td>
     <td><%= tag.name %></td>
-    <td><%= link_to tag.events.count, events_path(:tag_id => tag.id) %></td>
+    <td><%= link_to tag.events.active.count, events_path(:tag_id => tag.id) %></td>
     <td><%= link_to 'Show', tag %></td>
     <td><%= link_to 'Edit', edit_tag_path(tag) %></td>
     <td><%= link_to 'Destroy', tag, method: :delete, data: { confirm: 'Are you sure?' } %></td>
