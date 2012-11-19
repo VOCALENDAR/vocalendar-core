@@ -27,3 +27,7 @@
  * 動的にユーザ作った時に名前とか入れるように users/edit に飛ばす
    * users/edit のビューを整備
    * user の他のビューも整備
+ * google oauth 動的作成の時 editor ロールをふる判定を
+   calendar 側の所有ユーザからちぇっくするように変更する
+ * {google,twitter}_auth_valid をチェックして抜けるように
+ * 検証用にカレンダーコンペアスクリプトを作る事
