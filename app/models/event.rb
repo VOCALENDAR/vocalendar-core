@@ -201,7 +201,6 @@ class Event < ActiveRecord::Base
     tag_str = (opts[:tag_names_append] + tag_names - opts[:tag_names_remove]).uniq.join('/')
     tag_str.blank?  or  tag_str = "【#{tag_str}】"
     has_anniversary and tag_str = "★#{tag_str}"
-    tag_str.blank?  or  tag_str += " "
     summary = tag_str.to_s + self.summary
     {
       :iCalUID => self.ical_uid,
