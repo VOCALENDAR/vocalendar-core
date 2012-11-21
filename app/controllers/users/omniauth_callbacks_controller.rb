@@ -1,6 +1,8 @@
 class Users::OmniauthCallbacksController < Devise::OmniauthCallbacksController
   def google_oauth2
-    @user = User.find_for_google_oauth2(request.env["omniauth.auth"], current_user)
+    auth = request.env["omniauth.auth"]
+    auth["scope"] = session.delete :google_oauth2_scope
+    @user = User.find_for_google_oauth2(auth, current_user)
     after_login_callback "Google"
   end
 

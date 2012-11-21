@@ -210,8 +210,8 @@ Devise.setup do |config|
     config.omniauth :google_oauth2,
       Rails.configuration.google_client_id,
       Rails.configuration.google_client_secret,
-      { access_type: "offline",
-        scope: 'https://www.googleapis.com/auth/userinfo.email https://www.googleapis.com/auth/calendar',
+      { scope: 'userinfo.email,userinfo.profile',
+        strategy_class: VocalendarCore::GoogleOauth2Wrap
       }
   end
   config.omniauth :twitter, 'ifk27Iym60DQG6tvbuOtg', 'lLUCfWLxvbZtCpjvvooqwYtoxkdtez9WRdyOzYSZjE' # TODO: read from setting file

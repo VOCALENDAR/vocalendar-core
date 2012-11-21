@@ -7,23 +7,26 @@ class User < ActiveRecord::Base
   attr_accessible :name, :email, :role, :as => :admin
 
   validates :twitter_uid, :uniqueness => true, :allow_nil => true
+  validates :google_uid,  :uniqueness => true, :allow_nil => true
   validates :google_account, :uniqueness => true, :allow_nil => true
   validates :email, :uniqueness => true, :allow_nil => true
 
   class << self
-    def find_for_google_oauth2(auth, current_user = nil)
+    def find_for_google_oauth2(auth, current_user = nil, request = nil)
       !auth || !auth.uid and return nil
-      u = current_user || find_or_initialize_by_google_account(auth.uid)
+      u = current_user || find_or_initialize_by_google_uid(auth.uid)
       c = auth["credentials"]
       u.assign_attributes({
+        :google_account          => auth["info"]["email"],
         :google_auth_token       => c.token,
         :google_refresh_token    => c.refresh_token,
         :google_token_expires_at => Time.at(c.expires_at).to_datetime,
         :google_token_issued_at  => DateTime.now,
+        :google_auth_scope       => auth["scope"],
         :google_auth_valid       => true,
       }, :without_protection => true)
       u.email.blank? and u.email = auth["info"]["email"]
-      u.name.blank?  and u.name  = auth["info"]["email"]
+      u.name.blank?  and u.name  = auth["info"]["name"]
       u.auto_created = u.new_record?
       u.new_record? && count < 1 and u.role = :admin
       u.save!

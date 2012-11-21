@@ -15,6 +15,8 @@ class ApplicationController < ActionController::Base
   rescue_from ActiveRecord::RecordNotFound, :with => :render_ar_error
   rescue_from CanCan::AccessDenied, :with => :render_cancan_error
 
+  before_filter :check_admin_oauth_scope
+
   private
   def add_flash_msg(level, msg)
     flash[level] ||= []
@@ -68,4 +70,13 @@ class ApplicationController < ActionController::Base
     end
   end
 
+  def check_admin_oauth_scope
+    controller_name == 'sessions' and return
+    controller_name == 'omniauth_callbacks' and return
+    user_signed_in? or return
+    current_user.admin? or return
+    current_user.google_auth_scope.to_s.include?("https://www.googleapis.com/auth/calendar") and return
+    redirect_to user_omniauth_authorize_path(:provider => :google_oauth2, :scope => 'userinfo.email,userinfo.profile,calendar')
+    false
+  end
 end
