@@ -20,11 +20,17 @@ require 'spec_helper'
 
 describe UsersController do
 
+  before(:each) do
+    subject.stub(:formats).and_return [:html]
+  end
+
   # This should return the minimal set of attributes required to create a valid
   # User. As you add validations to User, be sure to
   # update the return value of this method accordingly.
   def valid_attributes
-    {}
+    {
+      :name => 'test user',
+    }
   end
 
   # This should return the minimal set of values that should be in the session
@@ -38,7 +44,7 @@ describe UsersController do
     it "assigns all users as @users" do
       user = User.create! valid_attributes
       get :index, {}, valid_session
-      assigns(:users).should eq([user])
+      assigns(:users).should be_include(user)
     end
   end
 
@@ -96,6 +102,7 @@ describe UsersController do
       it "re-renders the 'new' template" do
         # Trigger the behavior that occurs when invalid params are submitted
         User.any_instance.stub(:save).and_return(false)
+        User.any_instance.stub(:errors).and_return(:name => 'invalid')
         post :create, {:user => {}}, valid_session
         response.should render_template("new")
       end
@@ -110,7 +117,7 @@ describe UsersController do
         # specifies that the User created on the previous line
         # receives the :update_attributes message with whatever params are
         # submitted in the request.
-        User.any_instance.should_receive(:update_attributes).with({'these' => 'params'})
+        User.any_instance.should_receive(:update_attributes).with({'these' => 'params'}, :as => subject.current_user.role)
         put :update, {:id => user.to_param, :user => {'these' => 'params'}}, valid_session
       end
 
@@ -140,6 +147,7 @@ describe UsersController do
         user = User.create! valid_attributes
         # Trigger the behavior that occurs when invalid params are submitted
         User.any_instance.stub(:save).and_return(false)
+        User.any_instance.stub(:errors).and_return :name => 'invalid'
         put :update, {:id => user.to_param, :user => {}}, valid_session
         response.should render_template("edit")
       end
