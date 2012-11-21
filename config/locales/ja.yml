@@ -106,4 +106,6 @@ ja:
   calendars:
     index:
       title: 連携カレンダー一覧
-    
+  dashboard:
+    index:
+      title: ダッシュボード
