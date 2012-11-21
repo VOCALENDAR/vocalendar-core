@@ -1,8 +1,12 @@
-<h2>Admin Index Stub!!!</h2>
+<h2 class="title"><%= t ".title" %></h2>
 
 <ul>
   <li><%= link_to 'Calendars', calendars_path %></li>
   <li><%= link_to 'Events', events_path %></li>
   <li><%= link_to 'Tags', tags_path %></li>
+</ul>
+
+<h3>Admin only</h3>
+<ul>
   <li><%= link_to 'Settings', settings_path %></li>
 </ul>

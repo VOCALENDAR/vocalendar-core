@@ -14,9 +14,11 @@ VocalendarCore::Application.routes.draw do
     resources :events
   end
 
-  scope '/admin' do
+  scope 'admin' do
     resources :settings
   end
+
+  match 'dashboard(/:action)', :controller => 'dashboard', :as => 'dashboard'
 
   get "uris/new" # TODO: fix!
 
@@ -69,7 +71,7 @@ VocalendarCore::Application.routes.draw do
 
   # You can have the root of your site routed with "root"
   # just remember to delete public/index.html.
-  root :to => 'admin#index'
+  root :to => 'dashboard#index'
 
   # See how all your routes lay out with "rake routes"
 
