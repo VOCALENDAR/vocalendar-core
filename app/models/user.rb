@@ -93,7 +93,8 @@ class User < ActiveRecord::Base
     begin
       auth.fetch_access_token!
     rescue Signet::AuthorizationError => e
-      update_attribute :google_auth_valid, true
+      # This case means to be revoked on google.
+      update_attribute :google_auth_valid, false
       raise e
     end
     self.update_attributes!({
