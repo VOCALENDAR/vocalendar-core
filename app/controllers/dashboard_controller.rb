@@ -1,4 +1,3 @@
 class DashboardController < ApplicationController
-  def index
-  end
+  authorize_resource :class => false
 end
