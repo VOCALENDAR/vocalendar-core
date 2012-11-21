@@ -30,5 +30,3 @@
    * user の他のビューも整備
  * google oauth 動的作成の時 editor ロールをふる判定を
    calendar 側の所有ユーザからちぇっくするように変更する
- * {google,twitter}_auth_valid をチェックして抜けるように
- * google の OAuth のスコープを適切に切り替えられるように
