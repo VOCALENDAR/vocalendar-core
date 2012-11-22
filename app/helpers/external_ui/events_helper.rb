@@ -1,0 +1,2 @@
+module ExternalUi::EventsHelper
+end

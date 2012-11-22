@@ -1,0 +1,34 @@
+<h2 id="VCLsearchDetailTtile"><%= t ".title" %></h2>
+<article id="EventDtail">
+  <article class="VCLevent" id="datepanel">
+    <section class="body">
+      <h1 class="title"><%= @event.summary %></h1>
+      <div class="start clearfix">
+        <p class="date"><%= l @event.start_date %></p>
+        <% unless @event.allday? %>
+        <p class="time"><%= @event.start_datetime.strftime("%H:%M") %></p>
+        <% end %>
+      </div>
+      <% if @event.has_end_time? %>
+      <div class="end clearfix">
+        <p class="date"><%= l @event.end_date %></p>
+        <% unless @event.allday? %>
+        <p class="time"><%= @event.end_datetime.strftime("%H:%M") %></p>
+        <% end %>
+      </div>
+      <% end %>
+      <p class="where"><%= @event.location %></p>
+    </section>
+    <aside class="badge">
+      <% sd = @event.start_datetime %>
+      <p class="month"><%= sd.strftime("%b") %></p>
+      <p class="day"><%= sd.strftime("%d") %> </p>
+      <p class="dow"><%= sd.strftime("%a").upcase %></p>
+    </aside>
+    <div class="content">
+      <%= auto_link(simple_format(@event.description)){ |t| truncate t, :length => 80 } %>
+    </div>
+  </article>
+</article>
+
+<%= event_gcal_copy_link @event %>

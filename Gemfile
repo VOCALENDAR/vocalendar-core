@@ -37,6 +37,7 @@ gem 'rails_admin-i18n', :git => 'git://github.com/sugi/rails_admin-i18n.git'
 gem 'carrierwave'
 gem 'mime-types'
 gem 'rmagick'
+gem 'rails_autolink'
 
 group :development, :test do
   gem 'rspec-rails'

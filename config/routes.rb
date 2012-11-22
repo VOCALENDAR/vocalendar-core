@@ -7,6 +7,16 @@ VocalendarCore::Application.routes.draw do
     match 'sign_out', :to => 'devise/sessions#destroy', :as => :destroy_user_session
   end
 
+  namespace 'external_ui', :path => 'ex' do
+    resources :events, :only => [:index, :show] do
+      collection do
+        get 'gid/:gid' => 'events#show'
+        get 'eid/:eid' => 'events#show'
+        get 'uid/:uid' => 'events#show'
+      end
+    end
+  end
+
   resources :events
   resources :calendars
   resources :users

@@ -33,6 +33,12 @@ class Event < ActiveRecord::Base
 
   after_save :save_tag_order
 
+  class << self
+    def seaerch(query)
+      where("summary ilike '%?%' or description ilike '%?%'")
+    end
+  end
+
   def name
     summary
   end
@@ -141,6 +147,11 @@ class Event < ActiveRecord::Base
     self.tags = v.compact.map {|t| Tag.find_by_name(t) || Tag.create(:name => t) }
   end
 
+  def has_end_time?
+    allday? && start_date != (end_date - 1.day) ||
+      !allday? && start_datetime != end_datetime
+  end
+
   # Load attribute has from externel exchange format (e.g. google API)
   def load_exfmt(format, attrs, opts = {})
     self.respond_to? "load_exfmt_#{format}" or
@@ -205,7 +216,7 @@ class Event < ActiveRecord::Base
     {
       :iCalUID => self.ical_uid,
       :start => self.allday? ? {:date => self.start_date} : {:dateTime => self.start_datetime},
-      :end => self.allday? ? {:date => self.end_date} : {:dateTime => self.end_datetime},
+      :end => self.allday? ? {:date => self.end_date} : {:dateTime => self.end_datetime}, # TODO: timezone sync check
       :summary => summary,
       :description => self.description,
       :location => self.location,
