@@ -25,8 +25,8 @@ describe HistoriesController do
   # update the return value of this method accordingly.
   def valid_attributes
     {
-      "target" => "target_name"
-      "action" => "action_name"
+      "target" => "test_target_name",
+      "action" => "test_action_name",
     }
   end
 
@@ -41,7 +41,7 @@ describe HistoriesController do
     it "assigns all histories as @histories" do
       history = History.create! valid_attributes
       get :index, {}, valid_session
-      assigns(:histories).should includes([history])
+      assigns(:histories).should include(history)
     end
   end
 

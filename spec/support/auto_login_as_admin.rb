@@ -43,6 +43,7 @@ RSpec.configure do |config|
   end
 
   config.before(:all, :type => :request) do
-    get user_omniauth_callback_path(:google_oauth2), {:google_oauth2_scope => google_scope}
+    @session = Hashie::Mash.new({:google_oauth2_scope => google_scope})
+    get user_omniauth_callback_path(:google_oauth2)
   end
 end

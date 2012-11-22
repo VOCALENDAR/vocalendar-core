@@ -2,7 +2,7 @@ require 'spec_helper'
 
 describe "histories/index" do
   before(:each) do
-    assign(:histories, [
+    histories = [
       stub_model(History,
         :target => "Target",
         :target_type => "Target Type",
@@ -19,7 +19,11 @@ describe "histories/index" do
         :user_id => 2,
         :note => "MyText"
       )
-    ])
+    ]
+    histories.stub!(:current_page).and_return(1)
+    histories.stub!(:total_pages).and_return(1)
+    histories.stub!(:limit_value).and_return(nil)
+    assign(:histories, histories)
   end
 
   it "renders a list of histories" do
