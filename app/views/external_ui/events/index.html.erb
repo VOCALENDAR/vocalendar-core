@@ -1,0 +1,37 @@
+<section id='VS_resultContainer' class="clearfix">
+  <h2 id="VCLsearchResultTitle"><%= t ".title" %><span style="color:#aaa;font-size:20px;"> &nbsp;BETA</span></h2>
+  <a id="searchCloseBTN"></a>
+  <article id="VS_events">
+    <% @events.each_with_index do |event, i| %>
+    <article class="VCLevent sat c<%= i % 3 %>" id="event-datial-<%= event.id %>">
+      <section class="body">
+        <h1 class="title"><%= event.summary %></h1>
+        <div class="start clearfix">
+          <p class="date"><%= l event.start_date %></p>
+          <% unless event.allday? %>
+          <p class="time"><%= event.start_datetime.strftime("%H:%M") %></p>
+          <% end %>
+        </div>
+        <% if event.has_end_time? %>
+        <div class="end clearfix">
+          <p class="date"><%= l event.end_date %></p>
+          <% unless event.allday? %>
+          <p class="time"><%= event.end_datetime.strftime("%H:%M") %></p>
+          <% end %>
+        </div>
+        <% end %>
+        <p class="where"><%= event.location %></p>
+      </section>
+      <aside class="badge">
+        <% sd = event.start_datetime %>
+        <p class="month"><%= sd.strftime("%Y/%b") %></p>
+        <p class="day"><%= sd.strftime("%d") %> </p>
+        <p class="dow"><%= sd.strftime("%a").upcase %></p>
+      </aside>
+      <div class="content" style="display: none; ">
+        <%= auto_link(simple_format(event.description)){ |t| truncate t, :length => 80 } %>
+      </div>
+    </article>
+    <% end %>
+  </article>
+</section>

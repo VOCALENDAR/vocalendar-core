@@ -1,18 +1,5 @@
 require 'spec_helper'
 
-def hash_to_struct(h)
-  h.each do |k, v|
-    Hash === v or next
-    h[k] = hash_to_struct(v)
-  end
-  s = OpenStruct.new(h)
-  def s.[](k)
-    self.__send__ k
-  end
-  s
-end
-
-
 describe Event do
   let(:valid_attrs) do 
     {
@@ -161,7 +148,7 @@ describe Event do
   end
 
   it ": Load Google Calendar API v3 JSON format" do
-    hh = {
+    ge = Hashie::Mash.new({
       "kind"=>"calendar#event",
       "etag"=>"\"VPgt7A32MKJjP8Bq493zO-MXswA/Q09EbXdxZWRKeEVBQUFBQUFBQUFBQT09\"",
       "id"=>"h@00d8590b768fd9797c5c4f31d6596efba9d4a251",
@@ -184,14 +171,13 @@ describe Event do
 	"visibility"=>"public",
 	"iCalUID"=>"h@00d8590b768fd9797c5c4f31d6596efba9d4a251@google.com",
 	"sequence"=>1
-    }
-    ha = hash_to_struct hh
+    })
     e = an_event
-    e.load_exfmt :google_v3, ha, :calendar_id => 'dummy_gcal_id'
-    e.g_html_link.should   == ha["htmlLink"]
-    e.status.should        == ha["status"]
-    e.etag.should          == ha["etag"]
-    e.ical_uid.should      == ha["iCalUID"]
+    e.load_exfmt :google_v3, ge, :calendar_id => 'dummy_gcal_id'
+    e.g_html_link.should   == ge["htmlLink"]
+    e.status.should        == ge["status"]
+    e.etag.should          == ge["etag"]
+    e.ical_uid.should      == ge["iCalUID"]
     e.g_calendar_id.should == 'dummy_gcal_id'
   end
 

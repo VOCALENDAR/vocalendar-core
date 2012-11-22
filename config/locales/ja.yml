@@ -77,29 +77,12 @@ ja:
         google_api_secret: API Secret
 
   general:
-      add: 追加
-      delete: 削除
-      edit: 編集
-      new: 新規
-      delete_confirm: 本当に %{name} を削除してよろしいですか？
-  admin:
-    set_appid:
-      title: Google API アプリケーション ID の設定
-      description: 最初に Google API のアプリケーションクライアントIDおよび、そのシークレット文字列を設定する必要があります。
-      change_notice: '注意: この情報を変更すると Rails 自体を再起動する必要があります。'
-      set_redirect_url: Google API console で、リダイレクトURLが以下のように設定されている事を確認してください
-      missing: Google API アプリケーション ID が設定されていません
-    update_appid:
-      restart_notice: Google API の連携情報が変更されました。これを有効にするには Rails 自体を再起動する必要があります。
-    set_master_auth:
-      title: マスター認証情報の設定
-      description: 一つの Google アカウントをマスター認証用として設定する必要があります。Vocalendar core はここで設定された認証情報を使って連携したカレンダーを操作します。設定するアカウントは連携する全てのカレンダーに対して適切な権限を持っている必要があります。
-      update_auth: 認証情報を更新
-      current: 現在設定されているアカウント
-      noauthinfo: (なし)
-      notify: マスター認証IDが設定されていません。
-    auth_callback:
-      success: 認証情報は正しく更新されました
+    add: 追加
+    delete: 削除
+    edit: 編集
+    new: 新規
+    delete_confirm: 本当に %{name} を削除してよろしいですか？
+    copy_to_google_calendar: Googleカレンダーにコピー
   settings:
     index:
       title: 全体設定一覧
@@ -109,3 +92,10 @@ ja:
   dashboard:
     index:
       title: ダッシュボード
+  events:
+    show:
+      title: イベント詳細
+  external_ui:
+    events:
+      show:
+        title: イベント詳細
