@@ -34,8 +34,9 @@ class Event < ActiveRecord::Base
   after_save :save_tag_order
 
   class << self
-    def seaerch(query)
-      where("summary ilike '%?%' or description ilike '%?%'")
+    def search(query)
+      q = "%#{query}%"
+      where("lower(summary) like lower(?) or lower(description) like lower(?)", q, q)
     end
   end
 

@@ -21,7 +21,7 @@
     </section>
     <aside class="badge">
       <% sd = @event.start_datetime %>
-      <p class="month"><%= sd.strftime("%b") %></p>
+      <p class="month"><%= sd.strftime("%Y/%b") %></p>
       <p class="day"><%= sd.strftime("%d") %> </p>
       <p class="dow"><%= sd.strftime("%a").upcase %></p>
     </aside>

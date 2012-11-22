@@ -26,7 +26,7 @@ class User < ActiveRecord::Base
         :google_auth_valid       => true,
       }, :without_protection => true)
       u.email.blank? and u.email = auth["info"]["email"]
-      u.name.blank?  and u.name  = auth["info"]["name"]
+      u.name.blank?  and u.name  = auth["info"]["name"] || u.email
       u.auto_created = u.new_record?
       u.new_record? && count < 1 and u.role = :admin
       u.save!
