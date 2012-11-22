@@ -14,8 +14,9 @@ VocalendarCore::Application.routes.draw do
     resources :events
   end
 
-  scope 'admin' do
+  scope 'manage' do
     resources :settings
+    resources :histories, :only => [:index]
   end
 
   match 'dashboard(/:action)', :controller => 'dashboard', :as => 'dashboard'

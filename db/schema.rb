@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20121121205705) do
+ActiveRecord::Schema.define(:version => 20121121213310) do
 
   create_table "calendars", :force => true do |t|
     t.string   "name",                          :default => "", :null => false
@@ -85,6 +85,19 @@ ActiveRecord::Schema.define(:version => 20121121205705) do
   add_index "events", ["status"], :name => "index_events_on_status"
   add_index "events", ["twitter_hash"], :name => "index_events_on_twitter_hash"
   add_index "events", ["updated_at", "status"], :name => "index_events_on_updated_at_and_status"
+
+  create_table "histories", :force => true do |t|
+    t.string   "target",      :null => false
+    t.string   "target_type"
+    t.integer  "target_id"
+    t.string   "action",      :null => false
+    t.integer  "user_id"
+    t.text     "note"
+    t.datetime "created_at",  :null => false
+  end
+
+  add_index "histories", ["created_at", "target", "target_id"], :name => "index_histories_on_created_at_and_target_and_target_id"
+  add_index "histories", ["user_id", "created_at"], :name => "index_histories_on_user_id_and_created_at"
 
   create_table "settings", :force => true do |t|
     t.string   "var",                      :null => false

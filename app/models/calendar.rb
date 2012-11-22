@@ -1,5 +1,6 @@
 class Calendar < ActiveRecord::Base
   include VocalendarCore::ModelLogUtils
+  include VocalendarCore::HistoryUtils::Model
   default_scope order('io_type desc, name')
 
   has_many :fetched_events, :class_name => 'Event',
@@ -52,6 +53,8 @@ class Calendar < ActiveRecord::Base
 
     self.update_attribute :sync_started_at, DateTime.now
 
+    add_history :action => 'publish_started'
+
     target_events = self.target_events.reorder('events.updated_at')
     self.latest_synced_item_updated_at && !opts[:force] and
       target_events = target_events.where('events.updated_at >= ?', self.latest_synced_item_updated_at)
@@ -70,6 +73,9 @@ class Calendar < ActiveRecord::Base
         count += 1
         last_event_updated_at = event.updated_at
         log :info, "Event '#{event.summary}' (##{event.id}) has been published successfully."
+        add_history(:target    => event.class.model_name.underscore,
+                    :target_id => event.id,
+                    :action    => 'published')
         count >= opts[:max] and break
       end
     ensure
@@ -78,27 +84,31 @@ class Calendar < ActiveRecord::Base
 
     self.update_attribute :sync_finished_at, DateTime.now
     log :info, "Event publish completed. #{count} events has been updated (#{DateTime.now.to_f - self.sync_started_at.to_f} secs)."
+    add_history :action => 'publish_finished'
   end
 
   def cleanup_published_events(opts = {})
     log :info, "Start published event cleanup"
     start_time = DateTime.now.to_f
-    remote_eids = []
+    remote_gids = []
     self.gapi_list_each_page(:showDeleted => false) do |result|
       result.data["items"] or break
-      remote_eids += result.data.items.map { |e| e.id }
+      remote_gids += result.data.items.map { |e| e.id }
     end
-    local_eids = []
+    local_gids = []
     target_events.each do |e|
       e.g_id.blank? and next
-      local_eids << e.g_id
+      local_gids << e.g_id
     end
-    delete_eids = remote_eids - local_eids
-    delete_eids.each do |eid|
-      log :info, "Delete event: google event ID=#{eid}"
-      gapi_request :delete, {:eventId => eid}
+    delete_gids = remote_gids - local_gids
+    delete_gids.each do |gid|
+      log :info, "Delete event: google event ID=#{gid}"
+      gapi_request :delete, {:eventId => gid}
+      add_history(:target    => event.class.model_name.underscore,
+                  :target_id => event.id,
+                  :action    => 'delete_on_google')
     end
-    log :info, "Event cleanup completed: #{delete_eids.size} events has been deleted (#{DateTime.now.to_f - start_time} secs)"
+    log :info, "Event cleanup completed: #{delete_gids.size} events has been deleted (#{DateTime.now.to_f - start_time} secs)"
   end
 
   def fetch_events(opts = {})
@@ -107,6 +117,7 @@ class Calendar < ActiveRecord::Base
     count = 0
     default_tz_min = (Time.now.to_datetime.offset * 60 * 24).to_i
 
+    add_history :action => :fetch_started
     self.update_attribute :sync_started_at, DateTime.now
 
     query_params = {}
@@ -139,6 +150,9 @@ class Calendar < ActiveRecord::Base
             end
             count += 1
             new_item_stamp = eitem["updated"]
+            add_history(:target    => event.class.model_name.underscore,
+                        :target_id => event.id,
+                        :action    => 'import_from_google')
             opts[:max] <= count and break
           rescue => e
             log :error, "Failed to sync event: #{e.class.name}: #{e.to_s} (#{e.backtrace.join(' > ')})"
@@ -154,6 +168,7 @@ class Calendar < ActiveRecord::Base
 
     self.update_attribute :sync_finished_at, DateTime.now
     log :info, "Event sync completed: #{count} events has been updated (#{DateTime.now.to_f - self.sync_started_at.to_f} secs)."
+    add_history :action => :fetch_finished
   end
 
   def gapi_list_each_page(params = {}, &block)

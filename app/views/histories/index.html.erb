@@ -1,0 +1,25 @@
+<h1>Listing histories</h1>
+
+<table class="table table-striped table-hover table-condensed">
+  <tr>
+    <th>Target</th>
+    <th>Target type</th>
+    <th>Target</th>
+    <th>Action</th>
+    <th>User</th>
+    <th>Note</th>
+  </tr>
+
+<% @histories.each do |history| %>
+  <tr>
+    <td><%= history.target %></td>
+    <td><%= history.target_type %></td>
+    <td><%= history.target_id %></td>
+    <td><%= history.action %></td>
+    <td><%= history.user_id %></td>
+    <td><%= history.note %></td>
+  </tr>
+<% end %>
+</table>
+
+<%= paginate @histories %>
