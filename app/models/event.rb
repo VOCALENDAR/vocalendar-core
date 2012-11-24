@@ -207,16 +207,16 @@ class Event < ActiveRecord::Base
     tag_str = (opts[:tag_names_append] + tag_names - opts[:tag_names_remove]).uniq.join('/')
     tag_str.blank?  or  tag_str = "【#{tag_str}】"
     has_anniversary and tag_str = "★#{tag_str}"
-    summary = tag_str.to_s + self.summary
+    summary = tag_str.to_s + self.summary.to_s
     {
       :iCalUID => self.ical_uid,
-      :start => self.allday? ? {:date => self.start_date} : {:dateTime => self.start_datetime},
-      :end => self.allday? ? {:date => self.end_date} : {:dateTime => self.end_datetime}, # TODO: timezone sync check
+      :start => self.allday? ? {:date => self.start_date} : {:dateTime => self.start_datetime, :timeZone => self.timezone.try(:name)},
+      :end => self.allday? ? {:date => self.end_date} : {:dateTime => self.end_datetime, :timeZone => self.timezone.try(:name)},
       :summary => summary,
       :description => self.description,
       :location => self.location,
       :status => self.status,
-      :recurrence => self.recur_string.split("\n"),
+      :recurrence => self.recur_string.to_s.split("\n"),
     }
   end
 
