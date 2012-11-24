@@ -1,10 +1,10 @@
-<h1>Listing histories</h1>
+<h2><%= t ".title" %></h2>
 
 <table class="table table-striped table-hover table-condensed">
   <tr>
+    <th>Time</th>
     <th>Target</th>
-    <th>Target type</th>
-    <th>Target</th>
+    <th>ID</th>
     <th>Action</th>
     <th>User</th>
     <th>Note</th>
@@ -12,11 +12,26 @@
 
 <% @histories.each do |history| %>
   <tr>
-    <td><%= history.target %></td>
-    <td><%= history.target_type %></td>
-    <td><%= history.target_id %></td>
+    <td><%= history.created_at.strftime("%F %T") %></td>
+    <td>
+      <%= link_to history.target, histories_path(:target => history.target) %>
+    </td>
+    <td>
+      <% if history.target_id %>
+      <%= link_to "##{history.target_id}", 
+          histories_path(:target => history.target, :id => history.target_id) %>
+      <%= link_to ' <i class="icon-search"></i>'.html_safe,
+          polymorphic_url(history.target, :id => history.target_id) %>
+      <% end %>
+    </td>
     <td><%= history.action %></td>
-    <td><%= history.user_id %></td>
+    <td>
+      <% if history.user_id %>
+      <% u = User.find(history.user_id) %>
+      <%= link_to "##{u.try :id} (#{u.try :name})", histories_path(:user_id => u.try(:id)) %>
+      <%= link_to_if u, ' <i class="icon-search"></i>'.html_safe, u, :title => u.try(:name) %>
+      <% end %>
+    </td>
     <td><%= history.note %></td>
   </tr>
 <% end %>

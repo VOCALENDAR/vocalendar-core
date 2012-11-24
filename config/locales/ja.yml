@@ -104,3 +104,6 @@ ja:
     events:
       show:
         title: イベント詳細
+  histories:
+    index:
+      title: 履歴一覧
