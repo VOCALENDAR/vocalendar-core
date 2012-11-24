@@ -74,7 +74,7 @@ class Calendar < ActiveRecord::Base
         count += 1
         last_event_updated_at = event.updated_at
         log :info, "Event '#{event.summary}' (##{event.id}) has been published successfully."
-        add_history(:target    => event.class.model_name.underscore,
+        add_history(:target    => 'event',
                     :target_id => event.id,
                     :action    => 'published')
         count >= opts[:max] and break
@@ -105,8 +105,8 @@ class Calendar < ActiveRecord::Base
     delete_gids.each do |gid|
       log :info, "Delete event: google event ID=#{gid}"
       gapi_request :delete, {:eventId => gid}
-      add_history(:target    => event.class.model_name.underscore,
-                  :target_id => event.id,
+      add_history(:target    => 'event',
+                  :target_id => Event.find_by_g_id(gid).try(:id),
                   :action    => 'delete_on_google')
     end
     log :info, "Event cleanup completed: #{delete_gids.size} events has been deleted (#{DateTime.now.to_f - start_time} secs)"
@@ -150,7 +150,7 @@ class Calendar < ActiveRecord::Base
             end
             count += 1
             new_item_stamp = eitem["updated"]
-            add_history(:target    => event.class.model_name.underscore,
+            add_history(:target    => 'event',
                         :target_id => event.id,
                         :action    => 'import_from_google')
             opts[:max] <= count and break
