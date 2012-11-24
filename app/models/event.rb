@@ -208,7 +208,7 @@ class Event < ActiveRecord::Base
     tag_str.blank?  or  tag_str = "【#{tag_str}】"
     has_anniversary and tag_str = "★#{tag_str}"
     summary = tag_str.to_s + self.summary.to_s
-    ret = {
+    {
       :iCalUID => self.ical_uid,
       :start => self.allday? ? {:date => self.start_date} : {:dateTime => self.start_datetime.in_time_zone(self.timezone), :timeZone => self.timezone.try(:name)},
       :end => self.allday? ? {:date => self.end_date} : {:dateTime => self.end_datetime.in_time_zone(self.timezone), :timeZone => self.timezone.try(:name)},
@@ -216,10 +216,8 @@ class Event < ActiveRecord::Base
       :description => self.description,
       :location => self.location,
       :status => self.status,
+      :recurrence => self.recur_string.to_s.split("\n"),
     }
-    self.recur_string.blank? or
-      ret[:recurrence] = self.recur_string.to_s.split("\n")
-    ret
   end
 
   private
