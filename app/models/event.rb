@@ -210,8 +210,8 @@ class Event < ActiveRecord::Base
     summary = tag_str.to_s + self.summary.to_s
     {
       :iCalUID => self.ical_uid,
-      :start => self.allday? ? {:date => self.start_date} : {:dateTime => self.start_datetime, :timeZone => self.timezone.try(:name)},
-      :end => self.allday? ? {:date => self.end_date} : {:dateTime => self.end_datetime, :timeZone => self.timezone.try(:name)},
+      :start => self.allday? ? {:date => self.start_date} : {:dateTime => self.start_datetime.in_time_zone(self.timezone), :timeZone => self.timezone.try(:name)},
+      :end => self.allday? ? {:date => self.end_date} : {:dateTime => self.end_datetime.in_time_zone(self.timezone), :timeZone => self.timezone.try(:name)},
       :summary => summary,
       :description => self.description,
       :location => self.location,
