@@ -1,6 +1,7 @@
 class Calendar < ActiveRecord::Base
   include VocalendarCore::ModelLogUtils
   include VocalendarCore::HistoryUtils::Model
+
   default_scope order('io_type desc, name')
 
   has_many :fetched_events, :class_name => 'Event',
@@ -171,6 +172,28 @@ class Calendar < ActiveRecord::Base
     add_history :action => :fetch_finished
   end
 
+  def compare_remote_events(another)
+    all_events = Hash.new{|h,k| h[k] = {}}
+    [self, another].each do |cal|
+      cal.gapi_list_each_page do |result|
+        result.data.items.each do |eitem|
+          all_events[cal][eitem["iCalUID"]] = eitem.to_hash
+        end
+      end
+    end
+
+    my_events = all_events[self]
+    op_events = all_events[another]
+
+    {
+      :added   => (op_events.keys - my_events.keys).map {|uid| op_events[uid] },
+      :deleted => (my_events.keys - op_events.keys).map {|uid| my_events[uid] },
+      :changed => (my_events.keys & op_events.keys).map {|uid|
+        my_events[uid].diff(op_events[uid])
+      },
+    }
+  end
+
   def gapi_list_each_page(params = {}, &block)
     params = {
       :singleEvents => false,
@@ -204,9 +227,9 @@ class Calendar < ActiveRecord::Base
   def assert_user_gauth
     msg = nil
     self.user or
-      msg = "Calendar has no owner! Skip publish."
+      msg = "Calendar has no owner! Can not exec Google API request."
     self.user && !self.user.google_auth_valid? and
-      msg = "Calendar owner ##{self.user.id} has no valid google auth information! Skip publish."
+      msg = "Calendar owner ##{self.user.id} has no valid google auth information! Can not exec Google API request."
     msg or return true
     log :error, msg
     raise VocalendarCore::CalendarSyncError.new(msg)
