@@ -183,10 +183,10 @@ class Event < ActiveRecord::Base
     }
     if attrs["start"]
       self.attributes = {
-        start_datetime: attrs.start["dateTime"] || attrs.start.date.to_time.to_datetime,
         start_date: attrs.start["date"] || attrs.start.dateTime.to_date,
-        end_datetime: attrs.end["dateTime"] || attrs.end.date.to_time.to_datetime,
+        start_datetime: attrs.start["dateTime"] || attrs.start.date.to_time.to_datetime,
         end_date: attrs.end["date"] || attrs.end.dateTime.to_date,
+        end_datetime: attrs.end["dateTime"] || attrs.end.date.to_time.to_datetime,
         timezone: attrs.start["timeZone"] || default_timezone,
         allday: !!attrs.start["date"],
         recur_string: attrs.recurrence.to_a.join("\n"),
