@@ -80,44 +80,42 @@ describe Event do
     e.save.should be_true
   end
 
-  it ": Time zone format in string" do
-    e = an_event
-    e.tz_min = 0
-    e.zone.should == "+00:00"
-    e.tz_min = 30
-    e.zone.should == "+00:30"
-    e.tz_min = -30
-    e.zone.should == "-00:30"
-    e.tz_min = 90
-    e.zone.should == "+01:30"
-    e.tz_min = -90
-    e.zone.should == "-01:30"
-    e.tz_min = 540
-    e.zone.should == "+09:00"
-    e.tz_min = -540
-    e.zone.should == "-09:00"
+  it "raises exception on tz_min=" do
+    lambda { an_event.tz_min = 30 }.should raise_error(ArgumentError, /timezone=/)
   end
 
-  it ": Set timezone by string" do
+  it "returns time zone object" do
     e = an_event
-    e.zone = "+00:00"
-    e.tz_min.should == 0
-    e.zone = "-00:30"
-    e.tz_min.should == -30
-    e.zone = "+01:30"
-    e.tz_min.should == 90
-    e.zone = "-09:30"
-    e.tz_min.should == -570
+    e.timezone.should be_instance_of(ActiveSupport::TimeZone)
+    e.timezone = 'UTC'
+    e.timezone.should be_instance_of(ActiveSupport::TimeZone)
   end
 
-  it ": Set offset" do
+  it ": set time zone" do
     e = an_event
-    e.offset = Rational(9, 24)
-    e.tz_min.should == 540
-    e.zone.should == "+09:00"
-    e.offset = Rational(-0.5, 24)
-    e.tz_min.should == -30
-    e.zone.should == "-00:30"
+    e.timezone = 'UTC'
+    e.timezone.name.should eq 'UTC'
+    e.timezone.utc_offset.should eq 0
+    e.timezone = 'Asia/Tokyo'
+    e.timezone.name.should eq 'Asia/Tokyo'
+    e.timezone.utc_offset.should eq 32400
+    e.timezone.formatted_offset.should eq '+09:00'
+  end
+
+  it "dose NOT change by start_datetime" do
+    e = an_event
+    e.timezone = 'UTC'
+    e.start_datetime = '2012-03-09T03:09:00+09:00'
+    e.tz_min.should eq 0
+    e.timezone.utc_offset.should eq 0
+  end
+
+  it "changes tz_min by setting time zone" do
+    e = an_event
+    e.timezone = 'UTC'
+    e.tz_min.should eq 0
+    e.timezone = 'Asia/Tokyo'
+    e.tz_min.should eq 540
   end
 
   it ": Term string formatting" do

@@ -35,6 +35,7 @@ ja:
         g_id: GoogleイベントアイテムID
         ical_uid: iCalUID
         tz_min: タイムゾーン(分)
+        timezone: タイムゾーン
         country: 国コード
         lang: 言語コード
         allday: 全日

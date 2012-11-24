@@ -22,7 +22,6 @@ describe ExternalUi::EventsController do
         start_datetime: DateTime.parse("2003-02-26T09:00:00+09:00"),
         status: "confirmed",
         summary: "YAMAHA VOCALOID",
-        tz_min: 540,
       }
       Event.create!(event_attrs)
     end

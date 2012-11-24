@@ -13,8 +13,8 @@ class Event < ActiveRecord::Base
     :location, :status, :summary, :g_color_id, :g_creator_email,
     :g_creator_display_name, :start_date, :start_datetime,
     :end_date, :end_datetime, :g_id, :recur_string,
-    :ical_uid, :tz_min, :country, :lang, :allday, :twitter_hash,
-    :uris_attributes, :tags_attributes
+    :ical_uid, :country, :lang, :allday, :twitter_hash,
+    :uris_attributes, :tags_attributes, :timezone
 
   validates :g_id, :uniqueness => true, :allow_nil => true
   validates :etag, :presence => true
@@ -53,41 +53,35 @@ class Event < ActiveRecord::Base
     !cancelled?
   end
 
-  def zone
-    tz_min or return nil
-    "#{tz_min < 0 ? '-' : '+'}#{"%02d" % (tz_min.abs / 60).to_i}:#{"%02d" % (tz_min % 60)}"
+  def timezone
+    self[:timezone].blank? and return nil
+    @_timezone ||= ActiveSupport::TimeZone.new(self[:timezone])
   end
 
-  def zone=(v)
-    v.blank? and tz_min = nil and return v
-    unless v.to_s =~ /^([+-])([0-9][0-9]):([0-9][0-9])$/
-      raise "Invalid TimeZone format: #{v}"
-    end
-    self[:tz_min] = ($1 == "-" ? -1 : 1) * ($2.to_i * 60 + $3.to_i)
-    return v
+  def timezone=(v)
+    self[:timezone] = v
+    v.blank? and return
+    @_timezone = ActiveSupport::TimeZone.new(v)
+    self[:tz_min] = @_timezone.utc_offset / 60
   end
 
-  def offset
-    tz_min or return nil
-    Rational.new(tz_min, 24*60)
+  def tz_min=(v)
+    raise ArgumentError, "Use Event#timezone= instead."
   end
 
-  def offset=(v)
-    v.blank? && tz_min = nil and return v
-    self[:tz_min] = (v * 24 * 60).to_i
-    return v
+  def timezone_offset
+    
+    Rational.new(timezone.utc_offset/60, 24*60)
   end
 
   def start_datetime=(v)
     v = convert_to_datetime v
-    self.offset = v.offset
     self[:start_datetime] = v
     self[:start_date] = v.to_date
   end
 
   def end_datetime=(v)
     v = convert_to_datetime v
-    self.offset = v.offset
     self[:end_datetime] = v
     self[:end_date] = v.to_date
   end
@@ -162,7 +156,7 @@ class Event < ActiveRecord::Base
 
   def load_exfmt_google_v3(attrs, opts = {})
     opts = {:tag_names_remove => [], :tag_names_append => []}.merge opts
-    default_tz_min = opts[:default_tz_min] || (Time.now.to_datetime.offset * 60 * 24).to_i
+    default_timezone = opts[:default_timezone] || Time.zone.name
     opts[:calendar_id].blank? and
       raise ArgumentError, "Need to specify :calendar_id as option"
 
@@ -193,7 +187,7 @@ class Event < ActiveRecord::Base
         start_date: attrs.start["date"] || attrs.start.dateTime.to_date,
         end_datetime: attrs.end["dateTime"] || attrs.end.date.to_time.to_datetime,
         end_date: attrs.end["date"] || attrs.end.dateTime.to_date,
-        tz_min: attrs.start["date"] ? default_tz_min : (attrs.start.dateTime.to_datetime.offset * 60 * 24).to_i,
+        timezone: attrs.start["timeZone"] || default_timezone,
         allday: !!attrs.start["date"],
         recur_string: attrs.recurrence.to_a.join("\n"),
       }

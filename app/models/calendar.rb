@@ -116,8 +116,6 @@ class Calendar < ActiveRecord::Base
     opts = {:force => false, :max => 2000}.merge opts
     log :info, "Start event sync"
     count = 0
-    default_tz_min = (Time.now.to_datetime.offset * 60 * 24).to_i
-
     add_history :action => :fetch_started
     self.update_attribute :sync_started_at, DateTime.now
 
@@ -129,7 +127,7 @@ class Calendar < ActiveRecord::Base
     end
 
     self.gapi_list_each_page(query_params) do |result|
-      default_tz_min = TZInfo::Timezone.get(result.data.timeZone).current_period.utc_offset / 60
+      default_timezone = result.data.timeZone
 
       result.data["items"] or break
 
@@ -139,7 +137,8 @@ class Calendar < ActiveRecord::Base
           event = Event.find_by_g_id(eitem.id) || Event.new
           begin
             event.load_exfmt :google_v3, eitem,
-              :calendar_id => self.external_id, :default_tz_min => default_tz_min,
+              :calendar_id => self.external_id,
+              :default_timezone => default_timezone,
               :tag_names_append => self.tag_names_append,
               :tag_names_remove => self.tag_names_remove
             log :info, "Event sync: #{event.new_record? ? "create new event" : "update event ##{event.id}"}: #{event.summary}"

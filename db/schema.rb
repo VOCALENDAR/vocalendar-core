@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20121121213310) do
+ActiveRecord::Schema.define(:version => 20121124163815) do
 
   create_table "calendars", :force => true do |t|
     t.string   "name",                          :default => "", :null => false
@@ -51,7 +51,7 @@ ActiveRecord::Schema.define(:version => 20121121213310) do
 
   create_table "events", :force => true do |t|
     t.string   "g_calendar_id"
-    t.string   "etag",                                            :null => false
+    t.string   "etag",                                             :null => false
     t.string   "status",                 :default => "confirmed"
     t.text     "g_html_link"
     t.text     "summary"
@@ -60,22 +60,23 @@ ActiveRecord::Schema.define(:version => 20121121213310) do
     t.string   "g_color_id"
     t.string   "g_creator_email"
     t.string   "g_creator_display_name"
-    t.date     "start_date",                                      :null => false
-    t.datetime "start_datetime",                                  :null => false
-    t.date     "end_date",                                        :null => false
-    t.datetime "end_datetime",                                    :null => false
-    t.datetime "created_at",                                      :null => false
-    t.datetime "updated_at",                                      :null => false
+    t.date     "start_date",                                       :null => false
+    t.datetime "start_datetime",                                   :null => false
+    t.date     "end_date",                                         :null => false
+    t.datetime "end_datetime",                                     :null => false
+    t.datetime "created_at",                                       :null => false
+    t.datetime "updated_at",                                       :null => false
     t.string   "g_id"
     t.string   "recur_string"
-    t.string   "ical_uid",               :default => "",          :null => false
+    t.string   "ical_uid",               :default => "",           :null => false
     t.text     "primary_uri"
     t.integer  "tz_min",                 :default => 540
     t.string   "country",                :default => "jp"
     t.string   "lang",                   :default => "ja"
-    t.boolean  "allday",                 :default => false,       :null => false
+    t.boolean  "allday",                 :default => false,        :null => false
     t.string   "twitter_hash"
     t.string   "image"
+    t.string   "timezone",               :default => "Asia/Tokyo"
   end
 
   add_index "events", ["end_datetime", "status"], :name => "index_events_on_end_datetime_and_status"
