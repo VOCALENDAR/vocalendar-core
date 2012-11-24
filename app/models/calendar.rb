@@ -183,7 +183,8 @@ class Calendar < ActiveRecord::Base
             e.delete attr
           end
           e["summary"].strip!
-          all_events[cal][eitem["iCalUID"]] = e
+          e["status"] == "tentative" and e["status"] = "confirmed"
+          all_events[cal][eitem["id"]] = e
         end
       end
     end
@@ -192,14 +193,16 @@ class Calendar < ActiveRecord::Base
     op_events = all_events[another]
 
     diff = {
-      :added   => (op_events.keys - my_events.keys).map {|uid| op_events[uid] },
-      :deleted => (my_events.keys - op_events.keys).map {|uid| my_events[uid] },
+      :added   => (op_events.keys - my_events.keys).map {|id| op_events[id]},
+      :deleted => (my_events.keys - op_events.keys).map {|id| my_events[id]},
     }
-    c = diff[:changed] = []
-    (my_events.keys & op_events.keys).each do |uid|
-      d = my_events[uid].diff(op_events[uid])
+    c = diff[:changed] = {}
+    (my_events.keys & op_events.keys).each do |id|
+      d = my_events[id].diff(op_events[id])
       d.empty? and next
-      c << Hash[*d.keys.map {|k| [k, [my_events[uid][k], op_events[uid][k]]]}.flatten(1)]
+      c[id] = Hash[*d.keys.map {|k|
+                      [k, [my_events[id][k], op_events[id][k]]]
+                    }.flatten(1)]
     end
     diff
   end

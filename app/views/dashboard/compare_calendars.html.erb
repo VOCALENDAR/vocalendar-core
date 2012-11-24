@@ -1,0 +1,75 @@
+<h2><%= t ".title" %></h2>
+
+<p>
+  警告: この機能は完全にデバッグ目的の物です。
+  Google API で２つのカレンダーから直接全イベントを取得し、比較します。
+  必ずコードを読み、何が行われているか理解してから使って下さい。
+</p>
+
+<form method="post">
+  <table>
+    <tr>
+      <th>Compare A</th>
+      <th>Compare B</th>
+    </tr>
+  <% @calendars.each do |cal| %>
+    <tr>
+      <td>
+        <label>
+          <input type="radio" name="a_id" value="<%= cal.id %>">
+          <%= cal.name %>
+        </label>
+      </td>
+      <td>
+        <label>
+          <input type="radio" name="b_id" value="<%= cal.id %>">
+          <%= cal.name %>
+        </label>
+      </td>
+    </tr>
+  <% end %>
+  </table>
+  <input type="submit" value="Compare remote events on selected calendar"%>
+</form>
+
+<% if @diff %>
+<h3>Added events on <%= @cal_b.name %></h3>
+<ul>
+<% @diff[:added].each do |event| %>
+  <li><%= simple_format event.pretty_inspect %></li>
+<% end %>
+</ul>
+<h3>Deleted events on <%= @cal_b.name %></h3>
+<ul>
+<% @diff[:deleted].each do |event| %>
+  <li><%= simple_format event.pretty_inspect %></li>
+<% end %>
+</ul>
+<h3>Changed events on <%= @cal_b.name %></h3>
+<table>
+  <tr>
+    <th>attr</th>
+    <th><%= @cal_a.name %></th>
+    <th><%= @cal_b.name %></th>
+  </tr>
+  <% @diff[:changed].each do |id, change| %>
+  <% event = Event.find_by_g_id id %>
+  <tr><th>ID</th>
+    <th colspan="2" style="text-align: left">
+      <%= id %>
+      <% if event %>
+      (local: <%= link_to "##{event.id} #{event.name}", event %>)
+      <% end %>
+  </th></tr>
+  <% change.each do |attr, vals| %>
+  <tr>
+    <th rowspan="2"><%= attr %></th>
+  </tr>
+  <tr>
+    <td><%= vals[0].inspect %></td>
+    <td><%= vals[1].inspect %></td>
+  </tr>
+  <% end %>
+  <% end %>
+</table>
+<% end %>
