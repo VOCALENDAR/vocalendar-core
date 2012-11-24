@@ -177,7 +177,14 @@ class Calendar < ActiveRecord::Base
     [self, another].each do |cal|
       cal.gapi_list_each_page do |result|
         result.data.items.each do |eitem|
-          all_events[cal][eitem["iCalUID"]] = eitem.to_hash
+          e = eitem.to_hash
+          %w(created updated creator organizer attendees
+             extendedProperties reminders visibility
+             transparency sequence etag htmlLink).each do |attr|
+            e.delete attr
+          end
+          e["summary"].strip!
+          all_events[cal][eitem["iCalUID"]] = e
         end
       end
     end
@@ -185,13 +192,17 @@ class Calendar < ActiveRecord::Base
     my_events = all_events[self]
     op_events = all_events[another]
 
-    {
+    diff = {
       :added   => (op_events.keys - my_events.keys).map {|uid| op_events[uid] },
       :deleted => (my_events.keys - op_events.keys).map {|uid| my_events[uid] },
-      :changed => (my_events.keys & op_events.keys).map {|uid|
-        my_events[uid].diff(op_events[uid])
-      },
     }
+    c = diff[:changed] = []
+    (my_events.keys & op_events.keys).each do |uid|
+      d = my_events[uid].diff(op_events[uid])
+      d.empty? and next
+      c << Hash[*d.keys.map {|k| [k, [my_events[uid][k], op_events[uid][k]]]}.flatten(1)]
+    end
+    diff
   end
 
   def gapi_list_each_page(params = {}, &block)
