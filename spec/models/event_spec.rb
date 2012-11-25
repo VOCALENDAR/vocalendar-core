@@ -138,11 +138,43 @@ describe Event do
     e.term_str.should == "2010-03-09"
 
     e.allday = false
-    e.end_datetime   = Time.new(2010, 3, 10, 15, 9)
-    e.term_str.should == "2010-03-09 15:09 - 2010-03-10 15:09"
+    e.end_datetime   = Time.new(2010, 3, 11, 15, 9)
+    e.term_str.should == "2010-03-09 15:09 - 2010-03-11 15:09"
+  end
 
+  it "endtime must be treated as open interval: [start, end)" do
+    e = an_event
     e.allday = true
+
+    e.start_date     = Date.new(2010, 3, 9)
+    e.end_date       = Date.new(2010, 3, 10)
+    e.term_str.should == "2010-03-09"
+
+    e.start_datetime = Date.new(2010, 3, 9)
+    e.end_datetime   = Date.new(2010, 3, 10)
+    e.term_str.should == "2010-03-09"
+
+    e.start_datetime = Date.new(2010, 3, 9)
+    e.end_datetime   = Date.new(2010, 3, 11)
     e.term_str.should == "2010-03-09 - 2010-03-10"
+
+    e.start_date     = Date.new(2010, 3, 9)
+    e.end_date       = Date.new(2010, 3, 11)
+    e.term_str.should == "2010-03-09 - 2010-03-10"
+
+    e.start_datetime = Time.new(2010, 3, 9, 15, 9)
+    e.end_datetime   = Time.new(2010, 3, 10, 15, 9)
+    e.term_str.should == "2010-03-09 - 2010-03-10"
+
+    e.start_date     = Time.new(2010, 3, 9, 15, 9)
+    e.end_date       = Time.new(2010, 3, 10, 15, 9)
+    e.term_str.should == "2010-03-09"
+
+    e.end_datetime   = Time.new(2010, 3, 12, 15, 9)
+    e.term_str.should == "2010-03-09 - 2010-03-12"
+
+    e.end_datetime   = Date.new(2010, 3, 12)
+    e.term_str.should == "2010-03-09 - 2010-03-11"
   end
 
   it ": Load Google Calendar API v3 JSON format" do

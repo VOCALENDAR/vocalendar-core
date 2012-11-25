@@ -106,9 +106,18 @@ class Event < ActiveRecord::Base
     allday? ? end_date : end_datetime
   end
 
+  def time_until
+    allday? ? (end_datetime - 1.second).to_date : (end_datetime - 1.second)
+  end
+
+  def time_range
+    start_at...end_at
+  end
+
   def term_str
+    # TODO: Internationalization support!
     s = start_at
-    e = end_at
+    e = allday? ? time_until : end_datetime # Use end_datetime as user friendly display when event is not allday.
     year_fmt = ""
     s.year != e.year || s.year != Date.today.year and
       year_fmt = "%Y-"
@@ -259,7 +268,8 @@ class Event < ActiveRecord::Base
 
   def convert_to_datetime(v)
     v.kind_of?(DateTime) and return v
-    v.kind_of?(Time) and return v.to_datetime
+    v.kind_of?(Time)     and return v.to_datetime
+    v.kind_of?(Date)     and return Time.new(v.year, v.mon, v.day)
     DateTime.parse("#{v.to_s} #{Time.zone}")
   end
 end
