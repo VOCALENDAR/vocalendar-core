@@ -101,7 +101,7 @@ class Event < ActiveRecord::Base
   has_many :main_tag_relations,  tagrel_opts.merge(:conditions => {:target_field => ""})
   has_many :extra_tag_relations, tagrel_opts.merge(:conditions => "target_field != ''")
 
-  has_many :all_tags,  :through => :all_tag_relations
+  has_many :all_tags,  :through => :all_tag_relations, :source => :tag
   has_many :tags,      :through => :main_tag_relations
   
   has_one :reccuring_parent, :class_name => 'Event',

@@ -22,7 +22,7 @@
       <tr>
         <td><%= l event.start_at %></td>
         <td><%= link_to event.name.blank? ? "(empty)" : event.name, event %></td>
-        <td><%= event.tags.map {|t| link_to t.name, tag_events_path(:tag_id => t.id)}.join(', ').html_safe %></td>
+        <td><%= event.all_tags.uniq.map {|t| link_to t.name, tag_events_path(:tag_id => t.id)}.join(', ').html_safe %></td>
       </tr>
       <% end %>
       <% end %>
@@ -48,7 +48,7 @@
         <td></td>
         <td><%= l event.start_at %></td>
         <td><%= link_to event.name, event %></td>
-        <td><%= event.tags.map {|t| link_to t.name, tag_events_path(:tag_id => t.id)}.join(', ').html_safe  %></td>
+        <td><%= event.all_tags.uniq.map {|t| link_to t.name, tag_events_path(:tag_id => t.id)}.join(', ').html_safe  %></td>
       </tr>
       <% end %>
       <% end %>

@@ -51,7 +51,7 @@
     <td><%= event.term_str %></td>
     <td><%= l event.updated_at %></td>
     <td>
-      <% event.tags.each do |tag| %>
+      <% event.all_tags.uniq.each do |tag| %>
       <%= link_to tag.name, tag_events_path(tag.id) %>
       <% end %>
     </td>
