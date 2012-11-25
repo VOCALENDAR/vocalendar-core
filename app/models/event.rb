@@ -136,18 +136,15 @@ class Event < ActiveRecord::Base
   end
 
   def end_at
-    allday? ? end_date : end_datetime
+    allday? or return end_datetime
+    end_date < end_datetime.to_datetime or
+      return end_date
+    end_datetime.to_date + 1.day
   end
 
   def time_until
-    allday? or
-      return end_datetime - 1.second
-
-    if end_date < end_datetime.to_datetime
-      return end_datetime.to_date
-    else
-      return end_date - 1.day
-    end
+    allday? or return end_datetime - 1.second
+    end_at - 1.day
   end
 
   def time_range
