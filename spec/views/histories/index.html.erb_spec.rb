@@ -9,7 +9,8 @@ describe "histories/index" do
         :target_id => 1,
         :action => "Action",
         :user_id => 2,
-        :note => "MyText"
+        :note => "MyText",
+        :created_at => DateTime.now,
       ),
       stub_model(History,
         :target => "Target",
@@ -17,7 +18,8 @@ describe "histories/index" do
         :target_id => 1,
         :action => "Action",
         :user_id => 2,
-        :note => "MyText"
+        :note => "MyText",
+        :created_at => DateTime.now,
       )
     ]
     histories.stub!(:current_page).and_return(1)
@@ -30,9 +32,7 @@ describe "histories/index" do
     render
     # Run the generator again with the --webrat flag if you want to use webrat matchers
     assert_select "tr>td", :text => "Target".to_s, :count => 2
-    assert_select "tr>td", :text => 1.to_s, :count => 2
     assert_select "tr>td", :text => "Action".to_s, :count => 2
-    assert_select "tr>td", :text => 2.to_s, :count => 2
     assert_select "tr>td", :text => "MyText".to_s, :count => 2
   end
 end
