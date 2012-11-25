@@ -350,6 +350,7 @@ class Event < ActiveRecord::Base
   end
 
   def save_tag_order
+    tags.loaded? or return true
     self.tags.each_with_index do |t, i|
       self.tag_relations.each do |r|
         r.tag_id == t.id or next
