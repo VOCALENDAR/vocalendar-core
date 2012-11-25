@@ -11,6 +11,12 @@ class DashboardController < ApplicationController
   end
 
   def alerts
-    
+    @rare_tags = []
+    Tag.all.each do |tag|
+      tag.events.active.count > 3 and next
+      @rare_tags << tag
+    end
+    @rare_tags.sort_by! {|t| t.events.active.count }
+
   end
 end

@@ -1,0 +1,38 @@
+<h2><%= ".title" %></h2>
+
+<ul class="nav nav-tabs">
+  <li class="active"><a href="#alert-summary" data-toggle="tab">概要</a></li>
+  <li><a href="#rare-tags" data-toggle="tab">タグ</a></li>
+</ul>
+
+<div class="tab-content">
+  <div clsas="tab-pane active" id="alert-summary">
+  TODO!
+  </div>
+
+  <div class="tab-pane" id="rare-tags">
+    <h3>余り使われていないタグ</h3>
+    <table class="table table-hover table-condensed">
+      <tr><th colspan="4">タグ名 (件数)</th></tr>
+      <tr>
+        <td></td>
+        <th>開始日</th>
+        <th>イベントタイトル</th>
+        <th>タグ</th>
+      </tr>
+      <% @rare_tags.each do |tag| %>
+      <tr>
+        <th colspan="4"><%= tag.name %> (<%= tag.events.count %>)</th>
+      </tr>
+      <% tag.events.active.each do |event| %>
+      <tr>
+        <td></td>
+        <td><%= l event.start_at %></td>
+        <td><%= link_to event.name, event %></td>
+        <td><%= event.tags.map {|t| link_to t.name, tag_events_path(:tag_id => t.id)}.join(', ').html_safe  %></td>
+      </tr>
+      <% end %>
+      <% end %>
+    </table>
+  </div>
+</div>

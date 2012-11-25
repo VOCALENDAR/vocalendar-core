@@ -97,6 +97,8 @@ ja:
   dashboard:
     index:
       title: ダッシュボード
+    alerts:
+      title: チェックツール
   events:
     show:
       title: イベント詳細
