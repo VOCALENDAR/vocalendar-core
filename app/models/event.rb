@@ -9,15 +9,19 @@ class Event < ActiveRecord::Base
     args = []
     tag_ids = []
     query.strip.split(/[　 \t\n\r]+/).each do |q|
-      q.blank? || q.length < 2 and next
-      q = "%#{query}%"
-      args += [q, q]
+      q.blank? and next
+      qw = "%#{query}%"
+      args += [qw, qw]
       sqls << "lower(summary) like lower(?) or lower(description) like lower(?)"
       tag_ids << Tag.find_by_name(q).try(:id)
     end
-    args << tag_ids.compact
-    sqls.empty? or
-      joins(:tag_relations).where("#{sqls.join(' or ')} or event_tag_relations.tag_id IN (?)", *args)
+    tag_ids.compact!
+    unless tag_ids.empty?
+      sqls <<  "event_tag_relations.tag_id IN (?)"
+      args << tag_ids
+    end
+    sqls.empty? and return
+    joins(:tag_relations).where(sqls.join(' or '), *args)
   end)
 
   has_many :uris, :autosave => true, :dependent => :destroy
