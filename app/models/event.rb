@@ -142,9 +142,10 @@ class Event < ActiveRecord::Base
 
   def end_at
     allday? or return end_datetime
-    end_date <= end_datetime.to_datetime or
-      return end_date
-    end_datetime.to_date + 1.day
+    d = end_date
+    DateTime.new(d.year, d.mon, d.day, 0, 0, 0, end_datetime.to_datetime.offset) < end_datetime and
+      return (end_datetime + 1.day).to_date
+    end_date
   end
 
   def time_until
