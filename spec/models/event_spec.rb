@@ -140,6 +140,12 @@ describe Event do
     e.allday = false
     e.end_datetime   = Time.new(2010, 3, 11, 15, 9)
     e.term_str.should == "2010-03-09 15:09 - 2010-03-11 15:09"
+
+    e = an_event
+    e.allday = true
+    e.start_datetime = Time.new(2010, 3, 11, 0, 0)
+    e.end_datetime   = Time.new(2010, 3, 12, 0, 0)
+    e.term_str.should == "2010-03-11"
   end
 
   it "endtime must be treated as open interval: [start, end)" do
