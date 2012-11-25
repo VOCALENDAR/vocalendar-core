@@ -58,7 +58,7 @@ class EventsController < ApplicationController
   # DELETE /events/1
   # DELETE /events/1.json
   def destroy
-    @event.destroy
+    @event.update_attirbute! :status => 'cancelled'
     respond_with @event
   end
 end
