@@ -80,7 +80,6 @@ class Calendar < ActiveRecord::Base
                       :action    => 'published')
           count >= opts[:max] and break
         rescue VocalendarCore::GoogleAPIError => e
-          pp e.api_result
           apierr = e.api_result.response.body
           begin
             apierr = JSON.parse e.api_result.response.body
