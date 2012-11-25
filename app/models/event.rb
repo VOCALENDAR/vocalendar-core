@@ -142,7 +142,7 @@ class Event < ActiveRecord::Base
 
   def end_at
     allday? or return end_datetime
-    end_date < end_datetime.to_datetime or
+    end_date <= end_datetime.to_datetime or
       return end_date
     end_datetime.to_date + 1.day
   end
