@@ -22,8 +22,6 @@
  * 動的にユーザ作った時に名前とか入れるように users/edit に飛ばす
    * users/edit のビューを整備
    * user の他のビューも整備
- * google oauth 動的作成の時 editor ロールをふる判定を
-   calendar 側の所有ユーザからちぇっくするように変更する
  * bootstrap を gem のやつにいこう
  * カレンダーのオーナの選択を管理者だけに絞る
  * editor のチェックを管理者側からやるように
@@ -42,3 +40,4 @@
    (現在は単に最初に登録された物だけが有効になっていてまずい)
  * カレンダーの external_id を変更不能にする
  * カレンダーの削除タグで glob support
+ * カレンダー search を named scope に移行
