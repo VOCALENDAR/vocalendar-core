@@ -76,13 +76,21 @@ class User < ActiveRecord::Base
   # TODO: FIX this function more flexisible...
   def adhoc_update_editor_role_by_calendar_membership_info
     admin? and return
-    # TODO: REMOVE HARD-CODED Calendar ID
-    ret = gapi_request("calendar_list.list")
-    if ret && ret.data.items.find {|c| c.id == "pcg8ct8ulj96ptvqhllgcc181o@group.calendar.google.com" }
-      update_attribute :role, :editor
-    else
-      update_attribute :role, nil
+    Calendar.where(:io_type => 'src').each do |cal|
+      begin
+        apiret = cal.gapi_request("acl.list")
+        apiret.data.items.each do |acl|
+          acl.role == "owner" || acl.role == "writer" or next
+          acl.scope.type  == "user" or next
+          acl.scope.value == google_account or next
+          update_attribute :role, :editor
+          return
+        end
+      rescue => e
+        log :error, "Failed to check calendar ACL: #{e.class.name}:#{e.message} to update user role"
+      end
     end
+    update_attribute :role, nil
   end
 
   def update_gapi_client_token
@@ -108,7 +116,7 @@ class User < ActiveRecord::Base
   end
 
   def gapi_client
-    google_auth_valid? or return nil
+    google_auth_valid? or raise VocalendarCore::GoogleAPIError.new("User ##{id} has no valid google OAuth credentials.")
     if @gapi_client
       update_gapi_client_token
       return @gapi_client
@@ -130,7 +138,7 @@ class User < ActiveRecord::Base
   end
 
   def gapi_request(method, params = {}, body = nil, opts = {})
-    client = gapi_client or return nil
+    client = gapi_client
     opts = {:service  => ['calendar', 'v3']}.merge(opts)
     service = client.discovered_api *opts[:service]
     api_method = service
@@ -153,9 +161,8 @@ class User < ActiveRecord::Base
       update_gapi_client_token
       return gapi_request method, params, body
     elsif result.status < 200 || result.status >= 300
-      msg = "Error on Google API request '#{method}': status=#{result.status}, request=#{greq_orig.inspect} response=#{result.body}"
-      log :error, msg
-      raise VocalendarCore::GoogleAPIError.new(result, msg)
+      log :error, "Error on Google API request '#{method}': status=#{result.status}, request=#{greq_orig.inspect} response=#{result.body}"
+      raise VocalendarCore::GoogleAPIRequestError.new(result)
     end
     log :debug, "Google API request #{greq[:api_method].id} success (status=#{result.status})"
     result

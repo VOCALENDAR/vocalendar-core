@@ -75,8 +75,10 @@ class ApplicationController < ActionController::Base
     controller_name == 'omniauth_callbacks' and return
     user_signed_in? or return
     current_user.admin? or return
-    current_user.google_auth_scope.to_s.include?("https://www.googleapis.com/auth/calendar") and return
-    redirect_to user_omniauth_authorize_path(:provider => :google_oauth2, :scope => 'userinfo.email,userinfo.profile,calendar')
+    scope = current_user.google_auth_scope.to_s
+    cs    = "https://www.googleapis.com/auth/calendar"
+    scope.include?("#{cs}.readonly") && scope.include?(cs) and return true
+    redirect_to user_omniauth_authorize_path(:provider => :google_oauth2, :scope => 'userinfo.email,userinfo.profile,calendar,calendar.readonly')
     false
   end
 end
