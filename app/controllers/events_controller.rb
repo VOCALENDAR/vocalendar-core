@@ -5,7 +5,7 @@ class EventsController < ApplicationController
   # GET /events
   # GET /events.json
   def index
-    @events = @events.page(params[:page]).per(50)
+    @events = @events.page(params[:page]).per(50).order('updated_at desc')
     params[:tag_id].blank? or
       @events = @events.by_tag_ids(params[:tag_id])
     params[:g_calendar_id].blank? or
