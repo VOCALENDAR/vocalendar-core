@@ -1,3 +1,4 @@
+# -*- encoding: utf-8 -*-
 class DashboardController < ApplicationController
   authorize_resource :class => false
 
@@ -17,6 +18,21 @@ class DashboardController < ApplicationController
       @rare_tags << tag
     end
     @rare_tags.sort_by! {|t| t.events.active.count }
+
+    @weird_events = {
+      :title_too_long_or_short =>
+      Event.active.where("length(summary) > 100 or length(summary) < 3").to_a,
+      :title_has_tag_paren =>
+      Event.active.where("summary like '%【%'").to_a,
+      :title_is_empty =>
+      Event.active.where(:summary => "").to_a,
+      :title_has_over_3_white_spaces =>
+      Event.active.where("summary like '%   %' or summary like '%　　　%'").to_a,
+    }
+    @weird_events.each do |k, e|
+      e.empty? or next
+      @weird_events.delete k
+    end
 
   end
 end

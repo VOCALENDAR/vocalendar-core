@@ -2,12 +2,31 @@
 
 <ul class="nav nav-tabs">
   <li class="active"><a href="#alert-summary" data-toggle="tab">概要</a></li>
+  <li><a href="#weird-events" data-toggle="tab">タイトル</a></li>
   <li><a href="#rare-tags" data-toggle="tab">タグ</a></li>
 </ul>
 
 <div class="tab-content">
   <div clsas="tab-pane active" id="alert-summary">
-  TODO!
+  TODO! ほかのたぶをせんたくしてください。
+  </div>
+
+  <div class="tab-pane" id="weird-events">
+    <h3>怪しげなイベント項目一覧</h3>
+    <table class="table table-hover table-condensed">
+      <% @weird_events.each do |reason, events| %>
+      <tr>
+        <th colspan="3"><%= t reason %></th>
+      </tr>
+      <% events.each do |event| %>
+      <tr>
+        <td><%= l event.start_at %></td>
+        <td><%= link_to event.name.blank? ? "(empty)" : event.name, event %></td>
+        <td><%= event.tags.map {|t| link_to t.name, tag_events_path(:tag_id => t.id)}.join(', ').html_safe %></td>
+      </tr>
+      <% end %>
+      <% end %>
+    </table>
   </div>
 
   <div class="tab-pane" id="rare-tags">
