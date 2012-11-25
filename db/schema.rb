@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20121125113027) do
+ActiveRecord::Schema.define(:version => 20121125182009) do
 
   create_table "calendars", :force => true do |t|
     t.string   "name",                          :default => "", :null => false
@@ -42,11 +42,11 @@ ActiveRecord::Schema.define(:version => 20121125113027) do
   create_table "event_tag_relations", :force => true do |t|
     t.integer "event_id"
     t.integer "tag_id"
-    t.integer "pos",          :default => 1, :null => false
-    t.string  "target_field"
+    t.integer "pos",          :default => 1,  :null => false
+    t.string  "target_field", :default => "", :null => false
   end
 
-  add_index "event_tag_relations", ["event_id"], :name => "index_event_tag_relations_on_event_id"
+  add_index "event_tag_relations", ["event_id", "target_field"], :name => "index_event_tag_relations_on_event_id_and_target_field"
   add_index "event_tag_relations", ["tag_id"], :name => "index_event_tag_relations_on_tag_id"
 
   create_table "events", :force => true do |t|

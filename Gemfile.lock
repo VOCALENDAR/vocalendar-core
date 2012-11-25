@@ -171,6 +171,7 @@ GEM
       bundler (~> 1.0)
       railties (= 3.2.8)
     rails-i18n (0.7.1)
+      i18n (~> 0.5)
     rails-settings-cached (0.2.2)
       rails (>= 3.0.0)
     rails_admin (0.2.0)

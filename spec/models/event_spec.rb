@@ -37,10 +37,10 @@ describe Event do
     e = an_event
     e.tag_names_str = "a b c d e"
     e.save
-    e.tag_relations.map {|r| r.pos }.should eql (1..5).to_a
+    e.main_tag_relations.map {|r| r.pos }.should eql (1..5).to_a
     e.tag_names = %w(m n o p)
     e.save
-    e.tag_relations.map {|r| r.pos }.should eql (1..4).to_a
+    e.main_tag_relations.map {|r| r.pos }.should eql (1..4).to_a
   end
 
   it "keeps tag order" do
@@ -285,5 +285,34 @@ describe Event do
     output = e.to_exfmt :google_v3
     output[:originalStartTime].should == google_input[:originalStartTime]
     output[:originalStartTime][:date].should == google_input[:originalStartTime][:date]
+  end
+
+  it "saves extra tags" do
+    e = an_event
+    e.tag_names = %w(should keep ordinal tags)
+    e.extra_tags[:hoge].should eq []
+    e.extra_tags[:hoge].should be_a(Event::ExtraTagContainer::TagContainer)
+    e.extra_tags[:ext1].names_str = "hoge fuga/funya"
+    e.extra_tags[:ext1].names.should eq %w(hoge fuga funya)
+    e.extra_tags[:ext2].names_str = "a"
+    e.extra_tags[:ext2].names.should eq %w(a)
+    e.extra_tags[:ext1].names.should eq %w(hoge fuga funya)
+    e.save
+    en = Event.find(e.id)
+    en.extra_tags[:ext1].names.should eq %w(hoge fuga funya)
+    en.tag_names.should eq %w(should keep ordinal tags)
+
+    e.extra_tags[:ext1].names = %w(z 1)
+    e.extra_tags[:ext1].names.should eq %w(z 1)
+    e.extra_tags[:ext2].names = %w(z 2 1)
+    e.extra_tags[:ext2].names.should eq %w(z 2 1)
+    e.save
+
+    en = Event.find(e.id)
+    en.extra_tags[:ext1].names.should eq %w(z 1)
+    en.extra_tags[:ext2].names.should eq %w(z 2 1)
+    en.extra_tag_relations.should have(5).items
+    en.tag_names.should eq %w(should keep ordinal tags)
+
   end
 end

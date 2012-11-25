@@ -1,8 +1,77 @@
 # -*- coding: utf-8 -*-
 class Event < ActiveRecord::Base
+  class ExtraTagContainer < Hash
+    class TagContainer < Array
+      def names_str
+        names.join(' ')
+      end
+      
+      def names_str=(v)
+        self.names = v.strip.split(%r{(?:\s|/)+})
+      end
+      
+      def names
+        map {|t| t.try(:name) }.compact
+      end
+      
+      def names=(v)
+        self.clear
+        v.compact.each {|t| push Tag.find_or_create_by_name(t) }
+      end
+    end
+
+    def initialize(event)
+      super()
+      @loaded = false
+      @event = event
+    end
+    attr_accessor :event
+
+    def loaded?
+      @loaded
+    end
+
+    def load
+      loaded? and return self
+      @loaded = true
+      clear
+      @event.extra_tag_relations.each do |r|
+        fetch(r.target_field) {
+          store(r.target_field, TagContainer.new)
+        } << r.tag
+      end
+      self
+    end
+
+    def save
+      new_rels = []
+      each do |field, tags|
+        i = 1
+        tags.each do |tag|
+          new_rels << EventTagRelation.find_or_create_by_tag_id_and_event_id_and_target_field_and_pos(tag.id, @event.id, field, i)
+          i += 1
+        end
+      end
+      @event.extra_tag_relation_ids = new_rels.map {|r| r.id}
+    end
+    alias_method :save!, :save
+
+    def []=(k, v)
+      load
+      super(k.to_s, v)
+    end
+
+    def [](k)
+      load
+      fetch(k.to_s) {
+        store(k.to_s, TagContainer.new)
+      }
+    end
+  end
+
   scope :active, where(:status => 'confirmed')
   scope :by_tag_ids, (lambda do |ids|
-    joins(:tag_relations).where('event_tag_relations.tag_id' => ids)
+    joins(:all_tag_relations).where('event_tag_relations.tag_id' => ids)
   end)
   scope :search, (lambda do |query|
     sqls = []
@@ -21,16 +90,26 @@ class Event < ActiveRecord::Base
       args << tag_ids
     end
     sqls.empty? and return
-    joins(:tag_relations).where(sqls.join(' or '), *args)
+    joins(:all_tag_relations).where(sqls.join(' or '), *args)
   end)
 
-  has_many :uris, :autosave => true, :dependent => :destroy
-  has_many :tag_relations, :class_name => 'EventTagRelation', :order => 'pos', :dependent => :delete_all
-  has_many :tags, :through => :tag_relations, :order => 'event_tag_relations.pos, tags.name'
+  tagrel_opts = {
+    :class_name => 'EventTagRelation',
+    :order => 'target_field, pos',
+  }
+  has_many :all_tag_relations,   tagrel_opts.merge(:dependent => :delete_all)
+  has_many :main_tag_relations,  tagrel_opts.merge(:conditions => {:target_field => ""})
+  has_many :extra_tag_relations, tagrel_opts.merge(:conditions => "target_field != ''")
+
+  has_many :all_tags,  :through => :all_tag_relations
+  has_many :tags,      :through => :main_tag_relations
+  
   has_one :reccuring_parent, :class_name => 'Event',
     :foreign_key => 'g_recurring_event_id', :primary_key => 'g_id'
   has_many :histories, :class_name => 'History',
     :conditions => {:target => 'event'}, :foreign_key => 'target_id'
+
+  has_many :uris, :autosave => true, :dependent => :destroy
 
   mount_uploader :image, EventImageUploader
 
@@ -61,7 +140,14 @@ class Event < ActiveRecord::Base
     :cascade_start_date, :cascade_end_datetime, :cascade_end_date,
     :mangle_tentative_status
 
-  after_save :save_tag_order
+  after_save :save_tag_order, :save_extra_tags
+
+  after_initialize :init
+  def init
+    @extra_tags = ExtraTagContainer.new(self)
+    @tag_changed = false
+  end
+  attr_reader :extra_tags
 
   def name
     summary
@@ -191,7 +277,9 @@ class Event < ActiveRecord::Base
   end
 
   def tag_names=(v)
-    self.tags = v.compact.map {|t| Tag.find_by_name(t) || Tag.create(:name => t) }
+    @tag_changed = true
+    updated_at_will_change!
+    self.tags = v.compact.map {|t| Tag.find_or_create_by_name(t) }
   end
 
   def has_end_time?
@@ -351,13 +439,20 @@ class Event < ActiveRecord::Base
   end
 
   def save_tag_order
-    tags.loaded? or return true
+    !tags.loaded? && !@tags_changed and return true
     self.tags.each_with_index do |t, i|
-      self.tag_relations.each do |r|
+      self.main_tag_relations.each do |r|
         r.tag_id == t.id or next
         r.update_attribute :pos, i+1
       end
     end
+    @tag_changed = false
+    true
+  end
+
+  def save_extra_tags
+    extra_tags.save
+    true
   end
 
   def convert_to_date(v)
