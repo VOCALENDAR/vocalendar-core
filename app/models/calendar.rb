@@ -71,26 +71,21 @@ class Calendar < ActiveRecord::Base
           body = event.to_exfmt :google_v3,
             :tag_names_append => self.tag_names_append,
             :tag_names_remove => self.tag_names_remove
-          result = gapi_request :import, {}, body.to_json
+          result = gapi_event_request :import, {}, body.to_json
           count += 1
           last_event_updated_at = event.updated_at
           log :info, "Event '#{event.summary}' (##{event.id}) has been published successfully."
           add_history(:target    => 'event',
                       :target_id => event.id,
-                      :action    => 'published')
+                      :action    => 'published',
+                      :note      => "To calendar##{id} (#{name})")
           count >= opts[:max] and break
         rescue VocalendarCore::GoogleAPIError => e
-          apierr = e.api_result.response.body
-          begin
-            apierr = JSON.parse e.api_result.response.body
-            apierr = apierr["error"]["message"]
-          rescue
-            # ignore
-          end
-          log :error, "Failed to publish event ##{event.id} (#{event.name}): [status=#{e.api_result.status}] #{apierr} (may try to update cancelled event)"
+          log :error, "Failed to publish event ##{event.id} (#{event.name}): #{e.message} (may try to update cancelled event)"
           add_history(:target    => 'event',
                       :target_id => event.id,
-                      :action    => 'publish_failed')
+                      :action    => 'publish_failed',
+                      :note      => "[calendar##{id} (#{name})] #{e.message}")
           event.g_id_will_change!
           event.save! # force update timestamp to try publish again on next cycle
         end
@@ -100,8 +95,9 @@ class Calendar < ActiveRecord::Base
     end
 
     self.update_attribute :sync_finished_at, DateTime.now
-    log :info, "Event publish completed. #{count} events has been updated (#{DateTime.now.to_f - self.sync_started_at.to_f} secs)."
-    add_history :action => 'publish_finished'
+    msg = "#{count} events has been updated (#{DateTime.now.to_f - self.sync_started_at.to_f} secs)."
+    log :info, "Event publish completed. #{msg}"
+    add_history :action => 'publish_finished', :note => msg
   end
 
   def cleanup_published_events(opts = {})
@@ -120,10 +116,11 @@ class Calendar < ActiveRecord::Base
     delete_gids = remote_gids - local_gids
     delete_gids.each do |gid|
       log :info, "Delete event: google event ID=#{gid}"
-      gapi_request :delete, {:eventId => gid}
+      gapi_event_request :delete, {:eventId => gid}
       add_history(:target    => 'event',
                   :target_id => Event.find_by_g_id(gid).try(:id),
-                  :action    => 'delete_on_google')
+                  :action    => 'delete_from_google',
+                  :note      => "From calenar##{id} (#{name})")
     end
     log :info, "Event cleanup completed: #{delete_gids.size} events has been deleted (#{DateTime.now.to_f - start_time} secs)"
   end
@@ -168,7 +165,8 @@ class Calendar < ActiveRecord::Base
             new_item_stamp = eitem["updated"]
             add_history(:target    => 'event',
                         :target_id => event.id,
-                        :action    => 'import_from_google')
+                        :action    => 'import_from_google',
+                        :note      => "From calendar##{id} (#{name})")
             opts[:max] <= count and break
           rescue => e
             log :error, "Failed to sync event: #{e.class.name}: #{e.to_s} (#{e.backtrace.join(' > ')})"
@@ -232,16 +230,20 @@ class Calendar < ActiveRecord::Base
 
     while true
       log :debug, "Getting event list via Google API: #{params.inspect}"
-      result = gapi_request :list, params
+      result = gapi_event_request :list, params
       yield result
       result.next_page_token or break
       params[:pageToken] = result.next_page_token
     end
   end
 
+  def gapi_event_request(method, params = {}, body = nil)
+    gapi_request("events.#{method}", params, body)
+  end
+
   def gapi_request(method, params = {}, body = nil)
     assert_user_gauth
-    user.gapi_request("events.#{method}", {:calendarId => self.external_id}.merge(params), body)
+    user.gapi_request(method, {:calendarId => self.external_id}.merge(params), body)
   end
 
   private
