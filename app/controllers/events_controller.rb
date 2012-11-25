@@ -6,10 +6,15 @@ class EventsController < ApplicationController
   # GET /events.json
   def index
     @events = @events.page(params[:page]).per(50).order('updated_at desc')
-    params[:tag_id].blank? or
-      @events = @events.by_tag_ids(params[:tag_id])
+    unless params[:tag_id].blank?
+      tids = params[:tag_id]
+      String === tids and tids = tids.split(',')
+      @events = @events.by_tag_ids(tids)
+    end
     params[:g_calendar_id].blank? or
       @events = @events.where(:g_calendar_id => params[:g_calendar_id])
+    params[:q].blank? or
+      @events = @events.search(params[:q])
     params[:include_delete].blank? and
       @events = @events.active
 

@@ -1,5 +1,66 @@
-<h1>Events#show</h1>
+<h2><%= t ".title" %></h2>
 
-<%= render 'form' %>
+<table class="table table-striped">
+  <tr>
+    <th><%= Event.human_attribute_name :id %></th>
+    <td><%= @event.id %></td>
+  </tr>
+  <tr>
+    <th><%= Event.human_attribute_name :summary %></th>
+    <td><%= @event.summary %></td>
+  </tr>
+  <tr>
+    <th><%= Event.human_attribute_name :term_str %></th>
+    <td><%= @event.term_str %></td>
+  </tr>
+  <tr>
+    <th><%= Event.human_attribute_name :updated_at %></th>
+    <td><%= l @event.updated_at %></td>
+  </tr>
+  <tr>
+    <th><%= Event.human_attribute_name :timezone %></th>
+    <td><%= @event.timezone %></td>
+  </tr>
+  <tr>
+    <th><%= Event.human_attribute_name :g_id %></th>
+    <td><%= @event.g_id %></td>
+  </tr>
+  <tr>
+    <th><%= Event.human_attribute_name :g_eid %></th>
+    <td><%= @event.g_eid %></td>
+  </tr>
+  <tr>
+    <th><%= Event.human_attribute_name :etag %></th>
+    <td><%= @event.etag %></td>
+  </tr>
+  <tr>
+    <th><%= Event.human_attribute_name :status %></th>
+    <td><%= @event.status %></td>
+  </tr>
+  <tr>
+    <th><%= Event.human_attribute_name :tags %></th>
+    <td>
+      <% @event.tags.each do |tag| %>
+      <%= link_to "#{tag.name}(#{tag.events.active.count})", tag_events_path(:tag_id => tag.id) %> &nbsp;&nbsp;
+      <% end %>
+    </td>
+  </tr>
+</table>
 
-<%= link_to 'Back', events_path %>
+<h3><%= t "general.recent_histories" %></h3>
+<% @histories = @event.histories.limit(10) %>
+<%= render 'history_list' %>
+
+<div class="well">
+<%= link_to_if !@event.g_html_link.blank?, t('general.open_in_editors_calendar'), @event.g_html_link, :class => 'btn' %>
+<%= link_to t('general.local_edit'), edit_event_path(@event), :class => 'btn' %>
+<% if can? :access, :rails_admin %>
+<%= link_to t('general.open_in_rails_admin'), "#{root_path}rails_admin/event/#{@event.id}", :class => 'btn' %>
+<% end %>
+<%= link_to t('general.back_to_list'), events_path, :class => 'btn' %>
+
+<hr>
+<p class="alert alert-error">CAUTION! In general, you neeed to delete event entry on Google calendar. Be carefull to use this button!
+<%= link_to t('general.delete'), @event, method: :delete, data: { confirm: t('general.delete_confirm', name: @event.summary) }, :class => 'btn btn-danger pull-right' %>
+</p>
+</div>

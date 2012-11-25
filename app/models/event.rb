@@ -28,7 +28,9 @@ class Event < ActiveRecord::Base
   has_many :tag_relations, :class_name => 'EventTagRelation', :order => 'pos', :dependent => :delete_all
   has_many :tags, :through => :tag_relations, :order => 'event_tag_relations.pos, tags.name'
   has_one :reccuring_parent, :class_name => 'Event',
-   :foreign_key => 'g_recurring_event_id', :primary_key => 'g_id'
+    :foreign_key => 'g_recurring_event_id', :primary_key => 'g_id'
+  has_many :histories, :class_name => 'History',
+    :conditions => {:target => 'event'}, :foreign_key => 'target_id'
 
   mount_uploader :image, EventImageUploader
 

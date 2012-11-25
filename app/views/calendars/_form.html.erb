@@ -5,22 +5,28 @@
 <%= f.label :user %>
 <%= f.collection_select :user_id, User.admins, :id, :name %>
 <%= f.label :external_id %>
+<% if @calendar.new_record? %>
 <%= f.text_field :external_id %>
+<% else %>
+<%= @calendar.external_id %>
+<% end %>
 <%= f.label :io_type %>
 <%= f.radio_button :io_type, "src" %>
 <%= f.label :io_type_src, :style => 'display: inline' %>
 <%= f.radio_button :io_type, "dst" %>
 <%= f.label :io_type_dst, :style => 'display: inline' %><br>
+<% if @calendar.new_record? || @calendar.io_type == 'dst' %>
 <%= f.label :tags %> 
 <div class="tag-check-list">
 <% Tag.all.each do |tag| %>
-  <span style="white-space: nowrap; margin-right: 1em;">
+  <span class="checkbox-set">
     <%= f.check_box :tag_ids, {:name => "calendar[tag_ids][]", :id => "calendar_tag_ids_#{tag.id}"}, tag.id, nil %>
     <%= f.label "tag_ids_#{tag.id}", tag.name, :style => 'display: inline' %>
   </span>
 <% end %>
 </div>
-<p class="note">target events to sync (output mode only)</p>
+<p class="note"><%= t "general.sync_calendar_tag_note" %></p>
+<% end %>
 
 <%= f.label :tag_names_append_str %>
 <%= f.text_field :tag_names_append_str %>
@@ -28,6 +34,7 @@
 <%= f.text_field :tag_names_remove_str %>
 
 <br>
-<%= f.submit :class => 'btn' %>
+<%= f.submit :class => 'btn btn-primary' %>
+<%= link_to t("general.back_to_list"), calendars_path, :class => 'btn' %>
 
 <% end %>

@@ -1,0 +1,23 @@
+<table class="table table-striped table-hover table-condensed history-list">
+  <tr>
+    <th><%= History.human_attribute_name :created_at %></th>
+    <th><%= History.human_attribute_name :action %></th>
+    <th><%= History.human_attribute_name :user %></th>
+    <th><%= History.human_attribute_name :note %></th>
+  </tr>
+
+<% @histories.each do |history| %>
+  <tr>
+    <td class="time"><%= history.created_at.try(:strftime, "%F %T") %></td>
+    <td class="action"><%= t "history.actions.event.#{history.action}" %></td>
+    <td class="user">
+      <% if history.user_id %>
+      <% u = User.find_by_id(history.user_id) %>
+      <%= link_to "##{u.try :id} (#{u.try :name})", histories_path(:user_id => u.try(:id)) %>
+      <%= link_to_if u, ' <i class="icon-search"></i>'.html_safe, u, :title => u.try(:name) %>
+      <% end %>
+    </td>
+    <td class="note"><%= history.note %></td>
+  </tr>
+<% end %>
+</table>

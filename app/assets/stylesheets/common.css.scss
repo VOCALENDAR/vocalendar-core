@@ -1,3 +1,16 @@
+@mixin clearfix {
+	zoom:1;
+	&:before, &:after {
+		content: "\0020"; 
+		display: block; 
+		height: 0; 
+		overflow: hidden; 
+	}
+	&:after {
+		clear: both;
+	}
+}
+
 .field_with_errors {
 	display: inline;
 	input[type="text"], textarea, select {
@@ -15,4 +28,17 @@
 
 input[type="radio"], input[type="checkbox"] {
         vertical-align: top;
+}
+
+.checkbox-set {
+	min-width: 10em;
+	display: inline-block;
+	white-space: nowrap
+}
+
+.alert { @include clearfix; }
+
+.history-list {
+	.note { font-size: 86%; color: #666; width: 45%; }
+	.action { white-space: nowrap; }
 }

@@ -21,6 +21,7 @@ ja:
         g_calendar_id: GoogleカレンダーID
         status: ステータス
         g_html_link: Googleカレンダーリンク
+        g_eid: GoogleイベントEID
         summary: タイトル
         description: 説明
         location: 場所
@@ -59,6 +60,8 @@ ja:
       calendar:
         updated_at: 更新日時
         created_at: 作成日時
+        user_id: 所有ユーザー
+        user: 所有ユーザー
         name: 名前
         external_id: カレンダー外部ID
         io_type: 種別
@@ -86,14 +89,22 @@ ja:
     delete: 削除
     edit: 編集
     new: 新規
+    local_edit: ローカル編集
     delete_confirm: 本当に %{name} を削除してよろしいですか？
     copy_to_google_calendar: Googleカレンダーにコピー
+    open_in_editors_calendar: Googleの編集用カレンダーで開く
+    back_to_list: 一覧に戻る
+    sync_calendar_tag_note: 同期時に出力するタグを選択します(種別が「書き出し」の場合しか意味がありません)
+    history: 履歴
+    recent_histories: 最近の履歴
   settings:
     index:
       title: 全体設定一覧
   calendars:
     index:
       title: 連携カレンダー一覧
+    edit:
+      title: "カレンダー '%{name}' の編集"
   dashboard:
     index:
       title: ダッシュボード
@@ -109,3 +120,12 @@ ja:
   histories:
     index:
       title: 履歴一覧
+  history:
+    actions:
+      event:
+        publish_failed: 書き出し失敗
+        published: 書き出し
+        import_from_google: Google からインポート
+      calendar:
+        publish_started: 書き出し同期開始
+        publish_finished: 書き出し同期完了

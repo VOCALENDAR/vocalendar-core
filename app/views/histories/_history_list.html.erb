@@ -1,0 +1,42 @@
+<table class="table table-striped table-hover table-condensed history-list">
+  <tr>
+    <th><%= History.human_attribute_name :created_at %></th>
+    <th><%= History.human_attribute_name :target %></th>
+    <th><%= History.human_attribute_name :id %></th>
+    <th><%= History.human_attribute_name :action %></th>
+    <th><%= History.human_attribute_name :user %></th>
+    <th><%= History.human_attribute_name :note %></th>
+  </tr>
+
+<% @histories.each do |history| %>
+  <tr>
+    <td><%= history.created_at.try(:strftime, "%F %T") %></td>
+    <td class="target">
+      <%= link_to history.target, histories_path(:target => history.target) %>
+    </td>
+    <td class="target_id">
+      <% if history.target_id %>
+      <%= link_to "##{history.target_id}", 
+          histories_path(:target => history.target, :id => history.target_id) %>
+      <%=
+         begin
+           link_to ' <i class="icon-search"></i>'.html_safe,
+             polymorphic_url(history.target, :id => history.target_id)
+         rescue
+           # ignore all
+         end
+      %>
+      <% end %>
+    </td>
+    <td class="action"><%= t "history.actions.#{history.target}.#{history.action}" %></td>
+    <td class="user">
+      <% if history.user_id %>
+      <% u = User.find_by_id(history.user_id) %>
+      <%= link_to "##{u.try :id} (#{u.try :name})", histories_path(:user_id => u.try(:id)) %>
+      <%= link_to_if u, ' <i class="icon-search"></i>'.html_safe, u, :title => u.try(:name) %>
+      <% end %>
+    </td>
+    <td class="note"><%= history.note %></td>
+  </tr>
+<% end %>
+</table>

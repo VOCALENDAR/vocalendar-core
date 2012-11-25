@@ -1,26 +1,60 @@
-<h1>Listing events</h1>
+<h2><%= t ".title" %></h2>
+
+<%= form_tag events_path, :method => 'get', :class => 'form-inline' do %>
+<div class="accordion" id="filter-ui">
+  <div class="accordion-group">
+    <div class="accordion-heading">
+      <a class="accordion-toggle" data-toggle="collapse" data-parent="#filter-ui" href="#filter-main">
+        <%= t "general.filter" %>
+      </a>
+    </div>
+    <div id="filter-main" class="accordion-body collapse
+     <%= params[:tag_id].blank? && params[:g_calendar_id].blank? &&
+         params[:q].blank? ? '' : 'in' %>">
+      <div class="accordion-inner">
+        <%= submit_tag t('general.apply_filter', :default => 'Apply Filter'), :name => '', :class => 'btn pull-right' %>
+        <%= link_to t('general.clear_filter'), events_path, :class => 'btn pull-right' %>
+        <label for="tag_id">Tag Id:</label>
+        <%= text_field_tag :tag_id, [params[:tag_id]].compact.flatten.join(',') %>
+        <br>
+        <label for="g_calendar_id">Google Calendar Id:</label>
+        <%= text_field_tag :g_calendar_id, params[:g_calendar_id] %>
+        <br>
+        <label for="q">Search string:</label>
+        <%= text_field_tag :q, params[:q] %>
+        <br>
+      </div>
+    </div>
+  </div>
+</div>
+<% end %>
 
 <table class="table table-condensed table-hover table-striped">
   <tr>
     <th><%= Event.human_attribute_name :id %></th>
     <th><%= Event.human_attribute_name :summary %></th>
     <th><%= Event.human_attribute_name :term %></th>
+    <th><%= Event.human_attribute_name :updated_at %></th>
     <th><%= Event.human_attribute_name :tags %></th>
   </tr>
 
 <% @events.each do |event| %>
   <tr>
     <td><%= event.id %></td>
-    <td><%= link_to_if(!event.g_html_link.blank?, event.summary, event.g_html_link, :target => '_blank') { event.summary } %></td>
+    <td><%= link_to event.summary, event %>
+      <%= link_to_if !event.g_html_link.blank?,
+          ' <i class="icon-calendar"></i>'.html_safe,
+          event.g_html_link,
+          :target => '_blank',
+          :title => t('general.open_in_editors_calendar') %>
+    </td>
     <td><%= event.term_str %></td>
+    <td><%= l event.updated_at %></td>
     <td>
       <% event.tags.each do |tag| %>
       <%= link_to tag.name, tag_events_path(tag.id) %>
       <% end %>
     </td>
-    <td><%= link_to 'Show', event %></td>
-    <td><%= link_to 'Edit', edit_event_path(event) %></td>
-    <td><%= link_to 'Destroy', event, method: :delete, data: { confirm: t('general.delete_confirm', name: event.summary) } %></td>
   </tr>
 <% end %>
 </table>
