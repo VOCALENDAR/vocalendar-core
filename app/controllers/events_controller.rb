@@ -6,14 +6,13 @@ class EventsController < ApplicationController
   # GET /events.json
   def index
     @events = @events.page(params[:page]).per(50)
-    if params[:tag_id]
-      @events = @events.
-        joins('inner join event_tag_relations on events.id = event_tag_relations.event_id').
-        where('event_tag_relations.tag_id' => params[:tag_id])
-    end
-    if params[:g_calendar_id]
+    params[:tag_id].blank? or
+      @events = @events.by_tag_ids(params[:tag_id])
+    params[:g_calendar_id].blank? or
       @events = @events.where(:g_calendar_id => params[:g_calendar_id])
-    end
+    params[:include_delete].blank? and
+      @events = @events.active
+
     respond_with @events, :include=> [:tags,  :uris]
   end
 

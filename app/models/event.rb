@@ -2,13 +2,34 @@
 class Event < ActiveRecord::Base
   default_scope order('start_datetime')
   scope :active, where(:status => 'confirmed')
+  scope :by_tag_ids, (lambda do |ids|
+    joins(:tag_relations).where('event_tag_relations.tag_id' => ids)
+  end)
+  scope :search, (lambda do |query|
+    sqls = []
+    args = []
+    tag_ids = []
+    query.strip.split(/[　 \t\n\r]+/).each do |q|
+      q.blank? || q.length < 2 and next
+      q = "%#{query}%"
+      args += [q, q]
+      sqls << "lower(summary) like lower(?) or lower(description) like lower(?)"
+      tag_ids << Tag.find_by_name(q).try(:id)
+    end
+    args << tag_ids.compact
+    sqls.empty? or
+      joins(:tag_relations).where("#{sqls.join(' or ')} or event_tag_relations.tag_id IN (?)", *args)
+  end)
+
   has_many :uris, :autosave => true, :dependent => :destroy
   has_many :tag_relations, :class_name => 'EventTagRelation', :order => 'pos', :dependent => :delete_all
   has_many :tags, :through => :tag_relations, :order => 'event_tag_relations.pos, tags.name'
-  accepts_nested_attributes_for :uris, :tags
+  has_one :reccuring_parent, :class_name => 'Event',
+   :foreign_key => 'g_recurring_event_id', :primary_key => 'g_id'
 
   mount_uploader :image, EventImageUploader
 
+  accepts_nested_attributes_for :uris, :tags
   attr_accessible :g_calendar_id, :description, :etag, :g_html_link,
     :location, :status, :summary, :g_color_id, :g_creator_email,
     :g_creator_display_name, :start_date, :start_datetime,
@@ -26,6 +47,10 @@ class Event < ActiveRecord::Base
   validates :ical_uid, :presence => true, :if => :active?
   validates :tz_min, :numericality => {:only_integer => true}, :allow_nil => true
   validates :status, :presence => true, :inclusion => {:in => %w(confirmed cancelled)}
+  validates :recur_orig_start_datetime,
+    :presence => true, :if => :recurring_instance?
+  validates :recur_orig_start_date,
+    :presence => true, :if => :recurring_instance?
 
   before_validation :set_dummy_values_for_cancelled,
     :cascade_start_date, :cascade_end_datetime, :cascade_end_date,
@@ -33,15 +58,12 @@ class Event < ActiveRecord::Base
 
   after_save :save_tag_order
 
-  class << self
-    def search(query)
-      q = "%#{query}%"
-      where("lower(summary) like lower(?) or lower(description) like lower(?)", q, q)
-    end
-  end
-
   def name
     summary
+  end
+
+  def recurring_instance?
+    !self[:g_recurring_event_id].blank?
   end
 
   def cancelled?
@@ -70,7 +92,6 @@ class Event < ActiveRecord::Base
   end
 
   def timezone_offset
-    
     Rational.new(timezone.utc_offset/60, 24*60)
   end
 
@@ -96,6 +117,18 @@ class Event < ActiveRecord::Base
     v = convert_to_date v
     self[:end_date] = v
     self[:end_datetime] = Time.new(v.year, v.mon, v.day).to_datetime
+  end
+
+  def recur_orig_start_datetime=(v)
+    v = convert_to_datetime v
+    self[:recur_orig_start_datetime] = v
+    self[:recur_orig_start_date] = v.to_date
+  end
+
+  def recur_orig_start_date=(v)
+    v = convert_to_date v
+    self[:recur_orig_start_date] = v
+    self[:recur_orig_start_datetime] = Time.new(v.year, v.mon, v.day).to_datetime
   end
 
   def start_at
@@ -177,7 +210,7 @@ class Event < ActiveRecord::Base
     summary.sub!(/^★/, '') and tag_names << '記念日'
     self.tag_names = (tag_names - opts[:tag_names_remove]).uniq
 
-    self.attributes = {
+    self.assign_attributes({
       g_id: attrs.id,
       etag: attrs.etag,
       status: attrs.status,
@@ -189,9 +222,9 @@ class Event < ActiveRecord::Base
       g_creator_email: attrs["creator"].try(:email),
       g_creator_display_name: attrs["creator"].try(:display_name),
       ical_uid: attrs["iCalUID"].to_s,
-    }
+    }, :without_protection => true)
     if attrs["start"]
-      self.attributes = {
+      self.assign_attributes({
         start_date: attrs.start["date"] || attrs.start.dateTime.to_date,
         start_datetime: attrs.start["dateTime"] || attrs.start.date.to_time.to_datetime,
         end_date: attrs.end["date"] || attrs.end.dateTime.to_date,
@@ -199,7 +232,15 @@ class Event < ActiveRecord::Base
         timezone: attrs.start["timeZone"] || default_timezone,
         allday: !!attrs.start["date"],
         recur_string: attrs.recurrence.to_a.join("\n"),
-      }
+      }, :without_protection => true)
+    end
+    if attrs.recurringEventId
+      orig_sd = attrs["originalStartTime"]
+      assign_attributes({
+        g_recurring_event_id: attrs.recurringEventId,
+        recur_orig_start_date: orig_sd["date"] || orig_sd.dateTime.to_date,
+        recur_orig_start_datetime: orig_sd["dateTime"] || orig_sd.date.to_time.to_date,
+      }, :without_protection => true)
     end
   end
 
@@ -217,21 +258,50 @@ class Event < ActiveRecord::Base
     tag_str.blank?  or  tag_str = "【#{tag_str}】"
     has_anniversary and tag_str = "★#{tag_str}"
     summary = tag_str.to_s + self.summary.to_s
-    {
+    ret = {
+      :id => g_id,
       :iCalUID => self.ical_uid,
-      :start => self.allday? ? {:date => self.start_date} : {:dateTime => self.start_datetime.in_time_zone(self.timezone), :timeZone => self.timezone.try(:name)},
-      :end => self.allday? ? {:date => self.end_date} : {:dateTime => self.end_datetime.in_time_zone(self.timezone), :timeZone => self.timezone.try(:name)},
+      :start => 
+      if self.allday? 
+        {:date => self.start_date}
+      else
+        {:dateTime => self.start_datetime,
+         :timeZone => self.timezone.try(:name)}
+      end,
+      :end => 
+      if self.allday?
+        {:date => self.end_date}
+      else
+        {:dateTime => self.end_datetime,
+         :timeZone => self.timezone.try(:name)}
+      end,
       :summary => summary,
       :description => self.description,
       :location => self.location,
       :status => self.status,
-      :recurrence => self.recur_string.to_s.split("\n"),
     }
+    recur_string.blank? or
+      ret[:recurrence] = self.recur_string.to_s.split("\n")
+    if recurring_instance?
+      r = {
+        :recurringEventId => g_recurring_event_id,
+        :originalStartTime =>
+        if allday?
+          {:date => recur_orig_start_date }
+        else
+          {:dateTime => recur_orig_start_datetime,
+           :timeZone => self.timezone.try(:name) }
+        end
+      }
+      ret.update(r)
+    end
+    Hashie::Mash.new(ret)
   end
 
   private
   def cascade_start_date
     self[:start_date] ||= start_datetime.try(:to_date)
+    self[:recur_orig_start_date] ||= recur_orig_start_datetime.try(:to_date)
   end
 
   def cascade_end_datetime

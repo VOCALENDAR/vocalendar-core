@@ -177,38 +177,107 @@ describe Event do
     e.term_str.should == "2010-03-09 - 2010-03-11"
   end
 
-  it ": Load Google Calendar API v3 JSON format" do
-    ge = Hashie::Mash.new({
+  it ": Load and convert Google Calendar API v3 JSON format" do
+    google_input = {
       "kind"=>"calendar#event",
       "etag"=>"\"VPgt7A32MKJjP8Bq493zO-MXswA/Q09EbXdxZWRKeEVBQUFBQUFBQUFBQT09\"",
       "id"=>"h@00d8590b768fd9797c5c4f31d6596efba9d4a251",
       "status"=>"confirmed",
       "htmlLink"=>
       "https://www.google.com/calendar/event?eid=aEAwMGQ4NTkwYjc2OGZkOTc5N2M1YzRmMzFkNjU5NmVmYmE5ZDRhMjUxIGphcGFuZXNlQGg",
-	"created"=>DateTime.parse("2012-09-17T15:55:08.000Z"),
-	"updated"=>DateTime.parse("2012-09-17T15:55:08.000Z"),
-	"summary"=>"Children's Day",
-	"creator"=>
-      {"email"=>"japanese@holiday.calendar.google.com",
+      "created"=>DateTime.parse("2012-09-17T15:55:08.000Z"),
+      "updated"=>DateTime.parse("2012-09-17T15:55:08.000Z"),
+      "summary"=>"Children's Day",
+      "creator"=> {
+        "email"=>"japanese@holiday.calendar.google.com",
 	"displayName"=>"Japanese Holidays",
-	"self"=>true},
-	"organizer"=>
-      {"email"=>"japanese@holiday.calendar.google.com",
+	"self"=>true
+      },
+      "organizer"=> {
+        "email"=>"japanese@holiday.calendar.google.com",
 	"displayName"=>"Japanese Holidays",
-	"self"=>true},
-	"start"=>{"date"=>Date.parse("2011-05-05")},
-	"end"=>{"date"=>Date.parse("2011-05-06")},
-	"visibility"=>"public",
-	"iCalUID"=>"h@00d8590b768fd9797c5c4f31d6596efba9d4a251@google.com",
-	"sequence"=>1
-    })
+	"self"=>true
+      },
+      "start"=>{"date"=>Date.parse("2011-05-05")},
+      "end"=>{"date"=>Date.parse("2011-05-06")},
+      "visibility"=>"public",
+      "iCalUID"=>"h@00d8590b768fd9797c5c4f31d6596efba9d4a251@google.com",
+      "sequence"=>1,
+      "recurrence"=>["RRULE:FREQ=YEARLY;WKST=SU"],
+    }
+    google_input = Hashie::Mash.new(google_input)
     e = an_event
-    e.load_exfmt :google_v3, ge, :calendar_id => 'dummy_gcal_id'
-    e.g_html_link.should   == ge["htmlLink"]
-    e.status.should        == ge["status"]
-    e.etag.should          == ge["etag"]
-    e.ical_uid.should      == ge["iCalUID"]
+    e.load_exfmt :google_v3, google_input, :calendar_id => 'dummy_gcal_id'
+    e.g_html_link.should   == google_input["htmlLink"]
+    e.status.should        == google_input["status"]
+    e.etag.should          == google_input["etag"]
+    e.ical_uid.should      == google_input["iCalUID"]
     e.g_calendar_id.should == 'dummy_gcal_id'
+
+    output = e.to_exfmt :google_v3
+    %w(id status start end recurrence iCalUID recurringEventId).each do |f|
+      output[f].should == google_input[f]
+    end
   end
 
+  it "keeps recurring instance info while Google JSON convertion" do
+    google_input =  {
+      kind: "calendar#event",
+      etag: "\"NybCyMgjkLQM6Il-p8A5652MtaE/Q09EdnpMU3pKeEVBQUFBQUFBQUFBQT09\"",
+      id: "5i7288vqns7o91d95l52t4dbss_20121128T010000Z",
+      status: "confirmed",
+      htmlLink: "https://www.google.com/calendar/event?eid=NWk3Mjg4dnFuczdvOTFkOTVsNTJ0NGRic3NfMjAxMjExMjhUMDEwMDAwWiB0YXRzdWtpLnN1Z2l1cmFAbQ",
+      created: "2012-11-25T07:32:19.000Z",
+      updated: "2012-11-25T07:58:36.000Z",
+      summary: "test2",
+      creator: {
+        email: "tatsuki.sugiura@gmail.com",
+        displayName: "Tatsuki SUGIURA",
+        self: true
+      },
+      organizer: {
+        email: "tatsuki.sugiura@gmail.com",
+        displayName: "Tatsuki SUGIURA",
+        self: true
+      },
+      start: {
+        dateTime: DateTime.parse("2012-11-27T12:30:00+09:00"),
+        timeZone: "Asia/Taipei"
+      },
+      "end" => {
+        dateTime: DateTime.parse("2012-11-27T13:30:00+09:00"),
+        timeZone: "Asia/Taipei"
+      },
+      recurringEventId: "5i7288vqns7o91d95l52t4dbss",
+      originalStartTime: {
+        dateTime: DateTime.parse("2012-11-28T10:00:00+09:00"),
+        timeZone: "Asia/Taipei",
+      },
+      transparency: "transparent",
+      iCalUID: "5i7288vqns7o91d95l52t4dbss@google.com",
+      sequence: 3,
+      reminders: {
+        useDefault: true
+      }
+    }
+    google_input = Hashie::Mash.new(google_input)
+    e = an_event
+    e.load_exfmt :google_v3, google_input.dup, :calendar_id => 'dummy_gcal_id'
+    output = e.to_exfmt :google_v3
+
+    %w(id status start end recurrence iCalUID recurringEventId).each do |f|
+      output[f].should == google_input[f]
+    end
+    output[:originalStartTime][:dateTime].should == google_input[:originalStartTime][:dateTime]
+    output[:originalStartTime][:timeZone].should == google_input[:originalStartTime][:timeZone]
+
+    google_input[:start] = Hashie::Mash.new({:date => Date.parse("2012-03-09")})
+    google_input[:end]   = Hashie::Mash.new({:date => Date.parse("2012-03-10")})
+    google_input[:originalStartTime] = Hashie::Mash.new({:date => Date.parse("2012-03-03")})
+    e = an_event
+    e.load_exfmt :google_v3, google_input, :calendar_id => 'dummy_gcal_id'
+    output = e.to_exfmt :google_v3
+    output[:originalStartTime].should == google_input[:originalStartTime]
+    output[:originalStartTime][:date].should == google_input[:originalStartTime][:date]
+  end
 end
