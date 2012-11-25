@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
 class Event < ActiveRecord::Base
-  default_scope order('start_datetime')
   scope :active, where(:status => 'confirmed')
   scope :by_tag_ids, (lambda do |ids|
     joins(:tag_relations).where('event_tag_relations.tag_id' => ids)
@@ -191,6 +190,24 @@ class Event < ActiveRecord::Base
   def has_end_time?
     allday? && start_date != (end_date - 1.day) ||
       !allday? && start_datetime != end_datetime
+  end
+
+  def g_html_link=(v)
+    self[:g_html_link] = v
+    if !v.blank? && v =~ /eid=([^;&]+)/
+      self[:g_eid] = $1
+    else
+      self[:g_eid] = nil
+    end
+  end
+
+  def g_eid=(v)
+    self[:g_eid] = v
+    if v.blank?
+      self[:g_html_link] = nil
+    else
+      self[:g_html_link] = "https://www.google.com/calendar/event?eid=#{v}"
+    end
   end
 
   # Load attribute has from externel exchange format (e.g. google API)

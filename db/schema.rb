@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20121125074948) do
+ActiveRecord::Schema.define(:version => 20121125113027) do
 
   create_table "calendars", :force => true do |t|
     t.string   "name",                          :default => "", :null => false
@@ -80,10 +80,12 @@ ActiveRecord::Schema.define(:version => 20121125074948) do
     t.string   "g_recurring_event_id"
     t.date     "recur_orig_start_date"
     t.datetime "recur_orig_start_datetime"
+    t.string   "g_eid"
   end
 
   add_index "events", ["end_datetime", "status"], :name => "index_events_on_end_datetime_and_status"
   add_index "events", ["g_calendar_id"], :name => "index_events_on_g_calendar_id"
+  add_index "events", ["g_eid"], :name => "index_events_on_g_eid"
   add_index "events", ["g_id"], :name => "index_events_on_g_id", :unique => true
   add_index "events", ["g_recurring_event_id", "recur_orig_start_datetime"], :name => "idx_event_recur_info"
   add_index "events", ["start_datetime", "status"], :name => "index_events_on_start_datetime_and_status"
