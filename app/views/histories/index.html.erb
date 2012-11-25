@@ -33,7 +33,7 @@
     <td><%= history.action %></td>
     <td>
       <% if history.user_id %>
-      <% u = User.find(history.user_id) %>
+      <% u = User.find_by_id(history.user_id) %>
       <%= link_to "##{u.try :id} (#{u.try :name})", histories_path(:user_id => u.try(:id)) %>
       <%= link_to_if u, ' <i class="icon-search"></i>'.html_safe, u, :title => u.try(:name) %>
       <% end %>
