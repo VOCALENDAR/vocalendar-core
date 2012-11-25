@@ -148,8 +148,8 @@ class User < ActiveRecord::Base
       # Tring to reload token forcely to make sure.
       # However in ordinal case, this error is caused by revoking auth.
       # So google_auth_valid may be disabled in this operation.
-      update_attribute :token_expires_at, Time.at(0)
-      update_attribute :token_issued_at,  Time.at(0)
+      update_attribute :google_token_expires_at, Time.at(0)
+      update_attribute :google_token_issued_at,  Time.at(0)
       update_gapi_client_token
       return gapi_request method, params, body
     elsif result.status < 200 || result.status >= 300
