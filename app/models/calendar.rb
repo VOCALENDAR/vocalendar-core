@@ -67,17 +67,34 @@ class Calendar < ActiveRecord::Base
           log :error, "Sync skip! Event ##{event.id} don't have g_calendar_id & event.ical_uid"
           next
         end
-        body = event.to_exfmt :google_v3,
-          :tag_names_append => self.tag_names_append,
-          :tag_names_remove => self.tag_names_remove
-        result = gapi_request :import, {}, body.to_json
-        count += 1
-        last_event_updated_at = event.updated_at
-        log :info, "Event '#{event.summary}' (##{event.id}) has been published successfully."
-        add_history(:target    => 'event',
-                    :target_id => event.id,
-                    :action    => 'published')
-        count >= opts[:max] and break
+        begin
+          body = event.to_exfmt :google_v3,
+            :tag_names_append => self.tag_names_append,
+            :tag_names_remove => self.tag_names_remove
+          result = gapi_request :import, {}, body.to_json
+          count += 1
+          last_event_updated_at = event.updated_at
+          log :info, "Event '#{event.summary}' (##{event.id}) has been published successfully."
+          add_history(:target    => 'event',
+                      :target_id => event.id,
+                      :action    => 'published')
+          count >= opts[:max] and break
+        rescue VocalendarCore::GoogleAPIError => e
+          pp e.api_result
+          apierr = e.api_result.response.body
+          begin
+            apierr = JSON.parse e.api_result.response.body
+            apierr = apierr["error"]["message"]
+          rescue
+            # ignore
+          end
+          log :error, "Failed to publish event ##{event.id} (#{event.name}): [status=#{e.api_result.status}] #{apierr} (may try to update cancelled event)"
+          add_history(:target    => 'event',
+                      :target_id => event.id,
+                      :action    => 'publish_failed')
+          event.g_id_will_change!
+          event.save! # force update timestamp to try publish again on next cycle
+        end
       end
     ensure
       self.update_attribute :latest_synced_item_updated_at, last_event_updated_at
