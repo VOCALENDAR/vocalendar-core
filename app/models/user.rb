@@ -1,7 +1,10 @@
 class User < ActiveRecord::Base
   include VocalendarCore::ModelLogUtils
-  devise :trackable, :omniauthable
 
+  scope :admins, where(:role => 'admin')
+  scope :editors, where(:role => %w(admin editor))
+
+  devise :trackable, :omniauthable
   enum_attr :role, %w(admin editor)
   attr_accessible :name, :email
   attr_accessible :name, :email, :role, :as => :admin
