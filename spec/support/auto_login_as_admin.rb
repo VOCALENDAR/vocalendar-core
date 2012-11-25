@@ -1,6 +1,6 @@
 RSpec.configure do |config|
   google_email = "google-test-user@example.com"
-  google_scope = 'https://www.googleapis.com/auth/userinfo.email https://www.googleapis.com/auth/userinfo.profile https://www.googleapis.com/auth/calendar'
+  google_scope = 'https://www.googleapis.com/auth/userinfo.email https://www.googleapis.com/auth/userinfo.profile https://www.googleapis.com/auth/calendar https://www.googleapis.com/auth/calendar.readonly'
 
   admin_user_valid_attrs = Proc.new {
     email = "test-admin-user-#{rand(10000)}@example.com"
