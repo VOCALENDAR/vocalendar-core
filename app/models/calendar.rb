@@ -50,15 +50,17 @@ class Calendar < ActiveRecord::Base
   def publish_events(opts = {})
     opts = {:force => false, :max => 2000}.merge opts
     log :info, "Start event publish"
-    count = 0
-
-    self.update_attribute :sync_started_at, DateTime.now
-
-    add_history :action => 'publish_started'
 
     target_events = self.target_events.reorder('events.updated_at')
-    self.latest_synced_item_updated_at && !opts[:force] and
+    latest_synced_item_updated_at && !opts[:force] and
       target_events = target_events.where('events.updated_at >= ?', self.latest_synced_item_updated_at)
+
+    count = 0
+    count_fail  = 0
+    count_total = target_events.length
+
+    self.update_attribute :sync_started_at, DateTime.now
+    add_history :action => 'publish_started', :note => "Target are #{count_total} events."
 
     begin
       last_event_updated_at = nil
@@ -74,28 +76,36 @@ class Calendar < ActiveRecord::Base
           result = gapi_event_request :import, {}, body.to_json
           count += 1
           last_event_updated_at = event.updated_at
-          log :info, "Event '#{event.summary}' (##{event.id}) has been published successfully."
+          log :info, "(#{count+count_fail}/#{count_total}) Event '#{event.summary}' (##{event.id}) has been published successfully."
           add_history(:target    => 'event',
                       :target_id => event.id,
                       :action    => 'published',
                       :note      => "To calendar##{id} (#{name})")
           count >= opts[:max] and break
         rescue VocalendarCore::GoogleAPIError => e
-          log :error, "Failed to publish event ##{event.id} (#{event.name}): #{e.message} (may try to update cancelled event)"
+	  count_fail += 1
+	  extra_msg = ""
+	  e.message.include?("Invalid Value") and
+	    extra_msg = " (may try to update cancelled event)"
+          log :error, "(#{count+count_fail}/#{count_total}) Failed to publish event ##{event.id} (#{event.name}): #{e.message}#{extra_msg}"
           add_history(:target    => 'event',
                       :target_id => event.id,
                       :action    => 'publish_failed',
-                      :note      => "[calendar##{id} (#{name})] #{e.message}")
-          event.g_id_will_change!
+                      :note      => "[calendar##{id} (#{name})] #{e.message}#{extra_msg}")
+          event.updated_at_will_change!
           event.save! # force update timestamp to try publish again on next cycle
+
+	  e.message.include?("Quota Exceeded") && e.api_result.status == 403 and
+	    raise VocalendarCore::CalendarSyncError.new("Google API over quota. Calendar sync aborted.")
         end
       end
     ensure
-      self.update_attribute :latest_synced_item_updated_at, last_event_updated_at
+      last_event_updated_at and
+	self.update_attribute :latest_synced_item_updated_at, last_event_updated_at
     end
 
     self.update_attribute :sync_finished_at, DateTime.now
-    msg = "#{count} events has been updated (#{DateTime.now.to_f - self.sync_started_at.to_f} secs)."
+    msg = "#{count} events has been updated #{count_fail > 0 ? "(#{count_fail} events failed) " : ""}(#{DateTime.now.to_f - self.sync_started_at.to_f} secs)."
     log :info, "Event publish completed. #{msg}"
     add_history :action => 'publish_finished', :note => msg
   end
