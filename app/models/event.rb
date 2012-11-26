@@ -350,13 +350,20 @@ class Event < ActiveRecord::Base
         recur_string: attrs.recurrence.to_a.join("\n"),
       }, :without_protection => true)
     end
-    if attrs.recurringEventId
+    if attrs["recurringEventId"]
       orig_sd = attrs["originalStartTime"]
       assign_attributes({
         g_recurring_event_id: attrs.recurringEventId,
         recur_orig_start_date: orig_sd["date"] || orig_sd.dateTime.to_date,
         recur_orig_start_datetime: orig_sd["dateTime"] || orig_sd.date.to_time.to_date,
       }, :without_protection => true)
+    else
+      assign_attributes({
+        g_recurring_event_id: nil,
+        recur_orig_start_date: nil,
+        recur_orig_start_datetime: nil,
+      }, :without_protection => true)
+
     end
   end
 
@@ -375,7 +382,7 @@ class Event < ActiveRecord::Base
     has_anniversary and tag_str = "★#{tag_str}"
     summary = tag_str.to_s + self.summary.to_s
     ret = {
-      :id => g_id,
+      # :id => g_id, # TODO: If id is set, may get 404 not found.
       :iCalUID => self.ical_uid,
       :start => 
       if self.allday? 
@@ -395,21 +402,17 @@ class Event < ActiveRecord::Base
       :description => self.description,
       :location => self.location,
       :status => self.status,
+      :recurrence => self.recur_string.to_s.split("\n"),
+      :recurringEventId => g_recurring_event_id,
     }
-    recur_string.blank? or
-      ret[:recurrence] = self.recur_string.to_s.split("\n")
     if recurring_instance?
-      r = {
-        :recurringEventId => g_recurring_event_id,
-        :originalStartTime =>
-        if allday?
+      ret[:originalStartTime] =
+	if allday?
           {:date => recur_orig_start_date }
         else
           {:dateTime => recur_orig_start_datetime,
            :timeZone => self.timezone.try(:name) }
         end
-      }
-      ret.update(r)
     end
     Hashie::Mash.new(ret)
   end
