@@ -316,9 +316,11 @@ describe Event do
 
   end
 
-  it "mangles space in tag name" do
+  it "replaces space in tag name" do
     e = an_event
     e.tag_names = ["Hellow, World", "Good      Bye"]
-    e.tag_names.should eq ["Hellow,_World", "Good_Bye"]
+    e.tag_names.should eq ["Hellow, World", "Good Bye"]
+    e.tags[0].name.should eq "Hellow,_World"
+    e.tags[1].name.should eq "Good_Bye"
   end
 end

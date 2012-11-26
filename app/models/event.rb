@@ -11,15 +11,13 @@ class Event < ActiveRecord::Base
       end
       
       def names
-        map {|t| t.try(:name) }.compact
+        map {|t| t.try(:name).try(:tr, '_', ' ') }.compact
       end
       
       def names=(v)
         self.clear
-        v.map {|t|
-          t.to_s.strip.gsub(/\s+/, '_')
-        }.find_all {|t| !t.blank? }.each {|t|
-          push Tag.find_or_create_by_name(t)
+        v.map {|t| t.to_s.strip }.find_all {|t| !t.blank? }.each {|t|
+          push Tag.find_or_create_by_name(t.gsub(/\s+/, '_'))
         }
       end
     end
@@ -291,16 +289,14 @@ class Event < ActiveRecord::Base
   end
 
   def tag_names
-    self.tags.map {|t| t.try(:name) }.compact
+    self.tags.map {|t| t.try(:name).try(:tr, '_', ' ') }.compact
   end
 
   def tag_names=(v)
     @tag_changed = true
     updated_at_will_change!
-    self.tags = v.map {|t|
-      t.to_s.strip.gsub(/\s+/, '_')
-    }.find_all {|t| !t.blank? }.map {|t|
-      Tag.find_or_create_by_name(t)
+    self.tags = v.map {|t| t.to_s.strip }.find_all {|t| !t.blank? }.map {|t|
+      Tag.find_or_create_by_name(t.gsub(/\s+/, '_'))
     }
   end
 
