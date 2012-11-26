@@ -1,4 +1,8 @@
+# -*- coding: utf-8 -*-
 module VocalendarCore
+
+  TagSeparateRegexp = %r{(?:\s|[/／])+}
+
   class CalendarSyncError < StandardError; end
   class GoogleAPIError < StandardError; end
 

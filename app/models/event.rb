@@ -7,7 +7,7 @@ class Event < ActiveRecord::Base
       end
       
       def names_str=(v)
-        self.names = v.strip.split(%r{(?:\s|/)+})
+        self.names = v.strip.split(VocalendarCore::TagSeparateRegexp)
       end
       
       def names
@@ -16,7 +16,11 @@ class Event < ActiveRecord::Base
       
       def names=(v)
         self.clear
-        v.compact.each {|t| push Tag.find_or_create_by_name(t) }
+        v.map {|t|
+          t.to_s.strip.gsub(/\s+/, '_')
+        }.find_all {|t| !t.blank? }.each {|t|
+          push Tag.find_or_create_by_name(t)
+        }
       end
     end
 
@@ -279,7 +283,7 @@ class Event < ActiveRecord::Base
   end
 
   def tag_names_str=(v)
-    self.tag_names = v.strip.split(%r{(?:\s|/)+})
+    self.tag_names = v.strip.split(VocalendarCore::TagSeparateRegexp)
   end
 
   def tag_names
@@ -289,7 +293,11 @@ class Event < ActiveRecord::Base
   def tag_names=(v)
     @tag_changed = true
     updated_at_will_change!
-    self.tags = v.compact.map {|t| Tag.find_or_create_by_name(t) }
+    self.tags = v.map {|t|
+      t.to_s.strip.gsub(/\s+/, '_')
+    }.find_all {|t| !t.blank? }.map {|t|
+      Tag.find_or_create_by_name(t)
+    }
   end
 
   def has_end_time?
@@ -331,7 +339,7 @@ class Event < ActiveRecord::Base
     summary = attrs["summary"].to_s.strip
     tag_names = opts[:tag_names_append]
     while summary.sub!(/^【(.*?)】/, '')
-      tag_names += $1.split(%r{[/／]+}).map {|t| t.strip }.compact
+      tag_names += $1.split(VocalendarCore::TagSeparateRegexp)
     end
     summary.sub!(/^★/, '') and tag_names << '記念日'
     self.tag_names = (tag_names - opts[:tag_names_remove]).uniq
