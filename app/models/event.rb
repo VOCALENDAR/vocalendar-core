@@ -16,7 +16,8 @@ class Event < ActiveRecord::Base
       
       def names=(v)
         self.clear
-        v.map {|t| t.to_s.strip }.find_all {|t| !t.blank? }.each {|t|
+        [v].flatten.compact.map {|t| t.strip }.
+          find_all {|t| !t.blank? }.each {|t|
           push Tag.find_or_create_by_name(t.gsub(/\s+/, '_'))
         }
       end
@@ -295,7 +296,8 @@ class Event < ActiveRecord::Base
   def tag_names=(v)
     @tag_changed = true
     updated_at_will_change!
-    self.tags = v.map {|t| t.to_s.strip }.find_all {|t| !t.blank? }.map {|t|
+    self.tags = [v].flatten.compact.map {|t| t.strip }.
+      find_all {|t| !t.blank? }.map {|t|
       Tag.find_or_create_by_name(t.gsub(/\s+/, '_'))
     }
   end

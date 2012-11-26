@@ -316,6 +316,12 @@ describe Event do
 
   end
 
+  it "should accept single string as extra tag name" do
+    e = an_event
+    e.extra_tags[:hoge].names = "simple tag name"
+    e.extra_tags[:hoge].names.should eq ["simple tag name"]
+  end
+
   it "replaces space in tag name" do
     e = an_event
     e.tag_names = ["Hellow, World", "Good      Bye"]
