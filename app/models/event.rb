@@ -40,9 +40,7 @@ class Event < ActiveRecord::Base
       @loaded = true
       clear
       @event.extra_tag_relations.each do |r|
-        fetch(r.target_field) {
-          store(r.target_field, TagContainer.new)
-        } << r.tag
+        make_default(r.target_field) << r.tag
       end
       self
     end
@@ -62,13 +60,19 @@ class Event < ActiveRecord::Base
 
     def []=(k, v)
       load
-      super(k.to_s, v)
+      tc = make_default(k).clear
+      [v].flatten.compct.each {|t| tc << t }
     end
 
     def [](k)
       load
-      fetch(k.to_s) {
-        store(k.to_s, TagContainer.new)
+      make_default(k)
+    end
+
+    private
+    def make_default(key)
+      fetch(key.to_s) {
+        store(key.to_s, TagContainer.new)
       }
     end
   end
