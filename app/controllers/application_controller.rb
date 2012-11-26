@@ -1,4 +1,8 @@
 class ApplicationController < ActionController::Base
+  class AppResponder < ActionController::Responder
+    include Responders::FlashResponder
+  end
+
   class ProcessError < StandardError
     def initialize(msg, status = 404)
       @status = status
