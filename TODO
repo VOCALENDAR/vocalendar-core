@@ -31,3 +31,5 @@
  * flash responder がうごいてない
  * etag を g_etag に名前変更、オプショナルに。before_validation の代入
    を落とす
+ * names_str= をつかわず、names= が String を渡されたら勝手に maes_str=
+   へカスケードするようにする
