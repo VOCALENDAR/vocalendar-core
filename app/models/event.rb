@@ -211,15 +211,25 @@ class Event < ActiveRecord::Base
   end
 
   def recur_orig_start_datetime=(v)
-    v = convert_to_datetime v
-    self[:recur_orig_start_datetime] = v
-    self[:recur_orig_start_date] = v.to_date
+    if v.blank?
+      self[:recur_orig_start_date] =
+        self[:recur_orig_start_datetime] = nil
+    else
+      v = convert_to_datetime v
+      self[:recur_orig_start_datetime] = v
+      self[:recur_orig_start_date] = v.to_date
+    end
   end
 
   def recur_orig_start_date=(v)
-    v = convert_to_date v
-    self[:recur_orig_start_date] = v
-    self[:recur_orig_start_datetime] = Time.new(v.year, v.mon, v.day).to_datetime
+    if v.blank?
+      self[:recur_orig_start_date] =
+        self[:recur_orig_start_datetime] = nil
+    else
+      v = convert_to_date v
+      self[:recur_orig_start_date] = v
+      self[:recur_orig_start_datetime] = Time.new(v.year, v.mon, v.day).to_datetime
+    end
   end
 
   def start_at
