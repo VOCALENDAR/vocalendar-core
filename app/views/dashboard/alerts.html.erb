@@ -21,7 +21,7 @@
       <% events.each do |event| %>
       <tr>
         <td><%= l event.start_at %></td>
-        <td><%= link_to event.name.blank? ? "(empty)" : event.name, event %></td>
+        <td><%= link_to event.name? ? event.name : "(empty)", event %></td>
         <td><%= event.all_tags.uniq.map {|t| link_to t.name, tag_events_path(:tag_id => t.id)}.join(', ').html_safe %></td>
       </tr>
       <% end %>

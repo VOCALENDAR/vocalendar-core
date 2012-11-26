@@ -1,0 +1,37 @@
+<%=  %>
+
+<%= f.label      :summary %>
+<%= f.text_field :summary,        :class => 'input-xxlarge' %>
+
+<%= f.label      :tag_names_str %>
+<%= f.text_field :tag_names_str,  :class => 'input-xxlarge' %>
+
+<%= f.label      :location %>
+<%= f.text_field :location,       :class => 'input-xxlarge' %>
+
+<%= f.label      :twitter_hash %>
+<%= f.text_field :twitter_hash,   :class => 'input' %>
+
+<%= f.label      :start_date %>
+<%= f.text_field :start_date,     :class => 'date-input input-small' %>
+<%= f.text_field :start_time,     :class => 'time-input input-mini' %>
+<span class="checkbox-set">
+  <%= f.check_box  :allday %>
+  <%= f.label      :allday, :style => 'display: inline' %>
+</span>
+
+<%= f.label      :end_date %>
+<%= f.text_field :end_date,       :class => 'date-input input-small' %>
+<%= f.text_field :end_time,       :class => 'time-input input-mini' %>
+
+<%= f.label :image %>
+<%= image_tag(f.object.image.icon.url) if f.object.image? %>
+<%= f.file_field :image %>
+<%= f.hidden_field(:image_cache) if f.object.errors.any? %>
+<% unless f.object.new_record? %>
+  <%= f.check_box :remove_image %>
+  <%= f.label     :remove_image, :style => 'display: inline' %>
+<% end %>
+
+<%= f.label      :description %>
+<%= f.text_area  :description,    :rows => 7, :class => 'input-xxlarge' %>

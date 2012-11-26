@@ -172,7 +172,7 @@ GEM
       railties (= 3.2.8)
     rails-i18n (0.7.1)
       i18n (~> 0.5)
-    rails-settings-cached (0.2.2)
+    rails-settings-cached (0.2.4)
       rails (>= 3.0.0)
     rails_admin (0.2.0)
       bootstrap-sass (~> 2.1)
@@ -263,6 +263,7 @@ DEPENDENCIES
   enumerated_attribute!
   google-api-client
   jquery-rails
+  jquery-ui-rails
   kaminari
   kaminari-bootstrap
   kaminari-i18n

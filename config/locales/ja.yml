@@ -2,6 +2,7 @@ ja:
   activerecord:
     models:
       event: イベント
+      release_event: 新曲情報
       calendar: カレンダー
       setting: 設定
       settings: 設定
@@ -43,7 +44,7 @@ ja:
         allday?: 全日
         tags: タグ
         tag_names: タグ
-        tag_name_str: タグ
+        tag_names_str: タグ
         active: 有効
         active?: 有効
         cancelled: 削除済み
@@ -89,6 +90,8 @@ ja:
     delete: 削除
     edit: 編集
     new: 新規
+    create: 作成
+    create_new: 新規作成
     local_edit: ローカル編集
     delete_confirm: 本当に %{name} を削除してよろしいですか？
     copy_to_google_calendar: Googleカレンダーにコピー
@@ -111,8 +114,14 @@ ja:
     alerts:
       title: チェックツール
   events:
+    new:
+      title: "イベント(%{type})の新規作成"
     show:
       title: イベント詳細
+    types:
+      default: 標準
+      Event: 標準
+      ReleaseEvent: 新曲情報
   external_ui:
     events:
       show:

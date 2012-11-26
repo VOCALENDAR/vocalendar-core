@@ -120,32 +120,33 @@ class Event < ActiveRecord::Base
 
   mount_uploader :image, EventImageUploader
 
-  accepts_nested_attributes_for :uris, :tags
-  attr_accessible :g_calendar_id, :description, :etag, :g_html_link,
-    :location, :status, :summary, :g_color_id, :g_creator_email,
-    :g_creator_display_name, :start_date, :start_datetime,
-    :end_date, :end_datetime, :g_id, :recur_string,
-    :ical_uid, :country, :lang, :allday, :twitter_hash,
-    :uris_attributes, :tags_attributes, :timezone
+  accepts_nested_attributes_for :uris
+  attr_accessible :description, :location, :summary,
+    :start_date, :start_datetime, :end_date, :end_datetime,
+    :start_time, :end_time, :country, :lang, :allday,
+    :twitter_hash, :timezone, :tag_names, :tag_names_str,
+    :image, :image_cache, :uris_attributes
 
-  validates :g_id, :uniqueness => true, :allow_nil => true
-  validates :etag, :presence => true
+  validates :g_id,    :uniqueness => true, :allow_nil => true
+  validates :etag,    :presence => true
   validates :summary, :presence => true, :if => :active?
   validates :start_datetime, :presence => true, :if => :active?
-  validates :end_datetime, :presence => true, :if => :active?
+  validates :end_datetime,   :presence => true, :if => :active?
   validates :start_date, :presence => true, :if => :active?
-  validates :end_date, :presence => true, :if => :active?
-  validates :ical_uid, :presence => true, :if => :active?
+  validates :end_date,   :presence => true, :if => :active?
+  validates :ical_uid,   :presence => true, :if => :active?
   validates :tz_min, :numericality => {:only_integer => true}, :allow_nil => true
   validates :status, :presence => true, :inclusion => {:in => %w(confirmed cancelled)}
   validates :recur_orig_start_datetime,
     :presence => true, :if => :recurring_instance?
   validates :recur_orig_start_date,
     :presence => true, :if => :recurring_instance?
+  validates :start_time, :presence => true, :unless => :allday?
+  validates :end_time,   :presence => true, :unless => :allday?
 
   before_validation :set_dummy_values_for_cancelled,
     :cascade_start_date, :cascade_end_datetime, :cascade_end_date,
-    :mangle_tentative_status
+    :mangle_tentative_status, :generate_etag, :generate_ical_uid
 
   after_save :save_tag_order, :save_extra_tags
 
@@ -237,6 +238,26 @@ class Event < ActiveRecord::Base
       self[:recur_orig_start_date] = v
       self[:recur_orig_start_datetime] = Time.new(v.year, v.mon, v.day).to_datetime
     end
+  end
+
+  def start_time
+    allday? ? '' : start_datetime.try(:strftime, "%H:%M")
+  end
+
+  def end_time
+    allday? ? '' : end_datetime.try(:strftime, "%H:%M")
+  end
+
+  def start_time=(str)
+    str =~ /^(\d{2}):(\d{2})/ or raise ArgumentError.new("Unknonw time format")
+    cd = start_datetime.try(:to_datetime) || DateTime.now
+    self.start_datetime = DateTime.new(cd.year, cd.mon, cd.day, $1.to_i, $2.to_i, 0, cd.offset)
+  end
+
+  def end_time=(str)
+    str =~ /^(\d{2}):(\d{2})/ or raise ArgumentError.new("Unknonw time format")
+    cd = end_datetime.try(:to_datetime) || DateTime.now
+    self.end_datetime = DateTime.new(cd.year, cd.mon, cd.day, $1.to_i, $2.to_i, 0, cd.offset)
   end
 
   def start_at
@@ -488,5 +509,15 @@ class Event < ActiveRecord::Base
     v.kind_of?(Time)     and return v.to_datetime
     v.kind_of?(Date)     and return Time.new(v.year, v.mon, v.day)
     DateTime.parse("#{v.to_s} #{Time.zone}")
+  end
+
+  def generate_etag
+    self[:etag].blank? or return
+    self[:etag] = SecureRandom.hex(32)
+  end
+
+  def generate_ical_uid
+    !self[:ical_uid].blank? || !active? and return
+    self[:ical_uid] = SecureRandom.hex(24) + "@vocalendar.jp"
   end
 end

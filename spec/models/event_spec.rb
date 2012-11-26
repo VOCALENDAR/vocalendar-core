@@ -3,11 +3,9 @@ require 'spec_helper'
 describe Event do
   let(:valid_attrs) do 
     {
-      :etag => 'etag-string',
       :summary => "Summary text at #{DateTime.now}",
       :start_datetime => DateTime.now,
       :end_datetime => DateTime.now,
-      :ical_uid => 'ical-uid-string',
     }
   end
 
@@ -59,18 +57,6 @@ describe Event do
     e.status.should == "tentative"
     assert e.save
     e.status.should == "confirmed"
-  end
-
-  it "save must be failed without ical_uid" do
-    e = an_event
-    e.ical_uid = ''
-    e.save.should be_false
-  end
-
-  it "save must be failed without etag" do
-    e = an_event
-    e.etag = nil
-    e.save.should be_false
   end
 
   it "save sucesss without ical_uid if cancelled" do
@@ -182,6 +168,19 @@ describe Event do
     e.end_datetime   = Date.new(2010, 3, 12)
     e.term_str.should == "2010-03-09 - 2010-03-11"
   end
+
+  it "can be changed time only by set {start,end}_time " do
+    e = an_event
+    keepdate = e.start_date
+    e.start_time = "12:30"
+    e.start_date.should eq keepdate
+
+    e.start_date = "2012-03-09"
+    e.start_time.should eq "00:00"
+    e.start_time = "03:09"
+    e.start_datetime.should eq Time.new(2012, 3, 9, 3, 9, 0).to_datetime
+  end
+
 
   it ": Load and convert Google Calendar API v3 JSON format" do
     google_input = {

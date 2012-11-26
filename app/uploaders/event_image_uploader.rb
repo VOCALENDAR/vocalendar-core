@@ -61,14 +61,16 @@ class EventImageUploader < CarrierWave::Uploader::Base
   # Override the filename of the uploaded files:
   # Avoid using model.id or version_name here, see uploader/store.rb for details.
   def filename
-    @_override_filename ||= "i#{File.extname(original_filename.to_s) || ".jpg"}"
+    ext = File.extname original_filename.to_s
+    ext.blank? and ext = ".jpg"
+    @_override_filename ||= "i#{ext}"
   end
 
   #def move_to_cache
   #  true
   #end
 
-  def move_to_store
-    true
-  end
+  #def move_to_store
+  #  true
+  #end
 end

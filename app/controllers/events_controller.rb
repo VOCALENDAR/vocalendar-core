@@ -2,6 +2,8 @@
 class EventsController < ApplicationController
   load_and_authorize_resource
 
+  before_filter :set_type_variable
+
   # GET /events
   # GET /events.json
   def index
@@ -33,7 +35,6 @@ class EventsController < ApplicationController
     # TODO 回数はとりあえず固定
     # TODO: これはやめよう。動的に作るべき。 (gull08)
     2.times { @event.uris.build }
-    2.times { @event.tags.build }
     respond_with @event
   end
 
@@ -44,11 +45,6 @@ class EventsController < ApplicationController
   # POST /events
   # POST /events.json
   def create
-    # TODO Googleに一度登録してからデータを流用とか？
-    # TODO: etag は SecureRandom でもなんでも適当に生成すればいいとおもう (gull08)
-    # TODO: そして、ここじゃなくてモデルでやるべき (gull08)
-    @event.etag='etag'
-    @event.ical_uid='ical_uid'
     @event.save
     respond_with @event
   end
@@ -56,14 +52,19 @@ class EventsController < ApplicationController
   # PUT /events/1
   # PUT /events/1.json
   def update
-    @event.update_attributes(params[:event])
+    @event.update_attributes(params[@type.underscore])
     respond_with @event
   end
 
   # DELETE /events/1
   # DELETE /events/1.json
   def destroy
-    @event.update_attirbute! :status => 'cancelled'
+    @event.update_attirbute :status, 'cancelled'
     respond_with @event
+  end
+
+  private
+  def set_type_variable
+    @type = 'Event'
   end
 end

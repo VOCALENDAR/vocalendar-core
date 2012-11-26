@@ -18,6 +18,7 @@ VocalendarCore::Application.routes.draw do
   end
 
   resources :events
+  resources :release_events, :path => 'release'
   resources :calendars
   resources :users
   resources :tags do

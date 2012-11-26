@@ -1,0 +1,51 @@
+<%= form_for @event, :html => {:multipart => true} do |f| %>
+<div class="event">
+  <%= render :partial => 'form_parts_base', :locals => {:f => f} %>
+
+  <% %w(producers movie_authors illust_authors).each do |a| %>
+  <%= f.label      "#{a}_str".to_sym %>
+  <%= f.text_field "#{a}_str".to_sym, :class => 'input-xlarge' %>
+  <% end %>
+
+  <%= f.label :vocaloid_chars %>
+  <% "LEON｜LOLA｜MIRIAM｜PRIMA｜SONIKA｜TONIO｜MEIKO｜KAITO｜初音ミク｜鏡音リン｜鏡音レン｜巡音ルカ｜SWEET ANN｜BIG AL｜OLIVER｜がくっぽいど｜Megpoid｜Lilly｜ガチャッポイド｜CUL｜氷山キヨテル｜歌愛ユキ｜SF-A2 開発コード miki｜猫村いろは｜結月ゆかり｜VY1｜VY2｜Mew｜兎眠りおん｜蒼姫ラピス｜Merli｜歌手音ピコ｜SeeU｜BRUNO｜CLARA｜IA｜洛天依｜CV-4Cβ｜あきこロイド｜galaco｜未定/TBA".split("｜").each_with_index do |v, i| %>
+  <span class="checkbox-set">
+    <% id = "#{f.object_name}_vocaloid_chars_#{i}" %>
+    <%= f.check_box :vocaloid_chars,
+        {:id => id, :name => "#{f.object_name}[vocaloid_chars][]"}, v, nil %>
+    <%= f.label v, :for => id, :style => 'display: inline' %>
+  </span>
+  <% end %>
+
+  <%= f.label :media %>
+  <% ["ニコ動", "YouTube", "Sound Croud", "Vimeo"].each_with_index do |v, i| %>
+  <span class="checkbox-set">
+    <% id = "#{f.object_name}_media_#{i}" %>
+    <%= f.check_box :vocaloid_chars,
+        {:id => id, :name => "#{f.object_name}[media][]"}, v, nil %>
+    <%= f.label v, :for => id, :style => 'display: inline' %>
+  </span>
+  <% end %>
+</div>
+
+  <div class="uris">
+  <%= Uri.human_attribute_name :serviceName %>
+  <%= Uri.human_attribute_name :uri %>
+  <%= Uri.human_attribute_name :body %>
+  <br />
+  	<%= f.fields_for :uris do |uri| %>
+
+	    <%= uri.text_field :serviceName %>
+	    <%= uri.text_field :uri %>
+	    <%= uri.text_field :body %>
+    <br />
+  	<% end %>
+  
+  </div>
+
+  <div class="actions">
+    <%= f.submit :class => 'btn btn-primary' %>
+    <%= link_to t('general.back_to_list'), url_for(:action => :index), :class => 'btn' %>
+    <%= link_to t('general.back'), url_for(@event), :class => 'btn' %>
+  </div>
+<% end %>

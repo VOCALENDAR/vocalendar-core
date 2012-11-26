@@ -1,5 +1,12 @@
-<h1>Creating event</h1>
+<h2><%= t ".title", :type => t("events.types.#{@type}") %></h2>
 
-<%= render 'form' %>
+<% if @type == 'Event' %>
+<p class="alert alert-error">
+  いまのところ、何らかの特別な理由がない限り、この画面上で標準のイベント情報を作成しないでください。
+  混乱を避けるため、入力は Google カレンダーから行ってください。
+</p>
+<% end %>
+
+<%= render "form_#{@type.underscore}" %>
 
 <%= link_to 'Back', events_path %>

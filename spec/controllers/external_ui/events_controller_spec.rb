@@ -23,7 +23,7 @@ describe ExternalUi::EventsController do
         status: "confirmed",
         summary: "YAMAHA VOCALOID",
       }
-      Event.create!(event_attrs)
+      Event.create!(event_attrs, :without_protection => true)
     end
 
     it "returns http success" do

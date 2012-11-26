@@ -1,5 +1,5 @@
 class ApplicationController < ActionController::Base
-  class AppResponder < ActionController::Responder
+  class VcResponder < ActionController::Responder
     include Responders::FlashResponder
   end
 
@@ -12,7 +12,7 @@ class ApplicationController < ActionController::Base
   end
 
   protect_from_forgery
-  self.responder = AppResponder
+  self.responder = VcResponder
   respond_to :html, :xml, :json
 
   rescue_from ProcessError, :with => :render_proc_error
