@@ -11,7 +11,7 @@ class Event < ActiveRecord::Base
       end
       
       def names
-        map {|t| t.try(:name).try(:tr, '_', ' ') }.compact
+        map {|t| t.try(:name) }.compact
       end
       
       def names=(v)
@@ -290,7 +290,7 @@ class Event < ActiveRecord::Base
   end
 
   def tag_names
-    self.tags.map {|t| t.try(:name).try(:tr, '_', ' ') }.compact
+    self.tags.map {|t| t.try(:name) }.compact
   end
 
   def tag_names=(v)
