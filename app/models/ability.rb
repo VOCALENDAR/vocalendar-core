@@ -8,7 +8,7 @@ class Ability
     if user.editor?
       can :manage, [Event, Tag, :dashboard]
       can [:index, :show, :new, :create], Calendar
-      can [:edit, :update, :destroy], Calendar, :user_id => user.id
+      #can [:edit, :update, :destroy], Calendar, :user_id => user.id
       can :index, History
     elsif user
       #can [:show, :update, :edit, :destroy], Event, :user_id => user.id
