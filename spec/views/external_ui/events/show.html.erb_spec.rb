@@ -1,5 +1,5 @@
 require 'spec_helper'
 
 describe "events/show.html.erb" do
-  pending "add some examples to (or delete) #{__FILE__}"
+  pending "TODO: add some examples to #{__FILE__}"
 end
