@@ -20,8 +20,14 @@ class ApplicationController < ActionController::Base
   rescue_from CanCan::AccessDenied, :with => :render_cancan_error
 
   before_filter :check_admin_oauth_scope
+  before_filter :set_common_vars
 
   private
+  def set_common_vars
+    @current_controller_name = controller_name
+    @current_action_name     = action_name
+  end
+
   def add_flash_msg(level, msg)
     flash[level] ||= []
     flash[level] << msg
