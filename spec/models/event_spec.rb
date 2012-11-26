@@ -315,4 +315,10 @@ describe Event do
     en.tag_names.should eq %w(should keep ordinal tags)
 
   end
+
+  it "mangles space in tag name" do
+    e = an_event
+    e.tag_names = ["Hellow, World", "Good      Bye"]
+    e.tag_names.should eq ["Hellow,_World", "Good_Bye"]
+  end
 end
