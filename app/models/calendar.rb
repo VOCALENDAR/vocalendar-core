@@ -23,7 +23,7 @@ class Calendar < ActiveRecord::Base
   before_validation :trim_attrs
 
   def tag_names_append
-    self.tag_names_append_str.to_s.strip.split(%r{(?:\s|/)+})
+    self.tag_names_append_str.to_s.strip.split(VocalendarCore::TagSeparteRegexp)
   end
 
   def tag_names_append=(v)
@@ -31,7 +31,7 @@ class Calendar < ActiveRecord::Base
   end
 
   def tag_names_remove
-    self.tag_names_remove_str.to_s.strip.split(%r{(?:\s|/)+})
+    self.tag_names_remove_str.to_s.strip.split(VocalendarCore::TagSeparteRegexp)
   end
 
   def tag_names_remove=(v)
@@ -276,4 +276,3 @@ class Calendar < ActiveRecord::Base
     raise VocalendarCore::CalendarSyncError.new(msg)
   end
 end
-
