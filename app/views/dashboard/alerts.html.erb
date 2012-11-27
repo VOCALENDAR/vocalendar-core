@@ -8,7 +8,7 @@
 
 <div class="tab-content">
   <div clsas="tab-pane active" id="alert-summary">
-  TODO! ほかのたぶをせんたくしてください。
+    <p>TODO! ほかのたぶをせんたくしてください。</p>
   </div>
 
   <div class="tab-pane" id="weird-events">
@@ -21,7 +21,7 @@
       <% events.each do |event| %>
       <tr>
         <td><%= l event.start_at %></td>
-        <td><%= link_to event.name? ? event.name : "(empty)", event %></td>
+        <td><%= link_to event.summary? ? event.summary : "(empty)", event %></td>
         <td><%= event.all_tags.uniq.map {|t| link_to t.name, tag_events_path(:tag_id => t.id)}.join(', ').html_safe %></td>
       </tr>
       <% end %>
