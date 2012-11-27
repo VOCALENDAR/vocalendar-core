@@ -50,7 +50,7 @@ class Event < ActiveRecord::Base
         i = 1
         tags.each do |tag|
           new_rels << EventTagRelation.find_or_create_by_tag_id_and_event_id_and_target_field(tag.id, @event.id, field, :pos => i)
-          new_rels.update_attribute :pos, i
+          new_rels.last.update_attribute :pos, i
           i += 1
         end
       end
