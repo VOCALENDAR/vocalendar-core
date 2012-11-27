@@ -51,6 +51,8 @@ ja:
         cancelled?: 削除済み
         zone: タイムゾーン
         offset: タイムゾーンオフセット
+        src_calendar: 取り込み元カレンダー
+        dst_calendars: 書き出し先カレンダー
       tag:
         updated_at: 更新日時
         created_at: 作成日時
@@ -117,7 +119,8 @@ ja:
     new:
       title: "イベント(%{type})の新規作成"
     show:
-      title: イベント詳細
+      title: "イベント: %{name}"
+      detail: 詳細情報
     types:
       default: 標準
       Event: 標準

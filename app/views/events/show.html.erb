@@ -1,20 +1,24 @@
-<%= image_tag(@event.image.rect300.url, :style => 'position: absolute; right: 20px;') if @event.image? %>
+<%= image_tag(@event.image.rect300.url, :class => 'event-image', :style => 'position: absolute; right: 20px;') if @event.image? %>
 
-<h2><%= t ".title" %></h2>
+<h2><%= t ".title", :name => @event.name %></h2>
 
+<div class="well">
+<%= link_to t('general.open_in_editors_calendar'), @event.g_html_link, :class => 'btn'  if @event.g_html_link? %>
+<%= link_to t('general.local_edit'), url_for(:action => :edit, :id => @event.id), :class => 'btn' %>
+<% if can? :access, :rails_admin %>
+<%= link_to t('general.open_in_rails_admin'), "#{root_path}rails_admin/event/#{@event.id}", :class => 'btn' %>
+<% end %>
+<%= link_to t('general.back_to_list'), url_for(:action => :index), :class => 'btn' %>
+</div>
+
+<h3><%= t ".detail" %></h3>
 <table class="table table-striped">
-  <% %w(id summary location twitter_hash term_str updated_at
+  <% %w(id summary term_str location twitter_hash updated_at
         timezone g_id g_eid etag status).each do |field| %>
   <tr>
     <th><%= Event.human_attribute_name field %></th>
     <td><% v = @event.__send__ field %>
-      <%=
-         if v.kind_of?(Time) || v.kind_of?(Date)
-           l(v)
-         else 
-           v 
-         end
-         %>
+      <%= v.kind_of?(Time) || v.kind_of?(Date) ?  l(v) :  v  %>
     </td>
   </tr>
   <% end %>
@@ -22,7 +26,21 @@
     <th><%= Event.human_attribute_name :tags %></th>
     <td>
       <% @event.all_tags.each do |tag| %>
-      <%= link_to "#{tag.name}(#{tag.events.active.count})", tag_events_path(:tag_id => tag.id) %> &nbsp;&nbsp;
+      <%= link_to "#{tag.name}", tag %>
+      (<%= link_to tag.events.active.count, tag_events_path(:tag_id => tag.id) %>)
+      &nbsp;&nbsp;
+      <% end %>
+    </td>
+  </tr>
+  <tr>
+    <th><%= Event.human_attribute_name :src_calendar %></th>
+    <td><%= link_to_if @event.src_calendar, @event.src_calendar.try(:name), @event.src_calendar %></td>
+  </tr>
+  <tr>
+    <th><%= Event.human_attribute_name :dst_calendars %></th>
+    <td>
+      <% @event.dst_calendars.each do |cal| %>
+      <%= link_to cal.name, cal %> &nbsp;&nbsp;
       <% end %>
     </td>
   </tr>
@@ -36,16 +54,10 @@
 <% @histories = @event.histories.limit(10) %>
 <%= render 'history_list' %>
 
-<div class="well">
-<%= link_to t('general.open_in_editors_calendar'), @event.g_html_link, :class => 'btn'  if @event.g_html_link? %>
-<%= link_to t('general.local_edit'), url_for(:action => :edit, :id => @event.id), :class => 'btn' %>
-<% if can? :access, :rails_admin %>
-<%= link_to t('general.open_in_rails_admin'), "#{root_path}rails_admin/event/#{@event.id}", :class => 'btn' %>
-<% end %>
-<%= link_to t('general.back_to_list'), url_for(:action => :index), :class => 'btn' %>
 
-<hr>
-<p class="alert alert-error">CAUTION! In general, you neeed to delete event entry on Google calendar. Be carefull to use this button!
-<%= link_to t('general.delete'), @event, method: :delete, data: { confirm: t('general.delete_confirm', name: @event.summary) }, :class => 'btn btn-danger pull-right' %>
+<p class="alert alert-error">
+  <%= link_to t('general.delete'), @event, method: :delete, data: { confirm: t('general.delete_confirm', name: @event.summary) }, :class => 'btn btn-danger pull-right' %>
+  <b>!CAUTION!</b> You can set the event status to 'cancelled' on locally by this button.
+  In general, you should delete the event entry on Google calendar.
+  Be carefull to use this button!
 </p>
-</div>

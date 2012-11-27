@@ -119,7 +119,7 @@ class Event < ActiveRecord::Base
     :conditions => {:target => 'event'}, :foreign_key => 'target_id'
 
   has_one  :src_calendar, :class_name => 'Calendar',
-    :foreign_key => 'g_calendar_id', :primary_key => 'externel_id'
+    :foreign_key => 'external_id', :primary_key => 'g_calendar_id'
 
   has_many :dst_calendars, :class_name => 'Calendar', :through => :all_tags,
     :source => :calendars, :conditions => {'calendars.io_type' => 'dst'}
