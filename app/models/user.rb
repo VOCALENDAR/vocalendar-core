@@ -79,7 +79,9 @@ class User < ActiveRecord::Base
   # TODO: FIX this function more flexisible...
   def adhoc_update_editor_role_by_calendar_membership_info
     admin? and return
+    log :debug, "Cheking calendar ACLs to update role."
     Calendar.where(:io_type => 'src').each do |cal|
+      log :debug, "Cheking calendar ACL #{cal.name} to update role."
       begin
         apiret = cal.gapi_request("acl.list")
         apiret.data.items.each do |acl|
@@ -155,14 +157,14 @@ class User < ActiveRecord::Base
     greq_orig = greq.dup
     log :debug, "Execute Google API request #{api_method.id}"
     result = client.execute(greq)
-    if result.status == 401
+    if result.status == 401 && !opts[:token_force_reload_tried]
       # Tring to reload token forcely to make sure.
-      # However in ordinal case, this error is caused by revoking auth.
+      # In this case, error is caused by revoking auth OR missing scopes.
       # So google_auth_valid may be disabled in this operation.
       update_attribute :google_token_expires_at, Time.at(0)
       update_attribute :google_token_issued_at,  Time.at(0)
       update_gapi_client_token
-      return gapi_request method, params, body
+      return gapi_request method, params, body, opts.merge(:token_force_reload_tried => true)
     elsif result.status < 200 || result.status >= 300
       log :error, "Error on Google API request '#{method}': status=#{result.status}, request=#{greq_orig.inspect} response=#{result.body}"
       raise VocalendarCore::GoogleAPIRequestError.new(result)
