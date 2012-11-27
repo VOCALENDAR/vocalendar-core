@@ -1,33 +1,29 @@
-<h2><%= t ".title" %></h2>
-
 <%= form_tag events_path, :method => 'get', :class => 'form-inline' do %>
-<div class="accordion" id="filter-ui">
-  <div class="accordion-group">
-    <div class="accordion-heading">
-      <a class="accordion-toggle" data-toggle="collapse" data-parent="#filter-ui" href="#filter-main">
-        <%= t "general.filter" %>
-      </a>
-    </div>
-    <div id="filter-main" class="accordion-body collapse
-     <%= params[:tag_id].blank? && params[:g_calendar_id].blank? &&
-         params[:q].blank? ? '' : 'in' %>">
-      <div class="accordion-inner">
-        <%= submit_tag t('general.apply_filter', :default => 'Apply Filter'), :name => '', :class => 'btn pull-right' %>
-        <%= link_to t('general.clear_filter'), events_path, :class => 'btn pull-right' %>
-        <label for="tag_id">Tag Id:</label>
-        <%= text_field_tag :tag_id, [params[:tag_id]].compact.flatten.join(',') %>
-        <br>
-        <label for="g_calendar_id">Google Calendar Id:</label>
-        <%= text_field_tag :g_calendar_id, params[:g_calendar_id] %>
-        <br>
-        <label for="q">Search string:</label>
-        <%= text_field_tag :q, params[:q] %>
-        <br>
-      </div>
+<div class="well pull-right" style="position: relative;">
+  <a class="btn btn-small" data-target="#filter-main" data-toggle="collapse"
+     style="position: absolute; top: 0; right: 0; z-index: 10;">
+    <%= t "general.filter"  %>
+    <span class="caret"></span>
+  </a>
+  <div id="filter-main" class="collapse fade 
+   <%= 'in' if !params[:tag_id].blank? || !params[:g_calendar_id].blank? || !params[:q].blank?%> ">
+    <%= text_field_tag :tag_id, [params[:tag_id]].compact.flatten.join(','),
+        :placeholder => 'Tag ID (comma separated)', :title => 'Tag ID' %>
+    <br>
+    <%= text_field_tag :g_calendar_id, params[:g_calendar_id],
+        :placeholder => 'Google calendar ID', :title => 'Google calendar ID' %>
+    <br>
+    <%= text_field_tag :q, params[:q], :placeholder => 'Search string',
+        :title => 'Search string' %><br>
+    <div class="pull-right">
+      <%= link_to t('general.clear_filter'), events_path, :class => 'btn' %>
+      <%= submit_tag t('general.apply_filter', :default => 'Apply Filter'), :name => '', :class => 'btn' %>
     </div>
   </div>
 </div>
 <% end %>
+
+<h2><%= t ".title" %></h2>
 
 <%= link_to t('general.create_new'), url_for(:action => :new), :class => 'btn' %>
 <%= paginate @events %>
