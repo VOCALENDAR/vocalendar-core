@@ -112,10 +112,17 @@ class Event < ActiveRecord::Base
   has_many :all_tags,  :through => :all_tag_relations, :source => :tag
   has_many :tags,      :through => :main_tag_relations
   
-  has_one :reccuring_parent, :class_name => 'Event',
+  has_one  :reccuring_parent, :class_name => 'Event',
     :foreign_key => 'g_recurring_event_id', :primary_key => 'g_id'
+
   has_many :histories, :class_name => 'History',
     :conditions => {:target => 'event'}, :foreign_key => 'target_id'
+
+  has_one  :src_calendar, :class_name => 'Calendar',
+    :foreign_key => 'g_calendar_id', :primary_key => 'externel_id'
+
+  has_many :dst_calendars, :class_name => 'Calendar', :through => :all_tags,
+    :source => :calendars, :conditions => {'calendars.io_type' => 'dst'}
 
   has_many :uris, :autosave => true, :dependent => :destroy
 

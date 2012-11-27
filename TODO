@@ -21,8 +21,7 @@
    書き込まれるか確認する
  * 単体イベントのみを強制更新する仕組み
  * calendars#show の整備 (events#show と同じ感じで)
- * events に {src,dst}_calendar の accociation を追加
-   * events#show に表示も追加
+ * events#show に関連カレンダー表示も追加
  * レイアウトで flash message の出力
  * モデルエラーを flash にいれる
  * flash responder がうごいてない
