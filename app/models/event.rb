@@ -163,7 +163,7 @@ class Event < ActiveRecord::Base
   end
 
   def recurring_instance?
-    !self[:g_recurring_event_id].blank?
+    g_recurring_event_id?
   end
 
   def cancelled?
@@ -304,7 +304,7 @@ class Event < ActiveRecord::Base
   end
 
   def tag_names_str
-    self.tag_names.join(' ')
+    tag_names.join(' ')
   end
 
   def tag_names_str=(v)
@@ -312,7 +312,7 @@ class Event < ActiveRecord::Base
   end
 
   def tag_names
-    self.tags.map {|t| t.try(:name) }.compact
+    tags.map {|t| t.try(:name) }.compact
   end
 
   def tag_names=(v)
@@ -349,9 +349,9 @@ class Event < ActiveRecord::Base
 
   # Load attribute has from externel exchange format (e.g. google API)
   def load_exfmt(format, attrs, opts = {})
-    self.respond_to? "load_exfmt_#{format}" or
+    respond_to? "load_exfmt_#{format}" or
       raise ArgumentError, "Exchange format #{format} is not supported"
-    self.__send__ "load_exfmt_#{format}", attrs, opts
+    __send__ "load_exfmt_#{format}", attrs, opts
   end
 
   def load_exfmt_google_v3(attrs, opts = {})
@@ -361,14 +361,14 @@ class Event < ActiveRecord::Base
       raise ArgumentError, "Need to specify :calendar_id as option"
 
     summary = attrs["summary"].to_s.strip
-    tag_names = opts[:tag_names_append]
+    in_tags = opts[:tag_names_append]
     while summary.sub!(/^【(.*?)】/, '')
-      tag_names += $1.split(VocalendarCore::TagSeparateRegexp)
+      in_tags += $1.split(VocalendarCore::TagSeparateRegexp)
     end
-    summary.sub!(/^★/, '') and tag_names << '記念日'
-    self.tag_names = (tag_names - opts[:tag_names_remove]).uniq
+    summary.sub!(/^★/, '') and in_tags << '記念日'
+    self.tag_names = (in_tags - opts[:tag_names_remove]).uniq
 
-    self.assign_attributes({
+    assign_attributes({
       g_id: attrs.id,
       etag: attrs.etag,
       status: attrs.status,
@@ -382,7 +382,7 @@ class Event < ActiveRecord::Base
       ical_uid: attrs["iCalUID"].to_s,
     }, :without_protection => true)
     if attrs["start"]
-      self.assign_attributes({
+      assign_attributes({
         start_date: attrs.start["date"] || attrs.start.dateTime.to_date,
         start_datetime: attrs.start["dateTime"] || attrs.start.date.to_time.to_datetime,
         end_date: attrs.end["date"] || attrs.end.dateTime.to_date,
@@ -410,41 +410,41 @@ class Event < ActiveRecord::Base
   end
 
   def to_exfmt(format, opts = {})
-    self.respond_to? "to_exfmt_#{format}" or
+    respond_to? "to_exfmt_#{format}" or
       raise ArgumentError, "Exchange format #{format} is not supported"
-    self.__send__ "to_exfmt_#{format}", opts
+    __send__ "to_exfmt_#{format}", opts
   end
 
   def to_exfmt_google_v3(opts = {})
     opts = {:tag_names_remove => [], :tag_names_append => []}.merge opts
-    tag_names = self.tag_names
-    has_anniversary = tag_names.delete '記念日'
-    tag_str = (opts[:tag_names_append] + tag_names - opts[:tag_names_remove]).uniq.join('/')
+    out_tags = tag_names
+    has_anniversary = out_tags.delete '記念日'
+    tag_str = (opts[:tag_names_append] + out_tags - opts[:tag_names_remove]).uniq.join('/')
     tag_str.blank?  or  tag_str = "【#{tag_str}】"
     has_anniversary and tag_str = "★#{tag_str}"
-    summary = tag_str.to_s + self.summary.to_s
+    summary = tag_str.to_s + summary.to_s
     ret = {
       # :id => g_id, # TODO: If id is set, may get 404 not found.
-      :iCalUID => self.ical_uid,
+      :iCalUID => ical_uid,
       :start => 
-      if self.allday? 
-        {:date => self.start_date}
+      if allday? 
+        {:date => start_date}
       else
-        {:dateTime => self.start_datetime,
-         :timeZone => self.timezone.try(:name)}
+        {:dateTime => start_datetime,
+         :timeZone => timezone.try(:name)}
       end,
       :end => 
-      if self.allday?
-        {:date => self.end_date}
+      if allday?
+        {:date => end_date}
       else
-        {:dateTime => self.end_datetime,
-         :timeZone => self.timezone.try(:name)}
+        {:dateTime => end_datetime,
+         :timeZone => timezone.try(:name)}
       end,
       :summary => summary,
-      :description => self.description,
-      :location => self.location,
-      :status => self.status,
-      :recurrence => self.recur_string.to_s.split("\n"),
+      :description => description,
+      :location => location,
+      :status => status,
+      :recurrence => recur_string.to_s.split("\n"),
       :recurringEventId => g_recurring_event_id,
     }
     if recurring_instance?
@@ -453,7 +453,7 @@ class Event < ActiveRecord::Base
           {:date => recur_orig_start_date }
         else
           {:dateTime => recur_orig_start_datetime,
-           :timeZone => self.timezone.try(:name) }
+           :timeZone => timezone.try(:name) }
         end
     end
     Hashie::Mash.new(ret)

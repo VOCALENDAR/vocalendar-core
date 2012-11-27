@@ -23,7 +23,7 @@ class Calendar < ActiveRecord::Base
   before_validation :trim_attrs
 
   def tag_names_append
-    self.tag_names_append_str.to_s.strip.split(VocalendarCore::TagSeparteRegexp)
+    tag_names_append_str.to_s.strip.split(VocalendarCore::TagSeparteRegexp)
   end
 
   def tag_names_append=(v)
@@ -31,7 +31,7 @@ class Calendar < ActiveRecord::Base
   end
 
   def tag_names_remove
-    self.tag_names_remove_str.to_s.strip.split(VocalendarCore::TagSeparteRegexp)
+    tag_names_remove_str.to_s.strip.split(VocalendarCore::TagSeparteRegexp)
   end
 
   def tag_names_remove=(v)
@@ -51,15 +51,15 @@ class Calendar < ActiveRecord::Base
     opts = {:force => false, :max => 2000}.merge opts
     log :info, "Start event publish"
 
-    target_events = self.target_events.reorder('events.updated_at')
+    target_events = target_events.reorder('events.updated_at')
     latest_synced_item_updated_at && !opts[:force] and
-      target_events = target_events.where('events.updated_at >= ?', self.latest_synced_item_updated_at)
+      target_events = target_events.where('events.updated_at >= ?', latest_synced_item_updated_at)
 
     count = 0
     count_fail  = 0
     count_total = target_events.length
 
-    self.update_attribute :sync_started_at, DateTime.now
+    update_attribute :sync_started_at, DateTime.now
     add_history :action => 'publish_started', :note => "Target are #{count_total} events."
 
     begin
@@ -71,8 +71,8 @@ class Calendar < ActiveRecord::Base
         end
         begin
           body = event.to_exfmt :google_v3,
-            :tag_names_append => self.tag_names_append,
-            :tag_names_remove => self.tag_names_remove
+            :tag_names_append => tag_names_append,
+            :tag_names_remove => tag_names_remove
           result = gapi_event_request :import, {}, body.to_json
           count += 1
           last_event_updated_at = event.updated_at
@@ -101,11 +101,11 @@ class Calendar < ActiveRecord::Base
       end
     ensure
       last_event_updated_at and
-	self.update_attribute :latest_synced_item_updated_at, last_event_updated_at
+	update_attribute :latest_synced_item_updated_at, last_event_updated_at
     end
 
-    self.update_attribute :sync_finished_at, DateTime.now
-    msg = "#{count} events has been updated #{count_fail > 0 ? "(#{count_fail} events failed) " : ""}(#{DateTime.now.to_f - self.sync_started_at.to_f} secs)."
+    update_attribute :sync_finished_at, DateTime.now
+    msg = "#{count} events has been updated #{count_fail > 0 ? "(#{count_fail} events failed) " : ""}(#{DateTime.now.to_f - sync_started_at.to_f} secs)."
     log :info, "Event publish completed. #{msg}"
     add_history :action => 'publish_finished', :note => msg
   end
@@ -114,7 +114,7 @@ class Calendar < ActiveRecord::Base
     log :info, "Start published event cleanup"
     start_time = DateTime.now.to_f
     remote_gids = []
-    self.gapi_list_each_page(:showDeleted => false) do |result|
+    gapi_list_each_page(:showDeleted => false) do |result|
       result.data["items"] or break
       remote_gids += result.data.items.map { |e| e.id }
     end
@@ -140,16 +140,16 @@ class Calendar < ActiveRecord::Base
     log :info, "Start event sync"
     count = 0
     add_history :action => :fetch_started
-    self.update_attribute :sync_started_at, DateTime.now
+    update_attribute :sync_started_at, DateTime.now
 
     query_params = {}
-    if !opts[:force] && self.latest_synced_item_updated_at &&
-        self.latest_synced_item_updated_at > (DateTime.now - 20.days)
+    if !opts[:force] && latest_synced_item_updated_at &&
+        latest_synced_item_updated_at > (DateTime.now - 20.days)
       # Google limit updatedMin to 20 days. Drop the parameter if it's over 20 days to avoid error.
-      query_params[:updatedMin] = self.latest_synced_item_updated_at.utc.strftime("%Y-%m-%dT%H:%M:%SZ")
+      query_params[:updatedMin] = latest_synced_item_updated_at.utc.strftime("%Y-%m-%dT%H:%M:%SZ")
     end
 
-    self.gapi_list_each_page(query_params) do |result|
+    gapi_list_each_page(query_params) do |result|
       default_timezone = result.data.timeZone
 
       result.data["items"] or break
@@ -160,10 +160,10 @@ class Calendar < ActiveRecord::Base
           event = Event.find_by_g_id(eitem.id) || Event.new
           begin
             event.load_exfmt :google_v3, eitem,
-              :calendar_id => self.external_id,
+              :calendar_id => external_id,
               :default_timezone => default_timezone,
-              :tag_names_append => self.tag_names_append,
-              :tag_names_remove => self.tag_names_remove
+              :tag_names_append => tag_names_append,
+              :tag_names_remove => tag_names_remove
             log :info, "Event sync: #{event.new_record? ? "create new event" : "update event ##{event.id}"}: #{event.summary}"
             begin
               event.save!
@@ -186,12 +186,12 @@ class Calendar < ActiveRecord::Base
         end
       ensure
         new_item_stamp and
-          self.update_attribute :latest_synced_item_updated_at, new_item_stamp
+          update_attribute :latest_synced_item_updated_at, new_item_stamp
       end
     end
 
-    self.update_attribute :sync_finished_at, DateTime.now
-    log :info, "Event sync completed: #{count} events has been updated (#{DateTime.now.to_f - self.sync_started_at.to_f} secs)."
+    update_attribute :sync_finished_at, DateTime.now
+    log :info, "Event sync completed: #{count} events has been updated (#{DateTime.now.to_f - sync_started_at.to_f} secs)."
     add_history :action => :fetch_finished
   end
 
@@ -253,7 +253,7 @@ class Calendar < ActiveRecord::Base
 
   def gapi_request(method, params = {}, body = nil)
     assert_user_gauth
-    user.gapi_request(method, {:calendarId => self.external_id}.merge(params), body)
+    user.gapi_request(method, {:calendarId => external_id}.merge(params), body)
   end
 
   private
@@ -267,10 +267,10 @@ class Calendar < ActiveRecord::Base
 
   def assert_user_gauth
     msg = nil
-    self.user or
+    user or
       msg = "Calendar has no owner! Can not exec Google API request."
-    self.user && !self.user.google_auth_valid? and
-      msg = "Calendar owner ##{self.user.id} has no valid google auth information! Can not exec Google API request."
+    user && !user.google_auth_valid? and
+      msg = "Calendar owner ##{user.id} has no valid google auth information! Can not exec Google API request."
     msg or return true
     log :error, msg
     raise VocalendarCore::CalendarSyncError.new(msg)

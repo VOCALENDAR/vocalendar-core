@@ -334,4 +334,15 @@ describe Event do
     e.tags[0].name.should eq "Hellow,_World"
     e.tags[1].name.should eq "Good_Bye"
   end
+
+  it "respond recurring_instance?" do
+    e = an_event
+    e.recurring_instance?.should be_false
+    e.g_recurring_event_id = "abcdef"
+    e.recurring_instance?.should be_true
+    e.g_recurring_event_id = nil
+    e.recurring_instance?.should be_false
+    e.g_recurring_event_id = ""
+    e.recurring_instance?.should be_false
+  end
 end
