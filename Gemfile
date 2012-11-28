@@ -40,6 +40,7 @@ gem 'carrierwave'
 gem 'mime-types'
 gem 'rmagick'
 gem 'rails_autolink'
+gem 'addressable'
 
 group :development, :test do
   gem 'rspec-rails'

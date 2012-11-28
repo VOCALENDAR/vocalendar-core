@@ -1,5 +1,5 @@
 class ExLinksController < ApplicationController
-  load_and_authorize_resource
+  load_and_authorize_resource :except => :redirect
 
   def index
     respond_with(@ex_links)
@@ -29,5 +29,10 @@ class ExLinksController < ApplicationController
   def destroy
     @ex_link.destroy
     respond_with(@ex_link)
+  end
+
+  def redirect
+    @ex_link = ExLink.find params[:short_id].to_s.to_i(36)
+    redirect_to @ex_link.uri
   end
 end

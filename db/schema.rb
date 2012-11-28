@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20121128154505) do
+ActiveRecord::Schema.define(:version => 20121128185647) do
 
   create_table "calendars", :force => true do |t|
     t.string   "name",                          :default => "", :null => false
@@ -104,15 +104,25 @@ ActiveRecord::Schema.define(:version => 20121128154505) do
 
   create_table "ex_links", :force => true do |t|
     t.string   "type"
-    t.string   "name"
-    t.text     "uri"
+    t.string   "name",       :default => "", :null => false
+    t.text     "uri",        :default => "", :null => false
     t.string   "remote_id"
-    t.datetime "created_at", :null => false
-    t.datetime "updated_at", :null => false
+    t.datetime "created_at",                 :null => false
+    t.datetime "updated_at",                 :null => false
+    t.string   "digest",     :default => "", :null => false
   end
 
+  add_index "ex_links", ["digest"], :name => "index_ex_links_on_digest", :unique => true
   add_index "ex_links", ["type", "remote_id"], :name => "index_ex_links_on_type_and_remote_id"
   add_index "ex_links", ["uri"], :name => "index_ex_links_on_uri"
+
+  create_table "ex_links_tags", :id => false, :force => true do |t|
+    t.integer "tag_id"
+    t.integer "ex_link_id"
+  end
+
+  add_index "ex_links_tags", ["ex_link_id"], :name => "index_tags_ex_links_on_ex_link_id"
+  add_index "ex_links_tags", ["tag_id"], :name => "index_tags_ex_links_on_tag_id"
 
   create_table "histories", :force => true do |t|
     t.string   "target",      :null => false
@@ -145,14 +155,6 @@ ActiveRecord::Schema.define(:version => 20121128154505) do
   end
 
   add_index "tags", ["name"], :name => "index_tags_on_name", :unique => true
-
-  create_table "tags_ex_links", :id => false, :force => true do |t|
-    t.integer "tag_id"
-    t.integer "ex_link_id"
-  end
-
-  add_index "tags_ex_links", ["ex_link_id"], :name => "index_tags_ex_links_on_ex_link_id"
-  add_index "tags_ex_links", ["tag_id"], :name => "index_tags_ex_links_on_tag_id"
 
   create_table "users", :force => true do |t|
     t.string   "name",                                   :default => "",    :null => false

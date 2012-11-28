@@ -1,4 +1,6 @@
 VocalendarCore::Application.routes.draw do
+  match 'l/:short_id', :controller => :ex_links, :action => :redirect, :as => 'link_redirect', :format => false
+
   mount RailsAdmin::Engine => '/rails_admin', :as => 'rails_admin'
 
   devise_for :users, :controllers => { :omniauth_callbacks => "users/omniauth_callbacks" }
@@ -18,7 +20,6 @@ VocalendarCore::Application.routes.draw do
   end
 
   resources :events do
-    resources :ex_links
     resources :histories, :only => :index
   end
   resources :release_events, :path => 'release' do
@@ -32,11 +33,11 @@ VocalendarCore::Application.routes.draw do
   end
   resources :tags do
     resources :events
-    resources :ex_links
     resources :histories, :only => :index
   end
 
   scope 'manage' do
+    resources :ex_links
     resources :settings
     resources :histories, :only => :index
   end

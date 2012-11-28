@@ -262,6 +262,7 @@ PLATFORMS
   x86-mingw32
 
 DEPENDENCIES
+  addressable
   cancan
   carrierwave
   coffee-rails (~> 3.2.1)
