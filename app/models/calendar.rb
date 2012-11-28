@@ -25,7 +25,7 @@ class Calendar < ActiveRecord::Base
   before_validation :trim_attrs
 
   def tag_names_append
-    tag_names_append_str.to_s.strip.split(VocalendarCore::TagSeparteRegexp)
+    tag_names_append_str.to_s.strip.split(VocalendarCore::TagSeparateRegexp)
   end
 
   def tag_names_append=(v)
@@ -33,7 +33,7 @@ class Calendar < ActiveRecord::Base
   end
 
   def tag_names_remove
-    tag_names_remove_str.to_s.strip.split(VocalendarCore::TagSeparteRegexp)
+    tag_names_remove_str.to_s.strip.split(VocalendarCore::TagSeparateRegexp)
   end
 
   def tag_names_remove=(v)
@@ -53,7 +53,7 @@ class Calendar < ActiveRecord::Base
     opts = {:force => false, :max => 2000}.merge opts
     log :info, "Start event publish"
 
-    target_events = target_events.reorder('events.updated_at')
+    target_events = self.target_events.reorder('events.updated_at')
     latest_synced_item_updated_at && !opts[:force] and
       target_events = target_events.where('events.updated_at >= ?', latest_synced_item_updated_at)
 
