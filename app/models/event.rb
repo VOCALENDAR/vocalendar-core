@@ -1,8 +1,5 @@
 # -*- coding: utf-8 -*-
 class Event < ActiveRecord::Base
-  # Load all STI child classes to get proper results from self.subclesses
-  require 'release_event'
-
   class ExtraTagContainer < Hash
     class TagContainer < Array
       def names_str
@@ -535,3 +532,6 @@ class Event < ActiveRecord::Base
     self[:ical_uid] = SecureRandom.hex(24) + "@vocalendar.jp"
   end
 end
+
+# Load all STI child classes to get proper results from self.subclesses
+require 'release_event'
