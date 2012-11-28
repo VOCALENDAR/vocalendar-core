@@ -1,22 +1,25 @@
 <%= form_for(@tag) do |f| %>
-  <% if @tag.errors.any? %>
-    <div id="error_explanation">
-      <h2><%= pluralize(@tag.errors.count, "error") %> prohibited this tag from being saved:</h2>
+<% if @tag.new_record? %>
+<div>
+  <%= f.label :name %>
+  <%= f.text_field :name %>
+</div>
+<% end %>
 
-      <ul>
-      <% @tag.errors.full_messages.each do |msg| %>
-        <li><%= msg %></li>
-      <% end %>
-      </ul>
-    </div>
+<div>
+  <% @tag.link || @tag.build_link %>
+  <%= f.label :link %>
+  <%= f.fields_for :link do |lf| %>
+  <%= lf.text_field :name, class: 'input-mini', placeholder: t('general.name') %>
+  <%= lf.text_field :uri, class: 'input-xxlarge', placeholder: 'URL' %>
   <% end %>
+</div>
 
-  <div>
-    <%= f.label :name %>
-    <%= f.text_field :name %>
-  </div>
+<br>
 
   <div class="actions">
     <%= f.submit :class => 'btn btn-primary'%>
+    <%= link_to t("general.back"), url_for(@tag), class: 'btn' %>
+    <%= link_to t("general.back_to_list"), url_for(action: :index), class: 'btn' %>
   </div>
 <% end %>

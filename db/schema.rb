@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20121128185647) do
+ActiveRecord::Schema.define(:version => 20121128200829) do
 
   create_table "calendars", :force => true do |t|
     t.string   "name",                          :default => "", :null => false
@@ -81,6 +81,7 @@ ActiveRecord::Schema.define(:version => 20121128185647) do
     t.datetime "recur_orig_start_datetime"
     t.string   "g_eid"
     t.string   "type",                      :default => "",           :null => false
+    t.integer  "primary_link_id"
   end
 
   add_index "events", ["end_datetime", "status"], :name => "index_events_on_end_datetime_and_status"
@@ -88,6 +89,7 @@ ActiveRecord::Schema.define(:version => 20121128185647) do
   add_index "events", ["g_eid"], :name => "index_events_on_g_eid"
   add_index "events", ["g_id"], :name => "index_events_on_g_id", :unique => true
   add_index "events", ["g_recurring_event_id", "recur_orig_start_datetime"], :name => "idx_event_recur_info"
+  add_index "events", ["primary_link_id"], :name => "index_events_on_primary_link_id"
   add_index "events", ["start_datetime", "status"], :name => "index_events_on_start_datetime_and_status"
   add_index "events", ["status"], :name => "index_events_on_status"
   add_index "events", ["twitter_hash"], :name => "index_events_on_twitter_hash"
@@ -116,14 +118,6 @@ ActiveRecord::Schema.define(:version => 20121128185647) do
   add_index "ex_links", ["type", "remote_id"], :name => "index_ex_links_on_type_and_remote_id"
   add_index "ex_links", ["uri"], :name => "index_ex_links_on_uri"
 
-  create_table "ex_links_tags", :id => false, :force => true do |t|
-    t.integer "tag_id"
-    t.integer "ex_link_id"
-  end
-
-  add_index "ex_links_tags", ["ex_link_id"], :name => "index_tags_ex_links_on_ex_link_id"
-  add_index "ex_links_tags", ["tag_id"], :name => "index_tags_ex_links_on_tag_id"
-
   create_table "histories", :force => true do |t|
     t.string   "target",      :null => false
     t.string   "target_type"
@@ -149,12 +143,14 @@ ActiveRecord::Schema.define(:version => 20121128185647) do
   add_index "settings", ["thing_type", "thing_id", "var"], :name => "index_settings_on_thing_type_and_thing_id_and_var", :unique => true
 
   create_table "tags", :force => true do |t|
-    t.string   "name",       :default => "", :null => false
-    t.datetime "created_at",                 :null => false
-    t.datetime "updated_at",                 :null => false
+    t.string   "name",            :default => "", :null => false
+    t.datetime "created_at",                      :null => false
+    t.datetime "updated_at",                      :null => false
+    t.integer  "primary_link_id"
   end
 
   add_index "tags", ["name"], :name => "index_tags_on_name", :unique => true
+  add_index "tags", ["primary_link_id"], :name => "index_tags_on_primary_link_id"
 
   create_table "users", :force => true do |t|
     t.string   "name",                                   :default => "",    :null => false

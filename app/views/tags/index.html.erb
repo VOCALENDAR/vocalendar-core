@@ -1,5 +1,7 @@
 <h2><%= t ".title" %></h2>
 
+<%= link_to t('general.create_new'), new_tag_path, :class => 'btn' %>
+
 <div class="clearfix">
 
 <% @tags.each_slice((@tags.count.to_f / 3).ceil) do |cur_tags| %>
@@ -19,4 +21,5 @@
 <% end %>
 
 </div>
+
 <%= paginate @tags %>

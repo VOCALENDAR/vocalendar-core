@@ -9,6 +9,7 @@ ja:
       user: ユーザ
       history: 履歴
       tag: タグ
+      ex_link: 外部リンク
     attributes:
       setting:
         var: 名前
@@ -81,6 +82,9 @@ ja:
         tag_ids: 同期対象タグ
         target_events: 出力対象イベント
         fetched_events: 取得済みイベント
+      ex_link:
+        name: 名前
+        uri: URI
   helpers:
     label:
       setting:
@@ -104,6 +108,9 @@ ja:
     sync_calendar_tag_note: 同期時に出力するタグを選択します(種別が「書き出し」の場合しか意味がありません)
     history: 履歴
     recent_histories: 最近の履歴
+    name: 名前
+    back: 戻る
+    show: 表示
   settings:
     index:
       title: 全体設定一覧
@@ -135,6 +142,10 @@ ja:
       title: タグ一覧
     show:
       title: "タグ: %{name}"
+    edit:
+      title: "タグ '%{name}' の編集"
+    new:
+      title: "タグの作成"
   external_ui:
     events:
       show:

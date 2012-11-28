@@ -130,7 +130,8 @@ class Event < ActiveRecord::Base
   has_many :dst_calendars, :class_name => 'Calendar', :through => :all_tags,
     :source => :calendars, :conditions => {'calendars.io_type' => 'dst'}
 
-  has_and_belongs_to_many :links, :class_name => 'ExLink'
+  has_and_belongs_to_many :related_links, :class_name => 'ExLink'
+  has_one :primary_link, :class_name => 'ExLink'
 
   mount_uploader :image, EventImageUploader
 

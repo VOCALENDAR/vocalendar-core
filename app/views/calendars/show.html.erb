@@ -4,7 +4,7 @@
   <%= link_to t("general.edit"), edit_calendar_path(@calendar), :class => 'btn' if can? :edit, @calendar %>
   <%= link_to t("general.open_google_calendar"), "https://www.google.com/calendar/embed?src=#{@calendar.external_id}", :class => 'btn' %>
   <%= link_to t("general.back_to_list"), calendars_path, :class => 'btn' %>
-  <%= link_to %Q{<i class="icon-trash" title="#{t 'general.delete'}"></i>#{t 'general.delete'}}.html_safe, @calendar, confirm: t("general.delete_confirm", name: "#{@calendar.name} (#{@calendar.external_id})"), method: :delete , :class => 'btn btn-danger pull-right' if can? :destroy, @calendar %>
+  <%= link_to %Q{<i class="icon-trash icon-white" title="#{t 'general.delete'}"></i> #{t 'general.delete'}}.html_safe, @calendar, confirm: t("general.delete_confirm", name: "#{@calendar.name} (#{@calendar.external_id})"), method: :delete , :class => 'btn btn-danger pull-right' if can? :destroy, @calendar %>
 </div>
 
 <h3><%= t "general.details" %></h3>
