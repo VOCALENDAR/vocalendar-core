@@ -56,6 +56,7 @@ GEM
     carrierwave (0.7.1)
       activemodel (>= 3.2.0)
       activesupport (>= 3.2.0)
+    choice (0.1.6)
     coffee-rails (3.2.2)
       coffee-script (>= 2.2.0)
       railties (~> 3.2.0)
@@ -170,6 +171,11 @@ GEM
       activesupport (= 3.2.8)
       bundler (~> 1.0)
       railties (= 3.2.8)
+    rails-erd (1.0.0)
+      activerecord (>= 3.0)
+      activesupport (>= 3.0)
+      choice (~> 0.1.6)
+      ruby-graphviz (~> 1.0.4)
     rails-i18n (0.7.1)
       i18n (~> 0.5)
     rails-settings-cached (0.2.4)
@@ -215,6 +221,7 @@ GEM
       rspec-core (~> 2.12.0)
       rspec-expectations (~> 2.12.0)
       rspec-mocks (~> 2.12.0)
+    ruby-graphviz (1.0.8)
     sass (3.2.3)
     sass-rails (3.2.5)
       railties (~> 3.2.0)
@@ -273,6 +280,7 @@ DEPENDENCIES
   omniauth-google-oauth2
   omniauth-twitter
   rails (= 3.2.8)
+  rails-erd
   rails-i18n
   rails-settings-cached
   rails_admin

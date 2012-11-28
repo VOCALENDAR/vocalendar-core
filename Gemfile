@@ -46,6 +46,8 @@ group :development, :test do
   gem 'webrat'
 end
 
+gem 'rails-erd', :group => :development
+
 # To use ActiveModel has_secure_password
 # gem 'bcrypt-ruby', '~> 3.0.0'
 
