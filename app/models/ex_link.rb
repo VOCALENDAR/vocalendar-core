@@ -7,6 +7,8 @@ class ExLink < ActiveRecord::Base
 
   validates :uri, :presence => true, :uri => true
 
+  @@remote_fetch_enabled = true
+
   class << self
     def scan(text)
       text.scan(%r{(?:https?://|www\.)[^\s\x00-\x20()<>"'`\x7f]+}).map { |uri| #"
@@ -42,6 +44,14 @@ class ExLink < ActiveRecord::Base
     def tags
       [main_tags + related_tags].uniq
     end
+
+    def remote_fetch_enabled
+      @@remote_fetch_enabled
+    end
+
+    def remote_fetch_enabled=(v)
+      @@remote_fetch_enabled = v
+    end
   end
 
   def short_id
@@ -53,7 +63,6 @@ class ExLink < ActiveRecord::Base
     self[:digest] = self.class.digest(v)
     begin
       update_type_and_remote_id
-      name? or fetch_title
     rescue StandardError, URI::InvalidURIError, TimeoutError => e
       logger.debug "[ExLink##{id}] HTTP fech failed to getting name: #{e.message}"
     end
@@ -87,13 +96,22 @@ class ExLink < ActiveRecord::Base
     ti[:type] or return
     self[:type]      = ti[:type]
     self[:remote_id] = ti[:remote_id]
+    name? and return
+    @@remote_fetch_enabled or return
+    self[:name] =  get_remote_title
   end
 
   def typename
     (type.split('::').last || 'Default').underscore
   end
 
-  def fetch_title
+  def upate_name
+    name? and return
+    @@remote_fetch_enabled or return
+    update_attribute :name, get_remote_title
+  end
+
+  def get_remote_title
     response = nil
     cur_uri = self.uri
     Timeout::timeout(3) {
@@ -103,10 +121,9 @@ class ExLink < ActiveRecord::Base
         response.status == 301 || response.status == 302 and
           cur_uri = response.headers["location"]
       end
-    } 
-    response.body =~ %r{<title>(.*?)</title>}m or return
-    title = $1.strip
-    self[:name] = title.gsub(/\s+/, ' ')
+    }
+    response.body =~ %r{<title>(.*?)</title>}m or return nil
+    $1.strip.gsub(/\s+/, ' ')
   end
 
   class Amazon < ExLink
