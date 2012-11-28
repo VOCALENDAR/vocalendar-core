@@ -18,6 +18,7 @@ VocalendarCore::Application.routes.draw do
   end
 
   resources :events do
+    resources :ex_links
     resources :histories, :only => :index
   end
   resources :release_events, :path => 'release' do
@@ -31,6 +32,7 @@ VocalendarCore::Application.routes.draw do
   end
   resources :tags do
     resources :events
+    resources :ex_links
     resources :histories, :only => :index
   end
 

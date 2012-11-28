@@ -1,0 +1,29 @@
+<h1>Listing ex_links</h1>
+
+<table>
+  <tr>
+    <th>Type</th>
+    <th>Name</th>
+    <th>Uri</th>
+    <th>Remote</th>
+    <th></th>
+    <th></th>
+    <th></th>
+  </tr>
+
+<% @ex_links.each do |ex_link| %>
+  <tr>
+    <td><%= ex_link.type %></td>
+    <td><%= ex_link.name %></td>
+    <td><%= ex_link.uri %></td>
+    <td><%= ex_link.remote_id %></td>
+    <td><%= link_to 'Show', ex_link %></td>
+    <td><%= link_to 'Edit', edit_ex_link_path(ex_link) %></td>
+    <td><%= link_to 'Destroy', ex_link, method: :delete, data: { confirm: 'Are you sure?' } %></td>
+  </tr>
+<% end %>
+</table>
+
+<br />
+
+<%= link_to 'New Ex link', new_ex_link_path %>

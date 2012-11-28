@@ -1,0 +1,25 @@
+<p id="notice"><%= notice %></p>
+
+<p>
+  <b>Type:</b>
+  <%= @ex_link.type %>
+</p>
+
+<p>
+  <b>Name:</b>
+  <%= @ex_link.name %>
+</p>
+
+<p>
+  <b>Uri:</b>
+  <%= @ex_link.uri %>
+</p>
+
+<p>
+  <b>Remote:</b>
+  <%= @ex_link.remote_id %>
+</p>
+
+
+<%= link_to 'Edit', edit_ex_link_path(@ex_link) %> |
+<%= link_to 'Back', ex_links_path %>

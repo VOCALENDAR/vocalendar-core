@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20121128122213) do
+ActiveRecord::Schema.define(:version => 20121128154505) do
 
   create_table "calendars", :force => true do |t|
     t.string   "name",                          :default => "", :null => false
@@ -94,6 +94,26 @@ ActiveRecord::Schema.define(:version => 20121128122213) do
   add_index "events", ["type"], :name => "index_events_on_type"
   add_index "events", ["updated_at", "status"], :name => "index_events_on_updated_at_and_status"
 
+  create_table "events_ex_links", :id => false, :force => true do |t|
+    t.integer "event_id"
+    t.integer "ex_link_id"
+  end
+
+  add_index "events_ex_links", ["event_id"], :name => "index_events_ex_links_on_event_id"
+  add_index "events_ex_links", ["ex_link_id"], :name => "index_events_ex_links_on_ex_link_id"
+
+  create_table "ex_links", :force => true do |t|
+    t.string   "type"
+    t.string   "name"
+    t.text     "uri"
+    t.string   "remote_id"
+    t.datetime "created_at", :null => false
+    t.datetime "updated_at", :null => false
+  end
+
+  add_index "ex_links", ["type", "remote_id"], :name => "index_ex_links_on_type_and_remote_id"
+  add_index "ex_links", ["uri"], :name => "index_ex_links_on_uri"
+
   create_table "histories", :force => true do |t|
     t.string   "target",      :null => false
     t.string   "target_type"
@@ -125,6 +145,14 @@ ActiveRecord::Schema.define(:version => 20121128122213) do
   end
 
   add_index "tags", ["name"], :name => "index_tags_on_name", :unique => true
+
+  create_table "tags_ex_links", :id => false, :force => true do |t|
+    t.integer "tag_id"
+    t.integer "ex_link_id"
+  end
+
+  add_index "tags_ex_links", ["ex_link_id"], :name => "index_tags_ex_links_on_ex_link_id"
+  add_index "tags_ex_links", ["tag_id"], :name => "index_tags_ex_links_on_tag_id"
 
   create_table "users", :force => true do |t|
     t.string   "name",                                   :default => "",    :null => false
