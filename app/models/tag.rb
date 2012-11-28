@@ -4,9 +4,7 @@ class Tag < ActiveRecord::Base
   belongs_to :link, :foreign_key => :primary_link_id, :class_name => 'ExLink'
   has_and_belongs_to_many :calendars
 
-  attr_accessible :name, :link_attributes
-  accepts_nested_attributes_for :link,
-    :reject_if => lambda { |a| a[:uri].blank? }
+  attr_accessible :name, :link_uri
 
   validates :name, :presence => true, :format => {:with => /^\S+$/}
 
@@ -17,21 +15,17 @@ class Tag < ActiveRecord::Base
   def link_uri
     link.try :uri
   end
-  alias_method :uri, :link_uri
 
   def link_uri=(v)
-    l = link || build_link
-    l.update_attribute :uri, v
+    if v.blank?
+      self[:primary_link_id] = nil
+    else
+      l = ExLink.find_or_create_by_uri v
+      if l && l.valid?
+        self[:primary_link_id] = l.id
+      else
+        errors[:link_uri] << "is invalid URI"
+      end
+    end
   end
-  alias_method :uri=, :link_uri=
-
-  def link_name
-    link.try :name
-  end
-
-  def link_name=(v)
-    link or raise "Create link or call link_uri= before set link name."
-    link.update_attribute :name, v
-  end
-
 end

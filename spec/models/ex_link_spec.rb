@@ -26,4 +26,14 @@ describe ExLink do
     links.should have(2).items
   end
 
+  it "cannot set uri when it has been saved" do
+    l = a_link
+    l.save!
+    l.title = "hoge"
+    l.save.should be_true
+    lambda {
+      l.uri = "http://www.nicovideo.jp"
+    }.should raise_error(ArgumentError)
+  end
+
 end

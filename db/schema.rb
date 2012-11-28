@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20121128200829) do
+ActiveRecord::Schema.define(:version => 20121128231941) do
 
   create_table "calendars", :force => true do |t|
     t.string   "name",                          :default => "", :null => false
@@ -106,7 +106,7 @@ ActiveRecord::Schema.define(:version => 20121128200829) do
 
   create_table "ex_links", :force => true do |t|
     t.string   "type"
-    t.string   "name",       :default => "", :null => false
+    t.string   "title",      :default => "", :null => false
     t.text     "uri",        :default => "", :null => false
     t.string   "remote_id"
     t.datetime "created_at",                 :null => false

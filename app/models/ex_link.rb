@@ -1,17 +1,22 @@
+require 'htmlentities'
+
 class ExLink < ActiveRecord::Base
   self.store_full_sti_class = true
-  attr_accessible :name, :uri
+  attr_accessible :title
+  attr_accessible :uri, :if => :new_record?
   has_and_belongs_to_many :related_events, :class_name => 'Event'
   has_many :main_events, :foreign_key => :primary_link_id, :class_name => 'Event'
   has_many :tags,        :foreign_key => :primary_link_id
 
-  validates :uri, :presence => true, :uri => true
+  validates :uri,    :presence => true,   :uri => true
+  validates :digest, :uniqueness => true
 
   @@remote_fetch_enabled = true
+  @@htmlentities_coder = HTMLEntities.new
 
   class << self
     def scan(text)
-      text.scan(%r{(?:https?://|www\.)[^\s\x00-\x20()<>"'`\x7f]+}).map { |uri| #"
+      text.to_s.scan(%r{(?:https?://|www\.)[\x21-\x26\x2a-\x3b=\x3f-\x7e]+}).map { |uri| #"
         uri[0..3] != 'http' and uri = 'http://' + uri
         find_or_initialize_by_uri uri
       }.select {|l| l.valid? }
@@ -59,24 +64,35 @@ class ExLink < ActiveRecord::Base
   end
 
   def uri=(v)
+    unless new_record? && self[:uri] != v
+      if Rails.configuration.active_record.mass_assignment_sanitizer == :strict
+        raise ArgumentError.new("Cannot update URI. Create a new record.")
+      else
+        return nil
+      end
+    end
     self[:uri] = v
     self[:digest] = self.class.digest(v)
     begin
-      update_type_and_remote_id
+      set_type_and_remote_id
     rescue StandardError, URI::InvalidURIError, TimeoutError => e
-      logger.debug "[ExLink##{id}] HTTP fech failed to getting name: #{e.message}"
+      logger.debug "[ExLink##{id}] HTTP fech failed to getting title: #{e.message}"
     end
   end
 
   def detect_type_and_remote_id
     type = nil
     remote_id = nil
-    uri = URI.parse(self.uri) 
+    begin
+      uri = URI.parse(self.uri) 
+    rescue URI::InvalidURIError
+      return {type: nil, remote_id: nil}
+    end
     case uri.host
     when %r{^(?:www\.)?amazon\.(?:co\.)?jp$}
       type = 'ExLink::Amazon'
       uri.path =~ %r{(?:dp|ASIN)/([^/]{4,})} and remote_id = $1
-    when %r{^(?:www\.)?nicovideo\.jp/}
+    when %r{\.?nicovideo\.jp$}
       type = 'ExLink::NicoVideo'
       uri.path =~ %r{^/watch/([^/]+)} and remote_id = $1
     when %r{^(?:www\.)?youtube\.(?:com|[a-z][a-z])$/}
@@ -91,39 +107,68 @@ class ExLink < ActiveRecord::Base
     {type: type, remote_id: remote_id}
   end
 
-  def update_type_and_remote_id
+  def set_type_and_remote_id
     ti = detect_type_and_remote_id
     ti[:type] or return
     self[:type]      = ti[:type]
     self[:remote_id] = ti[:remote_id]
-    name? and return
+    title? and return
     @@remote_fetch_enabled or return
-    self[:name] =  get_remote_title
+    t = get_remote_title and
+      self[:title] = t
+  end
+
+  def update_type_and_remote_id
+    set_type_and_remote_id
+    save
   end
 
   def typename
     (type.split('::').last || 'Default').underscore
   end
 
-  def upate_name
-    name? and return
+  def update_title
+    title? and return
     @@remote_fetch_enabled or return
-    update_attribute :name, get_remote_title
+    t = get_remote_title and
+      update_attribute :title, t
   end
 
   def get_remote_title
     response = nil
     cur_uri = self.uri
-    Timeout::timeout(3) {
-      while cur_uri
-        response = Faraday.get cur_uri
-        cur_uri = nil
-        response.status == 301 || response.status == 302 and
-          cur_uri = response.headers["location"]
-      end
-    }
-    response.body =~ %r{<title>(.*?)</title>}m or return nil
-    $1.strip.gsub(/\s+/, ' ')
+    begin
+      Timeout::timeout(3) {
+        while cur_uri
+          response = Faraday.get cur_uri
+          cur_uri = nil
+          response.status == 301 || response.status == 302 and
+            cur_uri = response.headers["location"]
+        end
+      }
+    rescue => e
+      logger.error "[URI ##{id}] Remote title fetch error: #{e.message}"
+      return nil
+    end
+    response.status == 200 or return nil
+    body = response.body
+    response.headers["content-type"] =~ /charset=([.a-z0-9_-]*)/i or
+      body =~ /charset=["']?([a-z0-9._-]+?)(?=["'>\s])/i
+    code = $1
+    case code.to_s.downcase
+    when 'shift', 'ms932', 'x-sjis'
+      code = 'shift_jis'
+    when 'x-euc', 'euc'
+      code = 'euc-jp'
+    end
+    body =~ %r{<title>(.*?)</title>}m or return nil
+    begin
+      title = $1.strip
+      @@htmlentities_coder.decode title.gsub(/\s+/, ' ').force_encoding(code || 'utf-8').encode('utf-8', :invalid => :replace)
+    rescue => e
+      logger.error "[URI ##{id}] Failed to convert remote title encoding: #{e.message} (#{uri} : #{title})"
+      return nil
+    end
   end
 
   class Amazon < ExLink

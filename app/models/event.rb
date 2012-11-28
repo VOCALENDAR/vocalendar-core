@@ -131,7 +131,7 @@ class Event < ActiveRecord::Base
     :source => :calendars, :conditions => {'calendars.io_type' => 'dst'}
 
   has_and_belongs_to_many :related_links, :class_name => 'ExLink'
-  has_one :primary_link, :class_name => 'ExLink'
+  belongs_to :primary_link, :class_name => 'ExLink'
 
   mount_uploader :image, EventImageUploader
 
@@ -139,7 +139,7 @@ class Event < ActiveRecord::Base
     :start_date, :start_datetime, :end_date, :end_datetime,
     :start_time, :end_time, :country, :lang, :allday,
     :twitter_hash, :timezone, :tag_names, :tag_names_str,
-    :image, :image_cache, :name
+    :image, :image_cache, :name, :primary_link_uri
 
   validates :g_id,    :uniqueness => true, :allow_nil => true
   validates :etag,    :presence => true
@@ -184,6 +184,47 @@ class Event < ActiveRecord::Base
 
   def active?
     !cancelled?
+  end
+
+  def description=(v)
+    self[:description] = v
+    update_related_links
+  end
+
+  def location=(v)
+    self[:location] = v
+    update_related_links
+  end
+
+  def update_related_links
+    self.related_link_ids =
+      (related_links + 
+       ExLink.scan(description) +
+       ExLink.scan(location)
+       ).uniq.map {|l| l.save; l.id }.compact.uniq
+  end
+
+  def related_link_uris
+    related_links.map {|l| l.uri }
+  end
+
+  def related_link_uris=(uris)
+    self.related_link_ids = uris.map { |uri|
+      ExLink.find_or_create_by_uri(uri).id
+    }
+  end
+
+  def primary_link_uri
+    primary_link.try :uri
+  end
+
+  def primary_link_uri=(v)
+    l = ExLink.find_or_create_by_uri v
+    if l && l.valid?
+      self[:primary_link_id] = l.id
+    else
+      error[:primary_link_id] << 'is invalid URI'
+    end
   end
 
   def timezone

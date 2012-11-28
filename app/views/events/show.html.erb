@@ -13,7 +13,7 @@
 
 <h3><%= t "general.details" %></h3>
 <table class="table table-striped">
-  <% %w(id summary term_str location twitter_hash updated_at
+  <% %w(id summary term_str location twitter_hash updated_at primary_link_uri
         timezone g_id g_eid etag status recurring_instance?).each do |field| %>
   <tr>
     <th><%= Event.human_attribute_name field %></th>
@@ -63,7 +63,16 @@
   </tr>
   <tr>
     <th><%= Event.human_attribute_name :description %></th>
-    <td><%= simple_format @event.description %></td>
+    <td><%= auto_link simple_format @event.description %></td>
+  </tr>
+  <tr>
+    <th><%= Event.human_attribute_name :related_links %></th>
+    <td><% @event.related_links.each do |link| %>
+      <li><%= link_to link.title.blank? ? link.uri.sub(/(.{80}).*$/, '\\1...') : link.title, link.uri %> 
+        (<%= link.typename %> / <%= link.remote_id %>)
+      </li>
+      <% end%>
+    </td>
   </tr>
 </table>
 

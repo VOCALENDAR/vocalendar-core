@@ -21,7 +21,7 @@
   </tr>
   <tr>
     <th><%= Tag.human_attribute_name :link %></th>
-    <td><%= link_to @tag.uri.gsub(/^(.{60}).*/, '\1...'), @tag.uri if @tag.link %></td>
+    <td><%= link_to @tag.link_uri.gsub(/^(.{60}).*/, '\1...'), @tag.link_uri if @tag.link %></td>
   </tr>
 </table>
 

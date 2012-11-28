@@ -25,7 +25,7 @@ describe ExLinksController do
   # update the return value of this method accordingly.
   def valid_attributes
     {
-      name: "VOCALENDAR",
+      title: "VOCALENDAR",
       uri:  "http://vocalendar.jp/#{Time.now.to_f}",
     }
   end
@@ -114,41 +114,23 @@ describe ExLinksController do
         # specifies that the ExLink created on the previous line
         # receives the :update_attributes message with whatever params are
         # submitted in the request.
-        ExLink.any_instance.should_receive(:update_attributes).with({ "name" => "VC" })
-        put :update, {:id => ex_link.to_param, :ex_link => { "name" => "VC" }}, valid_session
+        ExLink.any_instance.should_receive(:update_attributes).with({ "title" => "VC" })
+        put :update, {:id => ex_link.to_param, :ex_link => { "title" => "VC" }}, valid_session
       end
 
       it "assigns the requested ex_link as @ex_link" do
         ex_link = ExLink.create! valid_attributes
-        put :update, {:id => ex_link.to_param, :ex_link => valid_attributes}, valid_session
+        put :update, {:id => ex_link.to_param, :ex_link => { "title" => ex_link.title}}, valid_session
         assigns(:ex_link).should eq(ex_link)
       end
 
       it "redirects to the ex_link" do
         ex_link = ExLink.create! valid_attributes
-        put :update, {:id => ex_link.to_param, :ex_link => valid_attributes}, valid_session
+        put :update, {:id => ex_link.to_param, :ex_link => { "title" => ex_link.title}}, valid_session
         response.should redirect_to(ex_link)
       end
     end
 
-    describe "with invalid params" do
-      it "assigns the ex_link as @ex_link" do
-        ex_link = ExLink.create! valid_attributes
-        # Trigger the behavior that occurs when invalid params are submitted
-        ExLink.any_instance.stub(:save).and_return(false)
-        put :update, {:id => ex_link.to_param, :ex_link => { "uri" => "invalid value" }}, valid_session
-        assigns(:ex_link).should eq(ex_link)
-      end
-
-      it "re-renders the 'edit' template" do
-        pending "do not works with responder"
-        ex_link = ExLink.create! valid_attributes
-        # Trigger the behavior that occurs when invalid params are submitted
-        ExLink.any_instance.stub(:save).and_return(false)
-        put :update, {:id => ex_link.to_param, :ex_link => { "uri" => "invalid value" }}, valid_session
-        response.should render_template("edit")
-      end
-    end
   end
 
   describe "DELETE destroy" do

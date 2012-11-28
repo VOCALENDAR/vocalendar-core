@@ -41,6 +41,7 @@ gem 'mime-types'
 gem 'rmagick'
 gem 'rails_autolink'
 gem 'addressable'
+gem 'htmlentities'
 
 group :development, :test do
   gem 'rspec-rails'
