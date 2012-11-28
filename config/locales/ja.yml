@@ -9,7 +9,6 @@ ja:
       user: ユーザ
       history: 履歴
       tag: タグ
-      uri: URI
     attributes:
       setting:
         var: 名前

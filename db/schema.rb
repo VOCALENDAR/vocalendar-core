@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20121126121222) do
+ActiveRecord::Schema.define(:version => 20121128122213) do
 
   create_table "calendars", :force => true do |t|
     t.string   "name",                          :default => "", :null => false
@@ -69,7 +69,6 @@ ActiveRecord::Schema.define(:version => 20121126121222) do
     t.string   "g_id"
     t.string   "recur_string"
     t.string   "ical_uid",                  :default => "",           :null => false
-    t.text     "primary_uri"
     t.integer  "tz_min",                    :default => 540
     t.string   "country",                   :default => "jp"
     t.string   "lang",                      :default => "ja"
@@ -123,20 +122,9 @@ ActiveRecord::Schema.define(:version => 20121126121222) do
     t.string   "name",       :default => "", :null => false
     t.datetime "created_at",                 :null => false
     t.datetime "updated_at",                 :null => false
-    t.text     "uri"
   end
 
   add_index "tags", ["name"], :name => "index_tags_on_name", :unique => true
-
-  create_table "uris", :force => true do |t|
-    t.text     "event_id"
-    t.text     "serviceName"
-    t.text     "uri"
-    t.text     "kind"
-    t.text     "body"
-    t.datetime "created_at",  :null => false
-    t.datetime "updated_at",  :null => false
-  end
 
   create_table "users", :force => true do |t|
     t.string   "name",                                   :default => "",    :null => false

@@ -20,21 +20,18 @@ class EventsController < ApplicationController
     params[:include_delete].blank? and
       @events = @events.active
 
-    respond_with @events, :include=> [:tags,  :uris]
+    respond_with @events, :include=> [:tags]
   end
 
   # GET /events/1
   # GET /events/1.json
   def show
-    respond_with @event, :include=> [:tags,  :uris]
+    respond_with @event, :include=> [:tags]
   end
 
   # GET /events/new
   # GET /events/new.json
   def new
-    # TODO 回数はとりあえず固定
-    # TODO: これはやめよう。動的に作るべき。 (gull08)
-    2.times { @event.uris.build }
     respond_with @event
   end
 

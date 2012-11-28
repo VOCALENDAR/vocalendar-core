@@ -41,8 +41,6 @@ VocalendarCore::Application.routes.draw do
 
   match 'dashboard(/:action)', :controller => 'dashboard', :as => 'dashboard'
 
-  get "uris/new" # TODO: fix!
-
   # The priority is based upon order of creation:
   # first created -> highest priority.
 

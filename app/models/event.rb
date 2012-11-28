@@ -130,16 +130,13 @@ class Event < ActiveRecord::Base
   has_many :dst_calendars, :class_name => 'Calendar', :through => :all_tags,
     :source => :calendars, :conditions => {'calendars.io_type' => 'dst'}
 
-  has_many :uris, :autosave => true, :dependent => :destroy
-
   mount_uploader :image, EventImageUploader
 
-  accepts_nested_attributes_for :uris
   attr_accessible :description, :location, :summary,
     :start_date, :start_datetime, :end_date, :end_datetime,
     :start_time, :end_time, :country, :lang, :allday,
     :twitter_hash, :timezone, :tag_names, :tag_names_str,
-    :image, :image_cache, :uris_attributes
+    :image, :image_cache
 
   validates :g_id,    :uniqueness => true, :allow_nil => true
   validates :etag,    :presence => true

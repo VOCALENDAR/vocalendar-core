@@ -3,20 +3,6 @@
   <%= render :partial => 'form_parts_base', :locals => {:f => f} %>
 </div>
 
-  <div class="uris">
-  <%= Uri.human_attribute_name :serviceName %>
-  <%= Uri.human_attribute_name :uri %>
-  <%= Uri.human_attribute_name :body %>
-  <br />
-  	<%= f.fields_for :uris do |uri| %>
-
-	    <%= uri.text_field :serviceName %>
-	    <%= uri.text_field :uri %>
-	    <%= uri.text_field :body %>
-    <br />
-  	<% end %>
-  
-  </div>
   <div class="actions">
     <%= f.submit :class => 'btn btn-primary' %>
     <%= link_to t('general.back_to_list'), url_for(:action => :index), :class => 'btn' %>
