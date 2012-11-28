@@ -136,7 +136,7 @@ class Event < ActiveRecord::Base
     :start_date, :start_datetime, :end_date, :end_datetime,
     :start_time, :end_time, :country, :lang, :allday,
     :twitter_hash, :timezone, :tag_names, :tag_names_str,
-    :image, :image_cache
+    :image, :image_cache, :name
 
   validates :g_id,    :uniqueness => true, :allow_nil => true
   validates :etag,    :presence => true
@@ -168,9 +168,7 @@ class Event < ActiveRecord::Base
   end
   attr_reader :extra_tags
 
-  def name
-    summary
-  end
+  alias_attribute :name, :summary
 
   def recurring_instance?
     g_recurring_event_id?
