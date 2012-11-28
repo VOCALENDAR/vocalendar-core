@@ -1,4 +1,6 @@
-<h2 id="VCLsearchDetailTtile"><%= t ".title" %></h2>
+<section id="VS_detailContainer" class="clearfix">
+
+<h2 id="VCLsearchDetailTitle"><%= t ".title" %></h2>
 <article id="EventDtail">
   <article class="VCLevent" id="datepanel">
     <section class="body">
@@ -26,9 +28,11 @@
       <p class="dow"><%= sd.strftime("%a").upcase %></p>
     </aside>
     <div class="content">
-      <%= auto_link(simple_format(@event.description)){ |t| truncate t, :length => 80 } %>
+      <%= auto_link(h(@event.description).gsub(/\n/, '<br>')){ |t| truncate t, :length => 80 } %>
     </div>
   </article>
 </article>
 
-<%= event_gcal_copy_link @event %>
+</section>
+
+<%= event_gcal_copy_link @event, nil, :class => 'VCLexecute' %>

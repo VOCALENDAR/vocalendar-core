@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 module EventsHelper
-  def event_gcal_copy_link(event, label = nil, attrs = {}, html_opts = {})
+  def event_gcal_copy_link(event, label = nil, html_opts = {}, attrs = {})
     prefix = event.tag_names.empty? ? "" : "【#{event.tag_names.join('/')}】"
     html_opts = {:target => '_blank', :class => 'btn VC_button'}.merge(html_opts)
     default_attrs = {

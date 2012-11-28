@@ -1,0 +1,33 @@
+<table class="table table-condensed table-hover table-striped">
+  <tr>
+    <th><%= Event.human_attribute_name :summary %></th>
+    <th><%= Event.human_attribute_name :type %></th>
+    <th><%= Event.human_attribute_name :term %></th>
+    <th><%= Event.human_attribute_name :updated_at %></th>
+    <th><%= Event.human_attribute_name :tags %></th>
+    <th><%= Event.human_attribute_name :recurring_instance? %></th>
+  </tr>
+
+<% @events.each do |event| %>
+  <tr>
+    <td><%= link_to event.summary, event %>
+      <% if event.g_html_link? %>
+      <%= link_to ' <i class="icon-calendar"></i>'.html_safe,
+          event.g_html_link,
+          :target => '_blank',
+          :title => t('general.open_in_editors_calendar') 
+      %>
+      <% end %>
+    </td>
+    <td><%= event.type.blank? ? '' : link_to(t("events.types.#{event.type}"), release_events_path) %></td>
+    <td><%= event.term_str %></td>
+    <td><%= l event.updated_at %></td>
+    <td>
+      <% event.all_tags.uniq.each do |tag| %>
+      <%= link_to tag.name, tag_events_path(tag.id) %>
+      <% end %>
+    </td>
+    <td><%=raw '&#x2713;' if event.recurring_instance? %></td>
+  </tr>
+<% end %>
+</table>

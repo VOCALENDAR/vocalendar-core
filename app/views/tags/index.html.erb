@@ -1,25 +1,22 @@
-<h1>Listing tags</h1>
+<h2><%= t ".title" %></h2>
 
-<table>
+<div class="clearfix">
+
+<% @tags.each_slice((@tags.count.to_f / 3).ceil) do |cur_tags| %>
+<table class="table table-hover pull-left tag-list">
   <tr>
-    <th><%= Tag.human_attribute_name :id %></th>
     <th><%= Tag.human_attribute_name :name %></th>
     <th><%= Tag.human_attribute_name :event_count %></th>
   </tr>
 
-<% @tags.each do |tag| %>
+<% cur_tags.each do |tag| %>
   <tr>
-    <td>#<%= tag.id %></td>
-    <td><%= tag.name %></td>
+    <td><%= link_to tag.name, tag %></td>
     <td><%= link_to tag.events.active.count, events_path(:tag_id => tag.id) %></td>
-    <td><%= link_to 'Show', tag %></td>
-    <td><%= link_to 'Edit', edit_tag_path(tag) %></td>
-    <td><%= link_to 'Destroy', tag, method: :delete, data: { confirm: 'Are you sure?' } %></td>
   </tr>
 <% end %>
 </table>
+<% end %>
+
+</div>
 <%= paginate @tags %>
-
-<br />
-
-<%= link_to 'New Tag', new_tag_path %>

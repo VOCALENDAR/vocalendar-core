@@ -1,14 +1,42 @@
-<h2>Tag: <%= @tag.name %></h2>
+<h2><%= t ".title", :name => @tag.name %></h2>
 
-<h3>Event count: <%= link_to @tag.events.count, events_path(:tag_id => @tag.id) %></h3>
+<div class="well">
+  <%= link_to t('general.edit'), edit_tag_path(@tag), :class => 'btn' %>
+  <%= link_to t("general.back_to_list"), url_for(:action => :index), :class => 'btn' %>
+  <%= link_to %Q{<i class="icon-trash" title="#{t 'general.delete'}"></i>#{t 'general.delete'}}.html_safe, @tag, confirm: t("general.delete_confirm", name: "#{@tag.name} (#{@tag.id})"), method: :delete , :class => 'btn btn-danger pull-right' if can? :destroy, @tag %>
 
-<h3>Recent Events</h3>
+</div>
 
+<h3><%= t "general.details" %></h3>
+<table class="table table-hover">
+  <% %w(id name).each do |f| %>
+  <tr>
+    <th><%= Tag.human_attribute_name f %></th>
+    <td><%= v = @tag.__send__(f); v.is_a?(Time) ? l(v) : v %></td>
+  </tr>
+  <% end %>
+  <tr>
+    <th><%= Tag.human_attribute_name :created_at %></th>
+    <td><%= l @tag.created_at %></td>
+  </tr>
+  <tr>
+    <th><%= Tag.human_attribute_name :uri %></th>
+    <td><%= link_to @tag.uri.to_s.sub(/^(.{30})/, '\1...'), @tag.uri if @tag.uri? %></td>
+  </tr>
+</table>
+
+<h3><%= t ".associated_dst_calenar" %> (<%= @tag.calendars.length%>)</h3>
 <ul>
-<% @tag.events.where('? < start_date', Date.today + 1.month).order('start_date desc').limit(10).each do |event| %>
-   <li>[<%= event.term_str %>] <%= link_to event.summary, event_path(event) %></li>
-<% end %>
+  <% @tag.calendars.each do |cal| %>
+  <li><%= link_to cal.name, cal %></li>
+  <% end %>
 </ul>
 
-<%= link_to 'Edit', edit_tag_path(@tag) %> |
-<%= link_to 'Back', tags_path %>
+
+<h3><%= t "general.events" %> (<%= link_to @tag.events.active.length, tag_events_path(@tag.id) %>)</h3>
+<% @events = @tag.events.limit(10) %>
+<%= render 'events/list' %>
+<ul class="pager"><li class="next">
+<%= link_to t('general.more'), tag_events_path(@tag.id) %>
+</li></ul>
+

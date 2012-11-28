@@ -1,9 +1,9 @@
-<section id='VS_resultContainer' class="clearfix">
+<section id="VS_resultContainer" class="clearfix" style="display: block">
   <h2 id="VCLsearchResultTitle"><%= t ".title" %><span style="color:#aaa;font-size:20px;"> &nbsp;BETA</span></h2>
   <a id="searchCloseBTN"></a>
   <article id="VS_events">
     <% @events.each_with_index do |event, i| %>
-    <article class="VCLevent sat c<%= i % 3 %>" id="event-datial-<%= event.id %>">
+    <article class="VCLevent <%= event.start_date.strftime("%a").downcase %> c<%= i % 3 %>" id="event-datial-<%= event.id %>">
       <section class="body">
         <h1 class="title"><%= event.summary %></h1>
         <div class="start clearfix">

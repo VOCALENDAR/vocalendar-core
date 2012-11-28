@@ -1,31 +1,31 @@
  * タグの名前が直接変更された時に、何らかの方法で書き出し先を更新する
    * タグ名変更不能にしておいたほうがいいか？
  * カレンダーの追加/削除タグが変更された時に強制反映するしくみ
- * tags#* の画面をまともに
- * アクションヒストリの記録を各種コントローラに追加
+ * tags#edit の画面をまともに。名前変更不能に。
+ * tag cleanup をモデルに移してアクションに入れる
  * タグにシステム属性フラグを追加?
    * 「メイン」「新曲はっぴょう予定」などだが、国際化をどうするか……
  * イベントモデルのURI属性を整理
    * evnets.primary_uri 削除
    * uri を events と n:m に
+   * と言うか、タグの URI も has_one :uri でいい
+ * アクションヒストリの記録を各種コントローラに追加
  * 動的にユーザ作った時に名前とか入れるように users/edit に飛ばす
    * users/edit のビューを整備
    * user の他のビューも整備
  * 申請フォームを取り込む
    * 新曲
    * イベント登録申請
- * an_event.status の通常更新不可に。accsssible を絞る :as を活用すること
  * カレンダーの同期時に何らかの手段でロックする
  * カレンダーの削除タグで glob support
  * google への書き込みで繰り返しイベントインスタンスがちゃんと
    書き込まれるか確認する
  * 単体イベントのみを強制更新する仕組み
- * calendars#show の整備 (events#show と同じ感じで)
- * events#show に関連カレンダー表示も追加
  * レイアウトで flash message の出力
  * モデルエラーを flash にいれる
  * flash responder がうごいてない
- * etag を g_etag に名前変更、オプショナルに。before_validation の代入
-   を落とす
- * names_str= をつかわず、names= が String を渡されたら勝手に maes_str=
-   へカスケードするようにする
+ * タグなど関連モデルを変更しても etag が変わらない
+ * History を polymorphic association で結びつけるように変更するか？
+ * rails 3.2.9 upgrade
+ * event*_controller の @type のセットをもっとまともに。
+   親クラスで全部やること。cancan の load_resource を参考に

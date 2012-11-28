@@ -17,17 +17,26 @@ VocalendarCore::Application.routes.draw do
     end
   end
 
-  resources :events
-  resources :release_events, :path => 'release'
-  resources :calendars
-  resources :users
+  resources :events do
+    resources :histories, :only => :index
+  end
+  resources :release_events, :path => 'release' do
+    resources :histories, :only => :index
+  end
+  resources :calendars do
+    resources :histories, :only => :index
+  end
+  resources :users do
+    resources :histories, :only => :index
+  end
   resources :tags do
     resources :events
+    resources :histories, :only => :index
   end
 
   scope 'manage' do
     resources :settings
-    resources :histories, :only => [:index]
+    resources :histories, :only => :index
   end
 
   match 'dashboard(/:action)', :controller => 'dashboard', :as => 'dashboard'

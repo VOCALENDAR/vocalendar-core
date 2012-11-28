@@ -1,3 +1,4 @@
+# -*- ruby -*-
 namespace :sync_calendar do
   desc "Publish events to google calendar"
   task :publish, [:force] => :environment do |t, args|

@@ -1,5 +1,5 @@
 <%= form_tag events_path, :method => 'get', :class => 'form-inline' do %>
-<div class="well pull-right" style="position: relative;">
+<div class="well well-small pull-right" style="position: relative;">
   <a class="btn btn-small" data-target="#filter-main" data-toggle="collapse"
      style="position: absolute; top: 0; right: 0; z-index: 10;">
     <%= t "general.filter"  %>
@@ -15,6 +15,8 @@
     <br>
     <%= text_field_tag :q, params[:q], :placeholder => 'Search string',
         :title => 'Search string' %><br>
+    <%= check_box_tag  :include_delete, 1, params[:include_delete] %>
+    <%= label_tag      :include_delete, 'Include deleted events' %><br>
     <div class="pull-right">
       <%= link_to t('general.clear_filter'), events_path, :class => 'btn' %>
       <%= submit_tag t('general.apply_filter', :default => 'Apply Filter'), :name => '', :class => 'btn' %>
@@ -27,43 +29,5 @@
 
 <%= link_to t('general.create_new'), url_for(:action => :new), :class => 'btn' %>
 <%= paginate @events %>
-
-<table class="table table-condensed table-hover table-striped">
-  <tr>
-    <th><%= Event.human_attribute_name :id %></th>
-    <th><%= Event.human_attribute_name :type %></th>
-    <th><%= Event.human_attribute_name :summary %></th>
-    <th><%= Event.human_attribute_name :term %></th>
-    <th><%= Event.human_attribute_name :updated_at %></th>
-    <th><%= Event.human_attribute_name :tags %></th>
-  </tr>
-
-<% @events.each do |event| %>
-  <tr>
-    <td><%= event.id %></td>
-    <td><%= event.type.blank? ? '' : link_to(t("events.types.#{event.type}"), release_events_path) %></td>
-    <td><%= link_to event.summary, event %>
-      <% if event.g_html_link? %>
-      <%= link_to ' <i class="icon-calendar"></i>'.html_safe,
-          event.g_html_link,
-          :target => '_blank',
-          :title => t('general.open_in_editors_calendar') 
-      %>
-      <% end %>
-    </td>
-    <td><%= event.term_str %></td>
-    <td><%= l event.updated_at %></td>
-    <td>
-      <% event.all_tags.uniq.each do |tag| %>
-      <%= link_to tag.name, tag_events_path(tag.id) %>
-      <% end %>
-    </td>
-  </tr>
-<% end %>
-</table>
-
+<%= render 'list' %>
 <%= paginate @events %>
-
-<br />
-
-<%= link_to 'New Event', new_event_path %>

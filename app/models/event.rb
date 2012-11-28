@@ -81,6 +81,9 @@ class Event < ActiveRecord::Base
   scope :by_tag_ids, (lambda do |ids|
     joins(:all_tag_relations).where('event_tag_relations.tag_id' => ids)
   end)
+  scope :by_tag_name, (lambda do |name|
+    joins(:all_tags).where('tags.name' => name)
+  end)
   scope :search, (lambda do |query|
     sqls = []
     args = []
@@ -112,15 +115,18 @@ class Event < ActiveRecord::Base
   has_many :all_tags,  :through => :all_tag_relations, :source => :tag
   has_many :tags,      :through => :main_tag_relations
   
-  has_one  :reccuring_parent, :class_name => 'Event',
-    :foreign_key => 'g_recurring_event_id', :primary_key => 'g_id'
+  has_one  :recurrent_parent, :class_name => 'Event',
+    :primary_key => 'g_recurring_event_id', :foreign_key => 'g_id',
+    :conditions => "g_id IS NOT NULL" # NOTE: ...any other way?
+  has_many :recurrent_children, :class_name => 'Event',
+    :foreign_key => 'g_recurring_event_id', :primary_key => 'g_id',
+    :conditions => "g_recurring_event_id IS NOT NULL" # NOTE: ...any other way?
 
   has_many :histories, :class_name => 'History',
     :conditions => {:target => 'event'}, :foreign_key => 'target_id'
 
   has_one  :src_calendar, :class_name => 'Calendar',
     :foreign_key => 'external_id', :primary_key => 'g_calendar_id'
-
   has_many :dst_calendars, :class_name => 'Calendar', :through => :all_tags,
     :source => :calendars, :conditions => {'calendars.io_type' => 'dst'}
 
@@ -520,7 +526,7 @@ class Event < ActiveRecord::Base
   end
 
   def generate_etag
-    self[:etag].blank? or return
+    etag? && !changed? or return
     self[:etag] = SecureRandom.hex(32)
   end
 

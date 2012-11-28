@@ -6,8 +6,10 @@ class Calendar < ActiveRecord::Base
 
   has_many :fetched_events, :class_name => 'Event',
     :foreign_key => 'g_calendar_id', :primary_key => 'external_id'
-  has_and_belongs_to_many :tags
   has_many :target_events, :through => :tags, :source => :events
+  has_many :histories, :class_name => 'History',
+    :conditions => {:target => 'calendar'}, :foreign_key => 'target_id'
+  has_and_belongs_to_many :tags
   belongs_to :user
 
   basic_allowed_attrs = [:name, :external_id, :io_type, :tag_ids,

@@ -1,5 +1,5 @@
 class ExternalUi::EventsController < ApplicationController
-  layout false
+  layout "mainsite_dummy"
 
   def index
     @events = Event.active.page(params[:page]).per(50)
@@ -7,6 +7,7 @@ class ExternalUi::EventsController < ApplicationController
       @events = @events.search(params[:q])
     params[:tag_id].blank? or
       @events = @events.by_tag_ids(params[:tag_id])
+
     respond_with @events
   end
 

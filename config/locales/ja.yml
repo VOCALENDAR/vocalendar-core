@@ -53,6 +53,7 @@ ja:
         offset: タイムゾーンオフセット
         src_calendar: 取り込み元カレンダー
         dst_calendars: 書き出し先カレンダー
+        recurring_instance?: 再起特例?
       tag:
         updated_at: 更新日時
         created_at: 作成日時
@@ -98,6 +99,8 @@ ja:
     delete_confirm: 本当に %{name} を削除してよろしいですか？
     copy_to_google_calendar: Googleカレンダーにコピー
     open_in_editors_calendar: Googleの編集用カレンダーで開く
+    open_google_calendar: Googleカレンダーを開く
+    details: 詳細情報
     back_to_list: 一覧に戻る
     sync_calendar_tag_note: 同期時に出力するタグを選択します(種別が「書き出し」の場合しか意味がありません)
     history: 履歴
@@ -108,6 +111,8 @@ ja:
   calendars:
     index:
       title: 連携カレンダー一覧
+    show:
+      title: "カレンダー: %{name}"
     edit:
       title: "カレンダー '%{name}' の編集"
   dashboard:
@@ -116,15 +121,21 @@ ja:
     alerts:
       title: チェックツール
   events:
+    index:
+      title: イベント一覧
     new:
       title: "イベント(%{type})の新規作成"
     show:
       title: "イベント: %{name}"
-      detail: 詳細情報
     types:
       default: 標準
       Event: 標準
       ReleaseEvent: 新曲情報
+  tags:
+    index:
+      title: タグ一覧
+    show:
+      title: "タグ: %{name}"
   external_ui:
     events:
       show:

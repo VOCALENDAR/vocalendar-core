@@ -1,0 +1,39 @@
+<h2><%= t ".title", :name => @calendar.name %></h2>
+
+<div class="well">
+  <%= link_to t("general.edit"), edit_calendar_path(@calendar), :class => 'btn' if can? :edit, @calendar %>
+  <%= link_to t("general.open_google_calendar"), "https://www.google.com/calendar/embed?src=#{@calendar.external_id}", :class => 'btn' %>
+  <%= link_to t("general.back_to_list"), calendars_path, :class => 'btn' %>
+  <%= link_to %Q{<i class="icon-trash" title="#{t 'general.delete'}"></i>#{t 'general.delete'}}.html_safe, @calendar, confirm: t("general.delete_confirm", name: "#{@calendar.name} (#{@calendar.external_id})"), method: :delete , :class => 'btn btn-danger pull-right' if can? :destroy, @calendar %>
+</div>
+
+<h3><%= t "general.details" %></h3>
+<table class="table table-striped">
+  <% %w(id name io_type created_at updated_at external_id sync_started_at
+        sync_finished_at latest_synced_item_updated_at
+        tag_names_append_str tag_names_remove_str).each do |field| %>
+  <tr>
+    <th><%= Calendar.human_attribute_name field %></th>
+    <td><%= @calendar.__send__ field %></td>
+  </tr>
+  <% end %>
+  <tr>
+    <th><%= Calendar.human_attribute_name :user %></th>
+    <td><%= link_to_if @calendar.user, @calendar.user.try(:name), @calendar.user %></td>
+  </tr>
+  <tr>
+    <th><%= Calendar.human_attribute_name :target_events %></th>
+    <td><%= link_to @calendar.target_events.active.count, events_path(:tag_id => @calendar.tag_ids) %></td>
+  </tr>
+  <tr>
+    <th><%= Calendar.human_attribute_name :fetched_events %></th>
+    <td><%= link_to @calendar.fetched_events.active.count, events_path(:g_calendar_id => @calendar.external_id) %></td>
+  </tr>
+</table>
+
+<h3><%= t "general.recent_histories" %></h3>
+<% @histories = @calendar.histories.limit(10) %>
+<%= render 'histories/list_without_target' %>
+<ul class="pager"><li class="next">
+<%= link_to t('general.more'), calendar_histories_path(@calendar), :class => 'more' %>
+</li></ul>
