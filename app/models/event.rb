@@ -1,5 +1,8 @@
 # -*- coding: utf-8 -*-
 class Event < ActiveRecord::Base
+  # Load all STI child classes to get proper results from self.subclesses
+  require 'release_event'
+
   class ExtraTagContainer < Hash
     class TagContainer < Array
       def names_str
