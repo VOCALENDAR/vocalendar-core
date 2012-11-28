@@ -526,7 +526,7 @@ class Event < ActiveRecord::Base
   end
 
   def generate_etag
-    etag? && !changed? or return
+    !self[:etag].blank? && !changed? and return
     self[:etag] = SecureRandom.hex(32)
   end
 

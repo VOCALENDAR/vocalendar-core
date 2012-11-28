@@ -34,20 +34,20 @@ describe Event do
   it "saves tag relation postion" do
     e = an_event
     e.tag_names_str = "a b c d e"
-    e.save
+    e.save!
     e.main_tag_relations.map {|r| r.pos }.should eql (1..5).to_a
     e.tag_names = %w(m n o p)
-    e.save
+    e.save!
     e.main_tag_relations.map {|r| r.pos }.should eql (1..4).to_a
   end
 
   it "keeps tag order" do
     e = Event.new(valid_attrs)
     e.tag_names_str = "x y a b 0"
-    e.save
+    e.save!
     Event.find(e.id).tag_names.should eql %w(x y a b 0)
     e.tag_names = %w(Z ii hhh 0000)
-    e.save
+    e.save!
     Event.find(e.id).tag_names.should eql %w(Z ii hhh 0000)
   end
 
@@ -302,7 +302,7 @@ describe Event do
     e.extra_tags[:ext2].names_str = "a"
     e.extra_tags[:ext2].names.should eq %w(a)
     e.extra_tags[:ext1].names.should eq %w(hoge fuga funya)
-    e.save
+    e.save!
     en = Event.find(e.id)
     en.extra_tags[:ext1].names.should eq %w(hoge fuga funya)
     en.tag_names.should eq %w(should keep ordinal tags)
@@ -311,7 +311,7 @@ describe Event do
     e.extra_tags[:ext1].names.should eq %w(z 1)
     e.extra_tags[:ext2].names = %w(z 2 1)
     e.extra_tags[:ext2].names.should eq %w(z 2 1)
-    e.save
+    e.save!
 
     en = Event.find(e.id)
     en.extra_tags[:ext1].names.should eq %w(z 1)
@@ -344,5 +344,23 @@ describe Event do
     e.recurring_instance?.should be_false
     e.g_recurring_event_id = ""
     e.recurring_instance?.should be_false
+  end
+
+  it "generates etag automatically" do
+    e = an_event
+    e.etag.should be_blank
+    e.save!
+    e.etag.should_not be_blank
+  end
+
+  it "changes etag when attribute updates" do
+    e = an_event
+    e.save!
+    prev_etag = e.etag
+    e.summary = "test"
+    e.etag.should eq prev_etag
+    e.save!
+    e.etag.should_not eq prev_etag
+    e.etag.should_not be_blank
   end
 end
