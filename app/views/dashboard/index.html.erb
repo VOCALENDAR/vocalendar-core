@@ -25,6 +25,18 @@ Welcome to the minefield &mdash; VOCALENDAR Core system!<br>
   <li><%= link_to 'Settings', settings_path %></li>
 </ul>
 
+<h3>外部呼び出し用UIテスト</h3>
+<ul>
+  <li><%= link_to 'Event list', external_ui_events_path %></li>
+  <li><%= link_to 'Detail view', external_ui_event_path(Event.order('updated_at desc').limit(1).last) %></li>
+</ul>
+
+<h3>直接公開フォーム (TODO)</h3>
+<ul>
+  <li></li>
+  <li></li>
+</ul>
+
 <h3>debug</h3>
 <ul>
   <li><%= link_to 'Rails admin', '/rails_admin/' %></li>
