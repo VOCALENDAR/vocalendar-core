@@ -43,9 +43,7 @@
     <th><%= Event.human_attribute_name :tags %></th>
     <td>
       <% @event.all_tags.each do |tag| %>
-      <%= link_to "#{tag.name}", tag %>
-      (<%= link_to tag.events.active.count(:id), tag_events_path(:tag_id => tag.id) %>)
-      &nbsp;&nbsp;
+      <%= format_tag tag, :show_icon => true, :edit_icon => false %>
       <% end %>
     </td>
   </tr>
@@ -68,7 +66,7 @@
   <tr>
     <th><%= Event.human_attribute_name :related_links %></th>
     <td><% @event.related_links.each do |link| %>
-      <li><%= exlink link %></li>
+      <li><%= format_ex_link link %></li>
       <% end%>
     </td>
   </tr>

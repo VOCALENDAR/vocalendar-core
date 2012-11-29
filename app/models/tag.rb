@@ -15,6 +15,8 @@ class Tag < ActiveRecord::Base
   def link?
     !!link
   end
+  alias_method :uri?,      :link?
+  alias_method :link_uri?, :link?
 
   def link_uri
     link.try :uri

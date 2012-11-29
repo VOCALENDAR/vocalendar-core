@@ -221,6 +221,12 @@ class Event < ActiveRecord::Base
     }
   end
 
+  def primary_link?
+    !!primary_link
+  end
+  alias_method :primary_link_uri?, :primary_link?
+  alias_method :uri?,              :primary_link?
+
   def primary_link_uri
     primary_link.try :uri
   end

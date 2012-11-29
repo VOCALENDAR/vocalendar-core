@@ -1,5 +1,5 @@
 module ExLinksHelper
-  def exlink(link, opts = {})
+  def format_ex_link(link, opts = {})
     link.blank? and return ""
 
     default_opts = {
@@ -34,8 +34,8 @@ module ExLinksHelper
   end
 
   def auto_link(text)
-    ExLink.gsub(h(text)) {|ex_link, uri_text|
-      exlink ex_link, :label => uri_text, :type_icon => false, :max_length => 80
+    ExLink.gsub(h(text)) {|link, uri_text|
+      format_ex_link link, :label => uri_text, :type_icon => false, :max_length => 80
     }.html_safe
   end
 end
