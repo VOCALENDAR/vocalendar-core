@@ -69,15 +69,18 @@ class ApplicationController < ActionController::Base
   end
 
   def render_proc_error(e)
+    logger.error "Process error [#{request.path}]: (#{e.status}) #{e.message}"
     render_error :message => e.message, :status => e.status
   end
 
   def render_ar_error(e)
+    logger.error "RecordNotFound [#{request.path}]: (404) #{e.message}"
     render_error :message => e.message, :status => 404
   end
 
   def render_cancan_error(e)
     if user_signed_in?
+      logger.error "Forbidden [#{request.path}]: (403) #{e.message}"
       render_error :message => e.message, :status => 403
     else
       session[:"user_return_to"] = request.fullpath
