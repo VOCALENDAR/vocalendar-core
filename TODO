@@ -25,4 +25,6 @@
  * ユーザ google 認証時に毎回 role を更新するのをやめる。
    * 初回決めたら後はそのままでいい。
    * admin が editor に設定しても戻ってしまう
- * {event,tag}.primary_link_uri のバリデーションがなにかうまくいってない
+ * {event,tag}.primary_link_uri のバリデーションがなにかうまくいってな
+   い
+ * events#edit に primary link の編集ボックス
