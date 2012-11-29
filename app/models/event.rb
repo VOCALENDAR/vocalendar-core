@@ -157,16 +157,16 @@ class Event < ActiveRecord::Base
     :presence => true, :if => :recurring_instance?
   validates :start_time, :presence => true, :unless => :allday?
   validates :end_time,   :presence => true, :unless => :allday?
-  validates :raw_start_time, :unless => :allday?,
+  validates :temp_start_time, :unless => :allday?,
     :format => {:with => /^(\d{2}:\d{2})$/}, :allow_nil => true
-  validates :raw_end_time, :unless => :allday?,
+  validates :temp_end_time, :unless => :allday?,
     :format => {:with => /^(\d{2}:\d{2})$/}, :allow_nil => true
 
   before_validation :set_dummy_values_for_cancelled,
     :cascade_start_date, :cascade_end_datetime, :cascade_end_date,
     :mangle_tentative_status, :generate_etag, :generate_ical_uid
 
-  after_validation :copy_primary_link_errors, :copy_raw_time_erros
+  after_validation :copy_primary_link_errors, :move_temp_time_erros
 
   after_save :save_tag_order, :save_extra_tags
 
@@ -175,7 +175,8 @@ class Event < ActiveRecord::Base
     @extra_tags = ExtraTagContainer.new(self)
     @tag_changed = false
   end
-  attr_reader :extra_tags
+  attr_reader   :extra_tags
+  attr_accessor :temp_start_time, :temp_end_time
 
   alias_attribute :name, :summary
 
@@ -298,18 +299,15 @@ class Event < ActiveRecord::Base
     allday? ? '' : end_datetime.try(:strftime, "%H:%M")
   end
 
-  def raw_start_time; self[:raw_start_time]; end
-  def raw_end_time;   self[:raw_end_time];   end
-
   def start_time=(str)
-    self[:raw_start_time] = str
+    self.temp_start_time = str
     str.to_s =~ /^(\d{2}):(\d{2})/ or return
     cd = start_datetime.try(:to_datetime) || DateTime.now
     self.start_datetime = DateTime.new(cd.year, cd.mon, cd.day, $1.to_i, $2.to_i, 0, cd.offset)
   end
 
   def end_time=(str)
-    self[:raw_end_time] = str
+    self.temp_end_time = str
     str.to_s =~ /^(\d{2}):(\d{2})/ or return
     cd = end_datetime.try(:to_datetime) || DateTime.now
     self.end_datetime = DateTime.new(cd.year, cd.mon, cd.day, $1.to_i, $2.to_i, 0, cd.offset)
@@ -589,12 +587,13 @@ class Event < ActiveRecord::Base
     end
   end
 
-  def copy_raw_time_erros
+  def move_temp_time_erros
     %w(start end).each do |type|
-      errors.has_key? :"raw_#{type}_time" or return
-      errors[:"raw_#{type}_time"].each do |ev|
+      errors.has_key? :"temp_#{type}_time" or return
+      errors[:"temp_#{type}_time"].each do |ev|
         errors[:"#{type}_time"] << ev
       end
+      errors.delete :"temp_#{type}_time"
     end
   end
 end
