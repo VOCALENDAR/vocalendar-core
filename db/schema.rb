@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20121129173457) do
+ActiveRecord::Schema.define(:version => 20121129190030) do
 
   create_table "calendars", :force => true do |t|
     t.string   "name",                          :default => "", :null => false
@@ -118,13 +118,14 @@ ActiveRecord::Schema.define(:version => 20121129173457) do
 
   create_table "ex_links", :force => true do |t|
     t.string   "type"
-    t.string   "title",        :default => "", :null => false
-    t.text     "uri",          :default => "", :null => false
+    t.string   "title",        :default => "",    :null => false
+    t.text     "uri",          :default => "",    :null => false
     t.string   "remote_id"
-    t.datetime "created_at",                   :null => false
-    t.datetime "updated_at",                   :null => false
-    t.string   "digest",       :default => "", :null => false
+    t.datetime "created_at",                      :null => false
+    t.datetime "updated_at",                      :null => false
+    t.string   "digest",       :default => "",    :null => false
     t.text     "endpoint_uri"
+    t.boolean  "disabled",     :default => false, :null => false
   end
 
   add_index "ex_links", ["digest"], :name => "index_ex_links_on_digest", :unique => true

@@ -3,8 +3,7 @@ require 'htmlentities'
 
 class ExLink < ActiveRecord::Base
   self.store_full_sti_class = true
-  attr_accessible :title
-  attr_accessible :uri, :if => :new_record?
+  attr_accessible :title, :uri, :disabled
   has_and_belongs_to_many :related_events, :class_name => 'Event'
   has_many :main_events, :foreign_key => :primary_link_id, :class_name => 'Event'
   has_many :tags,        :foreign_key => :primary_link_id
@@ -20,7 +19,6 @@ class ExLink < ActiveRecord::Base
     args.empty? and return
     where(["lower(uri) like ? or lower(title) like ? or lower(endpoint_uri) like ?"].join(' or '), *args)
   }
-
 
   validates :uri,    :presence => true,   :uri => true
   validates :digest, :uniqueness => true

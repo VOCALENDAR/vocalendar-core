@@ -11,6 +11,10 @@
     <%= f.label :endpoint_uri %>
     <%= @ex_link.endpoint_uri %>
   </div>
+  <div class="field">
+    <%= f.label :disabled %>
+    <%= f.check_box :disabled %>
+  </div>
   <br>
   <div class="actions">
     <%= f.submit :class => 'btn btn-primary' %>
