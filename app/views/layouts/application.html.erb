@@ -56,6 +56,7 @@
           <% end %>
           <div class="container nav-collapse">
             <ul class="nav">
+              <% if can? :index, Event %>
               <li class="dropdown">
                 <a class="dropdown-toggle"  data-toggle="dropdown" href="#">
                   <%= t("activerecord.models.event") %>
@@ -66,6 +67,7 @@
                   <li><%= link_to t("activerecord.models.release_event"), release_events_path if can? :index, ReleaseEvent %></li>
                 </ul>
               </li>
+              <% end %>
               <li><%= link_to t("activerecord.models.tag"), tags_path if can? :index, Tag %></li>
               <li><%= link_to t("activerecord.models.ex_link"), ex_links_path if can? :index, ExLink %></li>
               <li><%= link_to t("activerecord.models.history"), histories_path if can? :index, History %></li>
