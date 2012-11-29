@@ -6,10 +6,10 @@ class Ability
     user or return
 
     if user.editor?
-      can :manage, [Event, ReleseEvent, Tag, ExLink, :dashboard]
+      can :manage, [Event, ReleaseEvent, Tag, ExLink, :dashboard]
       can [:index, :show, :new, :create, :edit, :update, :destory]
       can [:index, :show, :new, :create], Calendar
-      #can [:edit, :update, :destroy], Calendar, :user_id => user.id
+      can [:show, :edit, :update], User, :id => user.id
       can :index, History
     elsif user
       #can [:show, :update, :edit, :destroy], Event, :user_id => user.id
