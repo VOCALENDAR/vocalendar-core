@@ -90,7 +90,7 @@ class Event < ActiveRecord::Base
     tag_ids = []
     query.strip.split(/[　 \t\n\r]+/).each do |q|
       q.blank? and next
-      qw = "%#{query}%"
+      qw = "%#{q}%"
       args += [qw, qw]
       sqls << "lower(summary) like lower(?) or lower(description) like lower(?)"
       tag_ids << Tag.find_by_name(q).try(:id)
