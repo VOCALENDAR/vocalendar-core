@@ -125,6 +125,7 @@ ja:
     name: 名前
     back: 戻る
     show: 表示
+    user_setting: ユーザ設定
   settings:
     index:
       title: 全体設定一覧
@@ -170,6 +171,13 @@ ja:
   ex_links:
     index:
       title: 外部リンク一覧
+  users:
+    inedex:
+      title: ユーザ一覧
+    edit:
+      title: "ユーザ情報の編集: %{name}"
+    show:
+      title: "ユーザ情報: %{name}"
 
   history:
     actions:

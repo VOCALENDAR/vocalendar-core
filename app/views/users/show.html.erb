@@ -1,5 +1,35 @@
-<p id="notice"><%= notice %></p>
+<h2><%= t ".title", :name => @user.name %></h2>
 
+<div class="well">
+  <%= link_to t('general.edit'), edit_user_path(@user), :class => 'btn' if can? :edit, @user %>
+  <% if can?(:update, @user) && @user == current_user %>
+  <%= link_to t(".add_twitter_authinfo"),
+        user_omniauth_authorize_path(:twitter),
+        :class => 'btn' if !@user.twitter_auth_valid? %>
+  <%= link_to t(".add_google_authinfo"),
+        user_omniauth_authorize_path(:google_oauth2),
+        :class => 'btn' if !@user.google_auth_valid? %>
+  <% end %>
 
-<%= link_to 'Edit', edit_user_path(@user) %> |
-<%= link_to 'Back', users_path %>
+  <%= link_to t('general.back_to_list'), users_path, :class => 'btn' if can? :index, User %>
+
+  <%= link_to %Q{<i class="icon-trash icon-white" title="#{t 'general.delete'}"></i> #{t 'general.delete'}}.html_safe, @user, confirm: t("general.delete_confirm", name: "#{@user.name} (#{@user.id})"), method: :delete , :class => 'btn btn-danger pull-right' if can? :destroy, @user %>
+</div>
+
+<table class="table table-striped table-hover">
+  <%
+  %w(id name role email google_account twitter_nick
+     sign_in_count last_sign_in_at).each do |field|  %>
+  <tr>
+    <th><%= User.human_attribute_name field %></th>
+    <td><%= v = @user.__send__(field); v.kind_of?(Time) ? l(v) : v %>
+  </tr>
+  <% end %>
+</table>
+
+<h3><%= t "general.recent_histories" %></h3>
+<% @histories = @user.histories.limit(10) %>
+<%= render 'histories/list_without_target' %>
+<ul class="pager"><li class="next">
+<%= link_to t('general.more'), user_histories_path(@user) %>
+</li></ul>

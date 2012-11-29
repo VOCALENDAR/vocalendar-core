@@ -69,6 +69,11 @@
               <li><%= link_to t("activerecord.models.tag"), tags_path if can? :index, Tag %></li>
               <li><%= link_to t("activerecord.models.ex_link"), ex_links_path if can? :index, ExLink %></li>
               <li><%= link_to t("activerecord.models.history"), histories_path if can? :index, History %></li>
+              <% if can? :index, User %>
+              <li><%= link_to t("activerecord.models.user"), users_path if can? :index, User %></li>
+              <% elsif user_signed_in? %>
+              <li><%= link_to t("general.user_setting"), edit_user_path(current_user) if can? :edit, current_user %></li>
+              <% end %>
               <li><%= link_to t("general.alerts"), dashboard_path(:alerts) if can? :alerts, :dashboard %></li>
               <li><%= link_to t('RailsAdmin'), "#{root_path}rails_admin" if can? :access, :rails_admin %></li>
             </ul>

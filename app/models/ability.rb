@@ -11,6 +11,7 @@ class Ability
       can [:show, :edit, :update], User, :id => user.id
       can :index, History
     elsif user
+      can [:show, :edit, :update], User, :id => user.id
       #can [:show, :update, :edit, :destroy], Event, :user_id => user.id
       #can [:new, :create], Event
     end

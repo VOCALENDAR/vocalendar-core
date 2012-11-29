@@ -18,7 +18,7 @@ class Users::OmniauthCallbacksController < Devise::OmniauthCallbacksController
 
   def after_sign_in_path_for(resource_or_scope)
     if User === resource_or_scope && resource_or_scope.auto_created?
-      user_path(resource_or_scope)
+      edit_user_path(resource_or_scope)
     else
       super
     end

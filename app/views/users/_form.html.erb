@@ -1,17 +1,20 @@
 <%= form_for(@user) do |f| %>
-  <% if @user.errors.any? %>
-    <div id="error_explanation">
-      <h2><%= pluralize(@user.errors.count, "error") %> prohibited this user from being saved:</h2>
 
-      <ul>
-      <% @user.errors.full_messages.each do |msg| %>
-        <li><%= msg %></li>
-      <% end %>
-      </ul>
-    </div>
-  <% end %>
+<div class="well">
+  <%= f.submit :class => 'btn btn-primary' %> 
+  <%= link_to t('general.show'), user_path(@user), :class => 'btn' if can? :show, @user %> 
+  <%= link_to t('general.back_to_list'), users_path, :class => 'btn' if can? :index, User %>
+</div>
 
-  <div class="actions">
-    <%= f.submit %>
-  </div>
+<%= f.label :name %>
+<%= f.text_field :name, :class => 'input-xlarge' %>
+
+<%= f.label :email %>
+<%= f.text_field :email, :class => 'input-xlarge' %>
+
+<% if user_signed_in? && current_user.admin? %>
+<%= f.label :role %>
+<%= f.enum_select :role, :include_blank => true %>
+<% end %>
+
 <% end %>

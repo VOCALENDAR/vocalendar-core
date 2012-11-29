@@ -4,6 +4,8 @@ class User < ActiveRecord::Base
   scope :admins, where(:role => 'admin')
   scope :editors, where(:role => %w(admin editor))
 
+  has_many :histories, :class_name => 'History', :foreign_key => 'target_id'
+
   devise :trackable, :omniauthable
   enum_attr :role, %w(admin editor)
   attr_accessible :name, :email
