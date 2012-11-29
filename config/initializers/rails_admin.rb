@@ -29,7 +29,7 @@ RailsAdmin.config do |config|
 
   # Exclude specific models (keep the others):
   # config.excluded_models = ['Calendar', 'Event', 'EventTagRelation', 'Setting', 'Tag', 'Uri', 'User']
-  config.excluded_models = ['EventTagRelation']
+  config.excluded_models = %w(EventTagRelation ExLink::Twitter ExLink::Amazon ExLink::YouTube ExLink::NicoVideo)
 
   # Include specific models (exclude the others):
   # config.included_models = ['Calendar', 'Event', 'EventTagRelation', 'Setting', 'Tag', 'Uri', 'User']

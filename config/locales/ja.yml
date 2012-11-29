@@ -13,6 +13,7 @@ ja:
       history: 履歴
       tag: タグ
       ex_link: 外部リンク
+      ex_link_access: 外部リンクアクセス記録
     attributes:
       setting:
         var: 名前
@@ -91,7 +92,12 @@ ja:
         short_id: 短縮ID
         remote_id: 外部ID
         type: 種別
-        
+        disabled: 無効化
+      ex_link_access:
+        ipaddr: IPアドレス
+        user_agent: UserAgent(ブラウザ)
+        created_at: 日時
+
   helpers:
     label:
       setting:

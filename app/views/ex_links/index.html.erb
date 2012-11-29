@@ -4,6 +4,8 @@
   <%= text_field_tag :q, params[:q], :class => 'search-query', :placeholder => 'Search' %>
 <% end %>
 
+<%= paginate @ex_links %>
+
 <table class="table table-condensed table-hover ex-link-list">
   <tr>
     <th><%= ExLink.human_attribute_name :type %></th>

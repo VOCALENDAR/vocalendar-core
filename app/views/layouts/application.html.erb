@@ -56,9 +56,21 @@
           <% end %>
           <div class="container nav-collapse">
             <ul class="nav">
-              <li><%= link_to t("activerecord.models.event"), events_path if can? :index, Event %></li>
+              <li class="dropdown">
+                <a class="dropdown-toggle"  data-toggle="dropdown" href="#">
+                  <%= t("activerecord.models.event") %>
+                  <b class="caret"></b>
+                </a>
+                <ul class="dropdown-menu">
+                  <li><%= link_to t("general.all"), events_path if can? :index, Event %></li>
+                  <li><%= link_to t("activerecord.models.release_event"), release_events_path if can? :index, ReleaseEvent %></li>
+                </ul>
+              </li>
               <li><%= link_to t("activerecord.models.tag"), tags_path if can? :index, Tag %></li>
+              <li><%= link_to t("activerecord.models.ex_link"), ex_links_path if can? :index, ExLink %></li>
               <li><%= link_to t("activerecord.models.history"), histories_path if can? :index, History %></li>
+              <li><%= link_to t("general.alerts"), dashboard_path(:alerts) if can? :dashboard, :alerts %></li>
+              <li><%= link_to t('RailsAdmin'), "#{root_path}rails_admin" if can? :access, :rails_admin %></li>
             </ul>
           </div><!--/.nav-collapse -->
         </div>

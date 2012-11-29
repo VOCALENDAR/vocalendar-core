@@ -2,6 +2,8 @@
 
 <%= link_to t('general.create_new'), new_tag_path, :class => 'btn' %>
 
+<%= paginate @tags %>
+
 <div class="clearfix">
 
 <% @tags.each_slice((@tags.length.to_f / 3).ceil) do |cur_tags| %>
