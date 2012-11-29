@@ -1,9 +1,6 @@
  * 申請フォームを取り込む
    * 新曲
    * イベント登録申請
- * {event,tag}.primary_link_uri のバリデーションがなにかうまくいってな
-   い
- * events#edit に primary link の編集ボックス
  * tag cleanup をモデルに移してアクションに入れる
  * タグにシステム属性フラグを追加?
    * 「メイン」「新曲はっぴょう予定」などだが、国際化をどうするか……
@@ -20,7 +17,6 @@
  * モデルエラーを flash にいれる
  * flash responder がうごいてない
  * タグなど関連モデルを変更しても etag が変わらない
- * History を polymorphic association で結びつけるように変更するか？
  * rails 3.2.9 upgrade
  * event*_controller の @type のセットをもっとまともに。
    親クラスで全部やること。cancan の load_resource を参考に
