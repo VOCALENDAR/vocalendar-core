@@ -208,7 +208,7 @@ class Calendar < ActiveRecord::Base
              transparency sequence etag htmlLink).each do |attr|
             e.delete attr
           end
-          e["summary"].strip!
+          e["summary"].to_s.strip!
           e["status"] == "tentative" and e["status"] = "confirmed"
           all_events[cal][eitem["id"]] = e
         end
