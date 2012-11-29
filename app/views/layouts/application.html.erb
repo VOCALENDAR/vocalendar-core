@@ -69,7 +69,7 @@
               <li><%= link_to t("activerecord.models.tag"), tags_path if can? :index, Tag %></li>
               <li><%= link_to t("activerecord.models.ex_link"), ex_links_path if can? :index, ExLink %></li>
               <li><%= link_to t("activerecord.models.history"), histories_path if can? :index, History %></li>
-              <li><%= link_to t("general.alerts"), dashboard_path(:alerts) if can? :dashboard, :alerts %></li>
+              <li><%= link_to t("general.alerts"), dashboard_path(:alerts) if can? :alerts, :dashboard %></li>
               <li><%= link_to t('RailsAdmin'), "#{root_path}rails_admin" if can? :access, :rails_admin %></li>
             </ul>
           </div><!--/.nav-collapse -->
@@ -92,7 +92,9 @@
 
     <div class="container" id="main-container">
         <div class="row">
+          <div id="main-content">
              <%= yield %>
+          </div>
         </div><!--/row-->
     </div> <!-- /container -->
 
