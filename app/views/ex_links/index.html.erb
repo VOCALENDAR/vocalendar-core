@@ -11,6 +11,7 @@
     <th><%= ExLink.human_attribute_name :uri %></th>
     <th><%= ExLink.human_attribute_name :short_id %></th>
     <th><%= ExLink.human_attribute_name :title %></th>
+    <th><%= ExLink.human_attribute_name :access_count %></th>
     <th></th>
   </tr>
 
@@ -18,9 +19,10 @@
   <tr>
     <td><%= link_to ex_link.typename.camelcase, ex_links_path(:type => ex_link.type) %></td>
     <td><%= ex_link.remote_id %></td>
-    <td class="uri"><%= ex_link.uri.sub(/^(.{30}).*/m, '\1...') %></td>
+    <td class="uri"><%= exlink(ex_link, :max_length => 30, :short_url => false, :label => ex_link.uri) %></td>
     <td><%= ex_link.short_id %></td>
     <td class="title"><%= ex_link.title.sub(/^(.{30}).*/m, '\1...') %></td>
+    <td><%= ex_link.access_count %></td>
     <td><%= link_to '<i class="icon-pencil"></i>'.html_safe, edit_ex_link_path(ex_link) %></td>
   </tr>
 <% end %>

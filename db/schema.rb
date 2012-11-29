@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20121128231941) do
+ActiveRecord::Schema.define(:version => 20121129164955) do
 
   create_table "calendars", :force => true do |t|
     t.string   "name",                          :default => "", :null => false
@@ -103,6 +103,18 @@ ActiveRecord::Schema.define(:version => 20121128231941) do
 
   add_index "events_ex_links", ["event_id"], :name => "index_events_ex_links_on_event_id"
   add_index "events_ex_links", ["ex_link_id"], :name => "index_events_ex_links_on_ex_link_id"
+
+  create_table "ex_link_accesses", :force => true do |t|
+    t.integer  "ex_link_id", :null => false
+    t.string   "ipaddr"
+    t.string   "user_agent"
+    t.datetime "created_at", :null => false
+  end
+
+  add_index "ex_link_accesses", ["created_at"], :name => "index_ex_link_accesses_on_created_at"
+  add_index "ex_link_accesses", ["ex_link_id", "created_at"], :name => "index_ex_link_accesses_on_ex_link_id_and_created_at"
+  add_index "ex_link_accesses", ["ipaddr", "created_at"], :name => "index_ex_link_accesses_on_ipaddr_and_created_at"
+  add_index "ex_link_accesses", ["user_agent", "created_at"], :name => "index_ex_link_accesses_on_user_agent_and_created_at"
 
   create_table "ex_links", :force => true do |t|
     t.string   "type"

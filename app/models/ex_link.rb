@@ -8,6 +8,7 @@ class ExLink < ActiveRecord::Base
   has_and_belongs_to_many :related_events, :class_name => 'Event'
   has_many :main_events, :foreign_key => :primary_link_id, :class_name => 'Event'
   has_many :tags,        :foreign_key => :primary_link_id
+  has_many :accesses,    :class_name => 'ExLinkAccess', :dependent => :delete_all
 
   scope :search, lambda{ |query|
     args = []
@@ -70,6 +71,10 @@ class ExLink < ActiveRecord::Base
     def remote_fetch_enabled=(v)
       @@remote_fetch_enabled = v
     end
+  end
+
+  def access_count
+    accesses.count(:id)
   end
 
   def short_id

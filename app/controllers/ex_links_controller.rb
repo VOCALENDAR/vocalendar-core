@@ -38,6 +38,15 @@ class ExLinksController < ApplicationController
 
   def redirect
     @ex_link = ExLink.find params[:short_id].to_s.to_i(36)
+    begin
+      ExLinkAccess.create({
+                            :ex_link_id => @ex_link.id,
+                            :ipaddr => request.env['REMOTE_ADDR'],
+                            :user_agent => request.env['HTTP_USER_AGENT'].to_s[0..100],
+                          }, :without_protection => true)
+    rescue Exception => e
+      logger.error "Failed to save access #{e.class.name}: #{e.message}"
+    end
     redirect_to @ex_link.uri
   end
 end
