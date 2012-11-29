@@ -42,6 +42,7 @@ gem 'rmagick'
 gem 'rails_autolink'
 gem 'addressable'
 gem 'htmlentities'
+gem 'charlock_holmes'
 
 group :development, :test do
   gem 'rspec-rails'

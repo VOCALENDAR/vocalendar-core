@@ -192,9 +192,8 @@ class ExLink < ActiveRecord::Base
       return nil
     end
     body = response.body
-    response.headers["content-type"] =~ /charset=([.a-z0-9_-]*)/i or
-      body =~ /charset=["']?([a-z0-9._-]+?)(?=["'>\s])/i
-    code = $1
+    response.headers["content-type"] =~ /charset=([.a-z0-9_-]*)/i
+    code = $1 || CharlockHolmes::EncodingDetector.detect(body)[:encoding]
     case code.to_s.downcase
     when 'shift', 'ms932', 'x-sjis', 'sjis', 'shift-jis'
       code = 'shift_jis'
