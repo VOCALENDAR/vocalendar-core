@@ -8,7 +8,9 @@
   <tr>
     <th><%= ExLink.human_attribute_name :type %></th>
     <th><%= ExLink.human_attribute_name :remote_id %></th>
-    <th><%= ExLink.human_attribute_name :uri %></th>
+    <th><%= ExLink.human_attribute_name :uri %><br>
+      <%= ExLink.human_attribute_name :endpoint_uri %>
+    </th>
     <th><%= ExLink.human_attribute_name :short_id %></th>
     <th><%= ExLink.human_attribute_name :title %></th>
     <th><%= ExLink.human_attribute_name :access_count %></th>
@@ -19,9 +21,12 @@
   <tr>
     <td><%= link_to ex_link.typename.camelcase, ex_links_path(:type => ex_link.type) %></td>
     <td><%= ex_link.remote_id %></td>
-    <td class="uri"><%= exlink(ex_link, :max_length => 30, :short_url => false, :label => ex_link.uri) %></td>
+    <td>
+      <%= exlink(ex_link, :max_length => 30, :short_url => false, :label => ex_link.uri) %><br>
+      <%= content_tag :span, ex_link.endpoint_uri.to_s.sub(/^(.{30}).*/m, '\1...'), :title => ex_link.endpoint_uri %>
+    </td>
     <td><%= ex_link.short_id %></td>
-    <td class="title"><%= ex_link.title.sub(/^(.{30}).*/m, '\1...') %></td>
+    <td><%= content_tag :span, ex_link.title.sub(/^(.{40}).*/m, '\1...'), :title =>  ex_link.title %></td>
     <td><%= ex_link.access_count %></td>
     <td><%= link_to '<i class="icon-pencil"></i>'.html_safe, edit_ex_link_path(ex_link) %></td>
   </tr>

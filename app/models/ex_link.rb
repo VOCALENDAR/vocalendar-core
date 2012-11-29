@@ -15,10 +15,10 @@ class ExLink < ActiveRecord::Base
     query.strip.split(/[　 \t\n\r]+/).each do |q|
       q.blank? and next
       q = "%#{q.downcase}%"
-      args += [q, q]
+      args += [q, q, q]
     end
     args.empty? and return
-    where(["lower(uri) like ? or lower(title) like ?"].join(' or '), *args)
+    where(["lower(uri) like ? or lower(title) like ? or lower(endpoint_uri) like ?"].join(' or '), *args)
   }
 
 
@@ -32,7 +32,7 @@ class ExLink < ActiveRecord::Base
     def scan(text)
       text.to_s.scan(%r{(?:https?://|www\.)[\x21-\x26\x2a-\x3b=\x3f-\x7e]+}).map { |uri| #"
         uri[0..3] != 'http' and uri = 'http://' + uri
-        find_or_initialize_by_uri uri
+        find_or_create_by_uri uri
       }.select {|l| l.valid? }
     end
 
@@ -81,6 +81,14 @@ class ExLink < ActiveRecord::Base
     id.try(:to_s, 36)
   end
 
+  def access_uri
+    uri
+  end
+
+  def endpoint_uri!
+    endpoint_uri? ? endpoint_uri : uri
+  end
+
   def uri=(v)
     unless new_record? && self[:uri] != v
       if Rails.configuration.active_record.mass_assignment_sanitizer == :strict
@@ -89,10 +97,10 @@ class ExLink < ActiveRecord::Base
         return nil
       end
     end
-    self[:uri] = v
+    self[:uri] = @cur_uri = v
     self[:digest] = self.class.digest(v)
     begin
-      set_type_and_remote_id
+      set_attributes_by_uri
     rescue StandardError, URI::InvalidURIError, TimeoutError => e
       logger.debug "[ExLink##{id}] HTTP fech failed to getting title: #{e.message}"
     end
@@ -102,14 +110,14 @@ class ExLink < ActiveRecord::Base
     type = nil
     remote_id = nil
     begin
-      uri = URI.parse(self.uri) 
+      uri = URI.parse(endpoint_uri!)
     rescue URI::InvalidURIError
       return {type: nil, remote_id: nil}
     end
     case uri.host
     when %r{^(?:www\.)?amazon\.(?:co\.)?jp$}
       type = 'ExLink::Amazon'
-      uri.path =~ %r{(?:dp|ASIN)/([^/]{4,})} and remote_id = $1
+      uri.path =~ %r{(?:dp|ASIN)/([^/]{4,})}i and remote_id = $1
     when %r{\.?nicovideo\.jp$}
       type = 'ExLink::NicoVideo'
       uri.path =~ %r{^/watch/([^/]+)} and remote_id = $1
@@ -125,19 +133,20 @@ class ExLink < ActiveRecord::Base
     {type: type, remote_id: remote_id}
   end
 
-  def set_type_and_remote_id
-    ti = detect_type_and_remote_id
-    ti[:type] or return
-    self[:type]      = ti[:type]
-    self[:remote_id] = ti[:remote_id]
-    title? and return
-    @@remote_fetch_enabled or return
+  def set_attributes_by_uri
     t = get_remote_title and
       self[:title] = t
+    @cur_uri != self.uri and
+      self[:endpoint_uri] = @cur_uri
+    ti = detect_type_and_remote_id
+    if ti[:type]
+      self[:type]      = ti[:type]
+      self[:remote_id] = ti[:remote_id]
+    end
   end
 
-  def update_type_and_remote_id
-    set_type_and_remote_id
+  def update_attributes_by_uri
+    set_attributes_by_uri
     save
   end
 
@@ -145,39 +154,54 @@ class ExLink < ActiveRecord::Base
     (type.to_s.split('::').last || 'Default').underscore
   end
 
-  def update_title
-    title? and return
-    @@remote_fetch_enabled or return
-    t = get_remote_title and
-      update_attribute :title, t
-  end
-
   def get_remote_title
+    @@remote_fetch_enabled or return nil
     response = nil
-    cur_uri = self.uri
+    @cur_uri = self.uri
     begin
-      Timeout::timeout(3) {
-        while cur_uri
-          response = Faraday.get cur_uri
-          cur_uri = nil
-          response.status == 301 || response.status == 302 and
-            cur_uri = response.headers["location"]
+      Timeout::timeout(5) {
+        while true
+          logger.debug "[URI ##{id}] Fetching remote content: #{@cur_uri}"
+          response = Faraday.head @cur_uri
+          if response.status == 301 || response.status == 302
+            loc = response.headers["location"]
+            if loc.blank?
+              @cur_uri = nil
+              return nil
+            end
+            if loc[0..3] != 'http'
+              @cur_uri = URI::join(@cur_uri, loc).to_s
+            else
+              @cur_uri = loc
+            end
+            next
+          end
+          response.headers["content-type"].to_s.include?("text/html") or
+            return nil
+          response = Faraday.get @cur_uri
+          break
         end
       }
     rescue => e
       logger.error "[URI ##{id}] Remote title fetch error: #{e.message}"
+      @cur_uri = nil
       return nil
     end
-    response.status == 200 or return nil
+    unless response.status == 200 || response.status == 206
+      @cur_uri = nil
+      return nil
+    end
     body = response.body
     response.headers["content-type"] =~ /charset=([.a-z0-9_-]*)/i or
       body =~ /charset=["']?([a-z0-9._-]+?)(?=["'>\s])/i
     code = $1
     case code.to_s.downcase
-    when 'shift', 'ms932', 'x-sjis'
+    when 'shift', 'ms932', 'x-sjis', 'sjis', 'shift-jis'
       code = 'shift_jis'
     when 'x-euc', 'euc'
       code = 'euc-jp'
+    when 'utf8', 'unicode'
+      code = 'utf-8'
     end
     body =~ %r{<title>(.*?)</title>}m or return nil
     begin
@@ -195,10 +219,16 @@ class ExLink < ActiveRecord::Base
     end
   end
 
-  class Amazon < ExLink
+  class Amazon < ExLink # Note: amazon means amazon.jp...
     include InjectCommonVars
     alias_attribute :asin, :remote_id
     alias_attribute :isbn, :remote_id
+
+    def access_uri
+      aid = Rails.configuration.amazon_tracking_id or return uri
+      u = endpoint_uri!.gsub(%r{/[^/]+-22/|t(?:ag)?=[^=&;]+-22&?}, '')
+      u << "#{u.include?("?") ? "&" : "?"}tag=#{aid}"
+    end
   end
 
   class NicoVideo < ExLink

@@ -2,7 +2,7 @@ class ExLinksController < ApplicationController
   load_and_authorize_resource :except => :redirect
 
   def index
-    @ex_links = @ex_links.page(params[:page]).per(50)
+    @ex_links = @ex_links.page(params[:page]).per(50).order('id desc')
     params.has_key? :type and
       @ex_links = @ex_links.where(:type => params[:type].to_s)
     params[:q].blank? or
@@ -47,6 +47,6 @@ class ExLinksController < ApplicationController
     rescue Exception => e
       logger.error "Failed to save access #{e.class.name}: #{e.message}"
     end
-    redirect_to @ex_link.uri
+    redirect_to @ex_link.access_uri
   end
 end

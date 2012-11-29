@@ -205,7 +205,7 @@ class Event < ActiveRecord::Base
       (related_links + 
        ExLink.scan(description) +
        ExLink.scan(location)
-       ).uniq.map {|l| l.save; l.id }.compact.uniq
+       ).uniq.map {|l| l.id }.compact.uniq
   end
 
   def related_link_uris
