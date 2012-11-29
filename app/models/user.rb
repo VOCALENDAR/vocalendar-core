@@ -20,6 +20,7 @@ class User < ActiveRecord::Base
       u = current_user || find_or_initialize_by_google_uid(auth.uid)
       c = auth["credentials"]
       u.assign_attributes({
+        :google_uid              => auth.uid, # for current_user
         :google_account          => auth["info"]["email"],
         :google_auth_token       => c.token,
         :google_refresh_token    => c.refresh_token,
@@ -31,7 +32,7 @@ class User < ActiveRecord::Base
       u.email.blank? and u.email = auth["info"]["email"]
       u.name.blank?  and u.name  = auth["info"]["name"] || u.email
       u.auto_created = u.new_record?
-      u.new_record? && count < 1 and u.role = :admin
+      u.new_record? && count(:id) < 1 and u.role = :admin
       u.save!
       u.auto_created? and
         u.adhoc_update_editor_role_by_calendar_membership_info
@@ -42,6 +43,7 @@ class User < ActiveRecord::Base
       !auth || !auth.uid and return nil
       u = current_user || find_or_initialize_by_twitter_uid(auth.uid)
       u.assign_attributes({
+        :twitter_uid    => auth.uid, # make sure for current_user
         :twitter_name   => auth["info"]["name"],
         :twitter_nick   => auth["info"]["nickname"],
         :twitter_token  => auth["credentials"]["token"],
@@ -51,7 +53,7 @@ class User < ActiveRecord::Base
       }, :without_protection => true)
       u.auto_created = u.new_record?
       u.name.blank? and u.name = auth["info"]["name"]
-      u.role = count < 1 ? :admin : nil
+      u.new_record? && count(:id) < 1 and u.role = :admin
       u.save!
       u
     end
