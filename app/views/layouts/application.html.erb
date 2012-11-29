@@ -48,7 +48,7 @@
             <span class="icon-bar"></span>
             <span class="icon-bar"></span>
           </a>
-          <a class="brand" href="#">Vocalendar Core</a>
+          <%= link_to "Vocalendar Core", root_path, :class => 'brand' %>
           <% if user_signed_in? %>
           <%= link_to 'Sign Out', destroy_user_session_path, :class => 'btn pull-right' %>
           <% else %>
@@ -56,9 +56,9 @@
           <% end %>
           <div class="container nav-collapse">
             <ul class="nav">
-              <li><%= link_to "Dashboard", dashboard_path %></li>
-              <li><%= link_to "Events", events_path %></li>
-              <li><%= link_to "Tags", tags_path %></li>
+              <li><%= link_to t("activerecord.models.event"), events_path if can? :index, Event %></li>
+              <li><%= link_to t("activerecord.models.tag"), tags_path if can? :index, Tag %></li>
+              <li><%= link_to t("activerecord.models.history"), histories_path if can? :index, History %></li>
             </ul>
           </div><!--/.nav-collapse -->
         </div>
