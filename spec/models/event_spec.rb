@@ -223,7 +223,7 @@ describe Event do
     pending "Not yet decided to add 'id' for google sync" do
       output[:id].should == google_input[:id]
     end
-    %w(status start end recurrence iCalUID recurringEventId).each do |f|
+    %w(summary status start end recurrence iCalUID recurringEventId).each do |f|
       output[f].should == google_input[f]
     end
   end
@@ -276,7 +276,7 @@ describe Event do
     pending "Not yet decided to add 'id' for google sync" do
       output[:id].should == google_input[:id]
     end
-    %w(status start end recurrence iCalUID recurringEventId).each do |f|
+    %w(summary status start end recurrence iCalUID recurringEventId).each do |f|
       output[f].should == google_input[f]
     end
     output[:originalStartTime][:dateTime].should == google_input[:originalStartTime][:dateTime]
