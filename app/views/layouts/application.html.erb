@@ -78,6 +78,7 @@
     </div>
     <div id="header-placeholder"></div>
 
+    <div class="container" id="flash-container">
     <div id="flash-messages">
       <% [:error, :alert, :notice].each do |level| %>
       <% flash[level].blank? and next %>
@@ -89,13 +90,10 @@
       </ul>
       <% end %>
     </div>
+    </div>
 
     <div class="container" id="main-container">
-        <div class="row">
-          <div id="main-content">
-             <%= yield %>
-          </div>
-        </div><!--/row-->
+      <%= yield %>
     </div> <!-- /container -->
 
     <footer>
