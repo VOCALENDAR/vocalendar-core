@@ -33,7 +33,8 @@ class User < ActiveRecord::Base
       u.auto_created = u.new_record?
       u.new_record? && count < 1 and u.role = :admin
       u.save!
-      u.adhoc_update_editor_role_by_calendar_membership_info
+      u.auto_created? and
+        u.adhoc_update_editor_role_by_calendar_membership_info
       u
     end
 
@@ -85,9 +86,11 @@ class User < ActiveRecord::Base
       begin
         apiret = cal.gapi_request("acl.list")
         apiret.data.items.each do |acl|
-          acl.role == "owner" || acl.role == "writer" or next
-          acl.scope.type  == "user" or next
-          acl.scope.value == google_account or next
+          log :debug, "Checking ACL item: #{acl.inspect}"
+          acl.role != "owner" && acl.role != "writer" and next
+          acl.scope.type  != "user" and next
+          acl.scope.value != google_account and next
+          log :info, "Write access priv to source calendar found! Setting editor role to the user."
           update_attribute :role, :editor
           return
         end

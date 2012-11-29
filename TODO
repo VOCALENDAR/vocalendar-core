@@ -20,7 +20,4 @@
  * rails 3.2.9 upgrade
  * event*_controller の @type のセットをもっとまともに。
    親クラスで全部やること。cancan の load_resource を参考に
- * ユーザ google 認証時に毎回 role を更新するのをやめる。
-   * 初回決めたら後はそのままでいい。
-   * admin が editor に設定しても戻ってしまう
  * カレンダーの追加/削除タグが変更された時に強制反映するしくみ
