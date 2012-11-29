@@ -63,7 +63,7 @@
   </tr>
   <tr>
     <th><%= Event.human_attribute_name :description %></th>
-    <td><%= auto_link simple_format @event.description %></td>
+    <td><%= simple_format auto_link @event.description %></td>
   </tr>
   <tr>
     <th><%= Event.human_attribute_name :related_links %></th>

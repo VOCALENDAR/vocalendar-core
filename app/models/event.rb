@@ -157,8 +157,10 @@ class Event < ActiveRecord::Base
     :presence => true, :if => :recurring_instance?
   validates :start_time, :presence => true, :unless => :allday?
   validates :end_time,   :presence => true, :unless => :allday?
-  validates :raw_start_time, :format => {:with => /^(\d{2}:\d{2})$/}, :allow_nil => true
-  validates :raw_end_time,   :format => {:with => /^(\d{2}:\d{2})$/}, :allow_nil => true
+  validates :raw_start_time, :unless => :allday?,
+    :format => {:with => /^(\d{2}:\d{2})$/}, :allow_nil => true
+  validates :raw_end_time, :unless => :allday?,
+    :format => {:with => /^(\d{2}:\d{2})$/}, :allow_nil => true
 
   before_validation :set_dummy_values_for_cancelled,
     :cascade_start_date, :cascade_end_datetime, :cascade_end_date,

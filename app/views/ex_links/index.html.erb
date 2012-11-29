@@ -23,10 +23,10 @@
     <td><%= ex_link.remote_id %></td>
     <td>
       <%= exlink(ex_link, :max_length => 30, :short_url => false, :label => ex_link.uri) %><br>
-      <%= content_tag :span, ex_link.endpoint_uri.to_s.sub(/^(.{30}).*/m, '\1...'), :title => ex_link.endpoint_uri %>
+      <%= content_tag :span, truncate(ex_link.endpoint_uri.to_s, :length => 30), :title => ex_link.endpoint_uri %>
     </td>
     <td><%= ex_link.short_id %></td>
-    <td><%= content_tag :span, ex_link.title.sub(/^(.{40}).*/m, '\1...'), :title =>  ex_link.title %></td>
+    <td><%= content_tag :span, truncate(ex_link.title, :length => 40), :title =>  ex_link.title %></td>
     <td><%= ex_link.access_count %></td>
     <td><%= link_to '<i class="icon-pencil"></i>'.html_safe, edit_ex_link_path(ex_link) %></td>
   </tr>

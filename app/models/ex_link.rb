@@ -26,13 +26,24 @@ class ExLink < ActiveRecord::Base
   @@remote_fetch_enabled = true
   @@htmlentities_coder = HTMLEntities.new
 
+  URI_PATTERN = %r{(?:https?://|www\.)[\x21-\x26\x2a-\x3b=\x3f-\x7e]+}
+
   class << self
     def scan(text)
-      text.to_s.scan(%r{(?:https?://|www\.)[\x21-\x26\x2a-\x3b=\x3f-\x7e]+}).map { |uri| #"
+      text.to_s.scan(URI_PATTERN).map { |uri|
         uri[0..3] != 'http' and uri = 'http://' + uri
         find_or_create_by_uri uri
       }.select {|l| l.valid? }
     end
+
+    def gsub(text, &block)
+      text.to_s.gsub(URI_PATTERN) { |uri|
+        uri[0..3] != 'http' and uri = 'http://' + uri
+        link = find_or_create_by_uri uri
+        link.valid? ? yield(link, uri) : uri
+      }
+    end
+
 
     def digest(uri)
       Digest::SHA1.hexdigest(uri)

@@ -28,7 +28,7 @@
       <p class="dow"><%= sd.strftime("%a").upcase %></p>
     </aside>
     <div class="content">
-      <%= auto_link(h(@event.description).gsub(/\n/, '<br>')){ |t| truncate t, :length => 80 } %>
+      <%= auto_link(@event.description).gsub(/\n/, '<br>').html_safe %>
     </div>
   </article>
 </article>

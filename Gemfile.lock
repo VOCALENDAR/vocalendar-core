@@ -196,8 +196,6 @@ GEM
       rails (~> 3.1)
       remotipart (~> 1.0)
       sass-rails (~> 3.1)
-    rails_autolink (1.0.9)
-      rails (~> 3.1)
     railties (3.2.8)
       actionpack (= 3.2.8)
       activesupport (= 3.2.8)
@@ -290,7 +288,6 @@ DEPENDENCIES
   rails-settings-cached
   rails_admin
   rails_admin-i18n!
-  rails_autolink
   responders
   rmagick
   rspec-rails

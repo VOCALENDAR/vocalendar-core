@@ -16,7 +16,7 @@ module ExLinksHelper
 
     label = opts[:label] || (link.title? ? link.title : link.uri)
     opts[:max_length] and
-      label = label.sub(/^(.{#{opts[:max_length]}}).*/m, '\1...')
+      label = truncate(label, :length => opts[:max_length])
 
     link.disabled? and
       return content_tag :span, content_tag(:del, label), {:class => 'ex-link'}.merge(html_opts)
@@ -31,5 +31,11 @@ module ExLinksHelper
                                  :default => link.typename.camelcase))
 
     content_tag :span, ret, {:class => 'ex-link'}.merge(html_opts)
+  end
+
+  def auto_link(text)
+    ExLink.gsub(h(text)) {|ex_link, uri_text|
+      exlink ex_link, :label => uri_text, :type_icon => false, :max_length => 80
+    }.html_safe
   end
 end
