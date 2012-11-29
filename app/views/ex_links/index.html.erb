@@ -1,4 +1,4 @@
-<h2><%= ".title" %></h2>
+<h2><%= t ".title" %></h2>
 
 <%= form_tag ex_links_path, :method => 'get', :class => 'pull-right' do %>
   <%= text_field_tag :q, params[:q], :class => 'search-query', :placeholder => 'Search' %>

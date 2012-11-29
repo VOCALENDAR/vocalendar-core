@@ -97,6 +97,7 @@ ja:
         ipaddr: IPアドレス
         user_agent: UserAgent(ブラウザ)
         created_at: 日時
+        access_count: アクセス数
 
   helpers:
     label:
@@ -166,6 +167,10 @@ ja:
   histories:
     index:
       title: 履歴一覧
+  ex_links:
+    index:
+      title: 外部リンク一覧
+
   history:
     actions:
       event:
