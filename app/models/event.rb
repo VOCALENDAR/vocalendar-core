@@ -131,7 +131,7 @@ class Event < ActiveRecord::Base
     :source => :calendars, :conditions => {'calendars.io_type' => 'dst'}
 
   has_and_belongs_to_many :related_links, :class_name => 'ExLink'
-  belongs_to :primary_link, :class_name => 'ExLink'
+  belongs_to :primary_link, :class_name => 'ExLink', :autosave => true
 
   mount_uploader :image, EventImageUploader
 
@@ -139,7 +139,7 @@ class Event < ActiveRecord::Base
     :start_date, :start_datetime, :end_date, :end_datetime,
     :start_time, :end_time, :country, :lang, :allday,
     :twitter_hash, :timezone, :tag_names, :tag_names_str,
-    :image, :image_cache, :name, :primary_link_uri
+    :image, :image_cache, :name, :primary_link_uri, :uri
 
   validates :g_id,    :uniqueness => true, :allow_nil => true
   validates :etag,    :presence => true
@@ -157,10 +157,14 @@ class Event < ActiveRecord::Base
     :presence => true, :if => :recurring_instance?
   validates :start_time, :presence => true, :unless => :allday?
   validates :end_time,   :presence => true, :unless => :allday?
+  validates :raw_start_time, :format => {:with => /^(\d{2}:\d{2})$/}, :allow_nil => true
+  validates :raw_end_time,   :format => {:with => /^(\d{2}:\d{2})$/}, :allow_nil => true
 
   before_validation :set_dummy_values_for_cancelled,
     :cascade_start_date, :cascade_end_datetime, :cascade_end_date,
     :mangle_tentative_status, :generate_etag, :generate_ical_uid
+
+  after_validation :copy_primary_link_errors, :copy_raw_time_erros
 
   after_save :save_tag_order, :save_extra_tags
 
@@ -217,15 +221,16 @@ class Event < ActiveRecord::Base
   def primary_link_uri
     primary_link.try :uri
   end
+  alias_method :uri, :primary_link_uri
 
   def primary_link_uri=(v)
-    l = ExLink.find_or_create_by_uri v
-    if l && l.valid?
-      self[:primary_link_id] = l.id
+    if v.blank?
+      self.primary_link = nil
     else
-      error[:primary_link_id] << 'is invalid URI'
+      self.primary_link = ExLink.find_or_create_by_uri v
     end
   end
+  alias_method :uri=, :primary_link_uri=
 
   def timezone
     self[:timezone].blank? and return nil
@@ -250,47 +255,37 @@ class Event < ActiveRecord::Base
   def start_datetime=(v)
     v = convert_to_datetime v
     self[:start_datetime] = v
-    self[:start_date] = v.to_date
+    self[:start_date] = v.try :to_date
   end
 
   def end_datetime=(v)
     v = convert_to_datetime v
     self[:end_datetime] = v
-    self[:end_date] = v.to_date
+    self[:end_date] = v.try :to_date
   end
 
   def start_date=(v)
     v = convert_to_date v
     self[:start_date] = v
-    self[:start_datetime] = Time.new(v.year, v.mon, v.day).to_datetime
+    self[:start_datetime] = v ? Time.new(v.year, v.mon, v.day).to_datetime : nil
   end
 
   def end_date=(v)
     v = convert_to_date v
     self[:end_date] = v
-    self[:end_datetime] = Time.new(v.year, v.mon, v.day).to_datetime
+    self[:end_datetime] = v ? Time.new(v.year, v.mon, v.day).to_datetime : nil
   end
 
   def recur_orig_start_datetime=(v)
-    if v.blank?
-      self[:recur_orig_start_date] =
-        self[:recur_orig_start_datetime] = nil
-    else
-      v = convert_to_datetime v
-      self[:recur_orig_start_datetime] = v
-      self[:recur_orig_start_date] = v.to_date
-    end
+    v = convert_to_datetime v
+    self[:recur_orig_start_datetime] = v
+    self[:recur_orig_start_date] = v.try :to_date
   end
 
   def recur_orig_start_date=(v)
-    if v.blank?
-      self[:recur_orig_start_date] =
-        self[:recur_orig_start_datetime] = nil
-    else
-      v = convert_to_date v
-      self[:recur_orig_start_date] = v
-      self[:recur_orig_start_datetime] = Time.new(v.year, v.mon, v.day).to_datetime
-    end
+    v = convert_to_date v
+    self[:recur_orig_start_date] = v
+    self[:recur_orig_start_datetime] = v ? Time.new(v.year, v.mon, v.day).to_datetime : nil
   end
 
   def start_time
@@ -301,14 +296,19 @@ class Event < ActiveRecord::Base
     allday? ? '' : end_datetime.try(:strftime, "%H:%M")
   end
 
+  def raw_start_time; self[:raw_start_time]; end
+  def raw_end_time;   self[:raw_end_time];   end
+
   def start_time=(str)
-    str =~ /^(\d{2}):(\d{2})/ or raise ArgumentError.new("Unknonw time format")
+    self[:raw_start_time] = str
+    str.to_s =~ /^(\d{2}):(\d{2})/ or return
     cd = start_datetime.try(:to_datetime) || DateTime.now
     self.start_datetime = DateTime.new(cd.year, cd.mon, cd.day, $1.to_i, $2.to_i, 0, cd.offset)
   end
 
   def end_time=(str)
-    str =~ /^(\d{2}):(\d{2})/ or raise ArgumentError.new("Unknonw time format")
+    self[:raw_end_time] = str
+    str.to_s =~ /^(\d{2}):(\d{2})/ or return
     cd = end_datetime.try(:to_datetime) || DateTime.now
     self.end_datetime = DateTime.new(cd.year, cd.mon, cd.day, $1.to_i, $2.to_i, 0, cd.offset)
   end
@@ -433,6 +433,9 @@ class Event < ActiveRecord::Base
       g_creator_display_name: attrs["creator"].try(:display_name),
       ical_uid: attrs["iCalUID"].to_s,
     }, :without_protection => true)
+    if attrs["location"].to_s[0..3] == 'http'
+      self.primary_link ||= ExLink.scan(attrs["location"]).first
+    end
     if attrs["start"]
       assign_attributes({
         start_date: attrs.start["date"] || attrs.start.dateTime.to_date,
@@ -553,11 +556,13 @@ class Event < ActiveRecord::Base
   end
 
   def convert_to_date(v)
+    v.blank? and return nil
     v.kind_of?(Date) || v.kind_of?(Time) and return v.to_date
     Date.parse(v.to_s)
   end
 
   def convert_to_datetime(v)
+    v.blank? and return nil
     v.kind_of?(DateTime) and return v
     v.kind_of?(Time)     and return v.to_datetime
     v.kind_of?(Date)     and return Time.new(v.year, v.mon, v.day)
@@ -572,6 +577,23 @@ class Event < ActiveRecord::Base
   def generate_ical_uid
     !self[:ical_uid].blank? || !active? and return
     self[:ical_uid] = SecureRandom.hex(24) + "@vocalendar.jp"
+  end
+
+  def copy_primary_link_errors
+    errors.has_key? :"primary_link.uri" or return
+    errors[:"primary_link.uri"].each do |ev|
+      errors[:uri] << ev
+      errors[:primary_link_uri] << ev
+    end
+  end
+
+  def copy_raw_time_erros
+    %w(start end).each do |type|
+      errors.has_key? :"raw_#{type}_time" or return
+      errors[:"raw_#{type}_time"].each do |ev|
+        errors[:"#{type}_time"] << ev
+      end
+    end
   end
 end
 

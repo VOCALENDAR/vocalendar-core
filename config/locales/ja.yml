@@ -1,4 +1,7 @@
 ja:
+  errors:
+    messages:
+      invalid_uri: は不正なURIです
   activerecord:
     models:
       event: イベント

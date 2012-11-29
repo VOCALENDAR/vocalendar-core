@@ -1,3 +1,17 @@
+<p class="alert alert-error">
+  <% if @event.new_record? %>
+  いまのところ、何らかの特別な理由がない限り、この画面上で標準のイベント情報を作成<strong>しないでください</strong>。
+  混乱を避けるため、入力は Google カレンダーから行ってください。
+  <% else %>
+  <strong>!警告!</strong> ここで変更を行っても、一部の情報を除き、
+  次回の Google カレンダーからの自動同期(インポート)によって<strong>上書きされます</strong>。
+  基本的に編集は Google カレンダー上で行って下さい。
+  <br>
+  ローカルの変更が有効なのは以下の物<strong>のみ</strong>です:
+  添付画像, ツイッターハッシュ, 一次情報URL
+  <% end %>
+</p>
+
 <%= form_for @event, :html => {:multipart => true} do |f| %>
 <div class="event">
   <%= render :partial => 'form_parts_base', :locals => {:f => f} %>
@@ -5,7 +19,8 @@
 
   <div class="actions">
     <%= f.submit :class => 'btn btn-primary' %>
+    <%= link_to t('general.open_in_editors_calendar'), @event.g_html_link, :class => 'btn' if @event.g_html_link? %>
+    <%= link_to t('general.back'), url_for(@event), :class => 'btn' unless @event.new_record? %>
     <%= link_to t('general.back_to_list'), url_for(:action => :index), :class => 'btn' %>
-    <%= link_to t('general.back'), url_for(@event), :class => 'btn' %>
   </div>
 <% end %>

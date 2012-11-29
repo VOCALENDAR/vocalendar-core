@@ -12,5 +12,6 @@
  *= require jquery.ui.all
  *= require jquery-ui-timepicker-addon
  *= require common
+ *= require external_ui_shared
 */
 

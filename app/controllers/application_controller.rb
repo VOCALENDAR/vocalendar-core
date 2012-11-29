@@ -1,6 +1,11 @@
 class ApplicationController < ActionController::Base
   class VcResponder < ActionController::Responder
     include Responders::FlashResponder
+    def respond
+      resource.respond_to?(:errors) && resource.try(:errors).try(:any?) and
+        Rails.logger.debug "Resource error: #{resource.errors.pretty_inspect}"
+      super
+    end
   end
 
   class ProcessError < StandardError

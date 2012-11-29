@@ -6,7 +6,7 @@ class UriValidator < ActiveModel::EachValidator
         raise Addressable::URI::InvalidURIError
       end
     rescue Addressable::URI::InvalidURIError
-      object.errors[attribute] << (options[:message] || "is invalid URL")
+      object.errors[attribute] << (options[:message] || I18n.t("errors.messages.invalid_uri", default: " is invalid URI"))
     end
   end
 end

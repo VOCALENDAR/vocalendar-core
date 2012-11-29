@@ -1,0 +1,9 @@
+.ex-link-icon {
+	vertical-align: top;
+	margin-left: 2px;
+}
+
+.ex-link {
+	white-space: nowrap;
+	display: inline-block;
+}

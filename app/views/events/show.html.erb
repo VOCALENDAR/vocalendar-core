@@ -68,9 +68,7 @@
   <tr>
     <th><%= Event.human_attribute_name :related_links %></th>
     <td><% @event.related_links.each do |link| %>
-      <li><%= link_to link.title.blank? ? link.uri.sub(/(.{80}).*$/, '\\1...') : link.title, link.uri %> 
-        (<%= link.typename %> / <%= link.remote_id %>)
-      </li>
+      <li><%= exlink link %></li>
       <% end%>
     </td>
   </tr>

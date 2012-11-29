@@ -19,6 +19,7 @@ class TagsController < ApplicationController
 
   def create
     @tag.save
+    pp @tag.errors
     respond_with(@tag)
   end
 

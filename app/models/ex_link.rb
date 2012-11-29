@@ -124,7 +124,7 @@ class ExLink < ActiveRecord::Base
   end
 
   def typename
-    (type.split('::').last || 'Default').underscore
+    (type.to_s.split('::').last || 'Default').underscore
   end
 
   def update_title

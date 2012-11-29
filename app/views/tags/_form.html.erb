@@ -15,7 +15,7 @@
 
   <div class="actions">
     <%= f.submit :class => 'btn btn-primary'%>
-    <%= link_to t("general.back"), url_for(@tag), class: 'btn' %>
+    <%= link_to t("general.back"), url_for(@tag), class: 'btn' unless @tag.new_record? %>
     <%= link_to t("general.back_to_list"), url_for(action: :index), class: 'btn' %>
   </div>
 <% end %>
