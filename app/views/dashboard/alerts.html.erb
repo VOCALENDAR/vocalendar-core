@@ -41,7 +41,7 @@
       </tr>
       <% @rare_tags.each do |tag| %>
       <tr>
-        <th colspan="4"><%= tag.name %> (<%= tag.events.count %>)</th>
+        <th colspan="4"><%= tag.name %> (<%= tag.events.count(:id) %>)</th>
       </tr>
       <% tag.events.active.each do |event| %>
       <tr>

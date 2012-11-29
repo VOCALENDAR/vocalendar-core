@@ -4,7 +4,7 @@
 
 <div class="clearfix">
 
-<% @tags.each_slice((@tags.count.to_f / 3).ceil) do |cur_tags| %>
+<% @tags.each_slice((@tags.length.to_f / 3).ceil) do |cur_tags| %>
 <table class="table table-hover pull-left tag-list">
   <tr>
     <th><%= Tag.human_attribute_name :name %></th>
@@ -14,7 +14,7 @@
 <% cur_tags.each do |tag| %>
   <tr>
     <td><%= link_to tag.name, tag %></td>
-    <td><%= link_to tag.events.active.count, events_path(:tag_id => tag.id) %></td>
+    <td><%= link_to tag.events.active.count(:id), events_path(:tag_id => tag.id) %></td>
   </tr>
 <% end %>
 </table>

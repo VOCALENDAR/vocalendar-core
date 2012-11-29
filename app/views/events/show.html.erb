@@ -44,7 +44,7 @@
     <td>
       <% @event.all_tags.each do |tag| %>
       <%= link_to "#{tag.name}", tag %>
-      (<%= link_to tag.events.active.count, tag_events_path(:tag_id => tag.id) %>)
+      (<%= link_to tag.events.active.count(:id), tag_events_path(:tag_id => tag.id) %>)
       &nbsp;&nbsp;
       <% end %>
     </td>

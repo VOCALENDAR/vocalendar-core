@@ -14,10 +14,10 @@ class DashboardController < ApplicationController
   def alerts
     @rare_tags = []
     Tag.all.each do |tag|
-      tag.events.active.count > 3 and next
+      tag.events.active.count(:id) > 3 and next
       @rare_tags << tag
     end
-    @rare_tags.sort_by! {|t| t.events.active.count }
+    @rare_tags.sort_by! {|t| t.events.active.count(:id) }
 
     @weird_events = {
       :title_too_long_or_short =>

@@ -23,11 +23,11 @@
   </tr>
   <tr>
     <th><%= Calendar.human_attribute_name :target_events %></th>
-    <td><%= link_to @calendar.target_events.active.count, events_path(:tag_id => @calendar.tag_ids) %></td>
+    <td><%= link_to @calendar.target_events.active.count(:id), events_path(:tag_id => @calendar.tag_ids) %></td>
   </tr>
   <tr>
     <th><%= Calendar.human_attribute_name :fetched_events %></th>
-    <td><%= link_to @calendar.fetched_events.active.count, events_path(:g_calendar_id => @calendar.external_id) %></td>
+    <td><%= link_to @calendar.fetched_events.active.count(:id), events_path(:g_calendar_id => @calendar.external_id) %></td>
   </tr>
 </table>
 
