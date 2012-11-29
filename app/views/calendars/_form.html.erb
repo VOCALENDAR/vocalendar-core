@@ -11,17 +11,23 @@
 <%= @calendar.external_id %>
 <% end %>
 <%= f.label :io_type %>
-<%= f.radio_button :io_type, "src" %>
-<%= f.label :io_type_src, :style => 'display: inline' %>
-<%= f.radio_button :io_type, "dst" %>
-<%= f.label :io_type_dst, :style => 'display: inline' %><br>
+<div>
+  <span class="radiobutton-set">
+    <%= f.radio_button :io_type, "src" %>
+    <%= f.label :io_type_src %>
+  </span>
+  <span class="radiobutton-set">
+    <%= f.radio_button :io_type, "dst" %>
+    <%= f.label :io_type_dst %>
+  </span>
+</div>
 <% if @calendar.new_record? || @calendar.io_type == 'dst' %>
 <%= f.label :tags %> 
 <div class="tag-check-list">
 <% Tag.all.each do |tag| %>
   <span class="checkbox-set">
     <%= f.check_box :tag_ids, {:name => "calendar[tag_ids][]", :id => "calendar_tag_ids_#{tag.id}"}, tag.id, nil %>
-    <%= f.label "tag_ids_#{tag.id}", tag.name, :style => 'display: inline' %>
+    <%= f.label "tag_ids_#{tag.id}", tag.name %>
   </span>
 <% end %>
 </div>

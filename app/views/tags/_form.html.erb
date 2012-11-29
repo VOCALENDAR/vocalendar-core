@@ -1,19 +1,21 @@
 <%= form_for(@tag) do |f| %>
 <% if @tag.new_record? %>
-<div>
-  <%= f.label :name %>
-  <%= f.text_field :name %>
-</div>
+<%= f.label     :name %>
+<%= f.text_field :name %>
 <% end %>
 
+<%= f.label :link_uri %>
+<%= f.text_field :link_uri, class: 'input-xxlarge', placeholder: 'URL' %>
+
 <div>
-  <%= f.label :link_uri %>
-  <%= f.text_field :link_uri, class: 'input-xxlarge', placeholder: 'URL' %>
+  <span class="checkbox-set">
+    <%= f.check_box :hidden %>
+    <%= f.label     :hidden %>
+  </span>
 </div>
 
 <br>
-
-  <div class="actions">
+  <div class="well">
     <%= f.submit :class => 'btn btn-primary'%>
     <%= link_to t("general.back"), url_for(@tag), class: 'btn' unless @tag.new_record? %>
     <%= link_to t("general.back_to_list"), url_for(action: :index), class: 'btn' %>

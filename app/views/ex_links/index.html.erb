@@ -24,7 +24,7 @@
     <td><%= link_to ex_link.typename.camelcase, ex_links_path(:type => ex_link.type) %></td>
     <td><%= ex_link.remote_id %></td>
     <td>
-      <%= exlink(ex_link, :max_length => 30, :short_url => false, :label => ex_link.uri) %><br>
+      <%= format_ex_link(ex_link, :max_length => 30, :short_url => false, :label => ex_link.uri) %><br>
       <%= content_tag :span, truncate(ex_link.endpoint_uri.to_s, :length => 30), :title => ex_link.endpoint_uri %>
     </td>
     <td><%= ex_link.short_id %></td>

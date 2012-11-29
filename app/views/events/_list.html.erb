@@ -24,7 +24,7 @@
     <td><%= l event.updated_at %></td>
     <td>
       <% event.all_tags.uniq.each do |tag| %>
-      <%= link_to tag.name, tag_events_path(tag.id) %>
+      <%= format_tag tag %>
       <% end %>
     </td>
     <td><%=raw '&#x2713;' if event.recurring_instance? %></td>

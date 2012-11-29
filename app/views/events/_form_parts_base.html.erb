@@ -18,7 +18,7 @@
 <%= f.text_field :start_time,     :class => 'time-input input-mini' %>
 <span class="checkbox-set">
   <%= f.check_box  :allday %>
-  <%= f.label      :allday, :style => 'display: inline' %>
+  <%= f.label      :allday %>
 </span>
 
 <%= f.label      :end_date %>
@@ -30,8 +30,10 @@
 <%= f.file_field :image %>
 <%= f.hidden_field(:image_cache) if f.object.errors.any? %>
 <% unless f.object.new_record? %>
+<span class="checkbox-set">
   <%= f.check_box :remove_image %>
-  <%= f.label     :remove_image, :style => 'display: inline' %>
+  <%= f.label     :remove_image %>
+</span>
 <% end %>
 
 <%= f.label      :description %>
