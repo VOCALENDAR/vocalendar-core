@@ -1,13 +1,23 @@
 <p id="notice"><%= notice %></p>
 
 <p>
-  <b>Type:</b>
-  <%= @ex_link.type %>
+  <b>ID:</b>
+  <%= @ex_link.id%>
 </p>
 
 <p>
-  <b>Name:</b>
-  <%= @ex_link.name %>
+  <b>Short ID:</b>
+  <%= @ex_link.short_id %>
+</p>
+
+<p>
+  <b>Type:</b>
+  <%= @ex_link.typename.camelcase %>
+</p>
+
+<p>
+  <b>Title:</b>
+  <%= @ex_link.title %>
 </p>
 
 <p>
@@ -16,7 +26,7 @@
 </p>
 
 <p>
-  <b>Remote:</b>
+  <b>RemoteID:</b>
   <%= @ex_link.remote_id %>
 </p>
 

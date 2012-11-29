@@ -1,29 +1,29 @@
-<h1>Listing ex_links</h1>
+<h2><%= ".title" %></h2>
 
-<table>
+<%= form_tag ex_links_path, :method => 'get', :class => 'pull-right' do %>
+  <%= text_field_tag :q, params[:q], :class => 'search-query', :placeholder => 'Search' %>
+<% end %>
+
+<table class="table table-condensed table-hover ex-link-list">
   <tr>
-    <th>Type</th>
-    <th>Name</th>
-    <th>Uri</th>
-    <th>Remote</th>
-    <th></th>
-    <th></th>
+    <th><%= ExLink.human_attribute_name :type %></th>
+    <th><%= ExLink.human_attribute_name :remote_id %></th>
+    <th><%= ExLink.human_attribute_name :uri %></th>
+    <th><%= ExLink.human_attribute_name :short_id %></th>
+    <th><%= ExLink.human_attribute_name :title %></th>
     <th></th>
   </tr>
 
 <% @ex_links.each do |ex_link| %>
   <tr>
-    <td><%= ex_link.type %></td>
-    <td><%= ex_link.name %></td>
-    <td><%= ex_link.uri %></td>
+    <td><%= link_to ex_link.typename.camelcase, ex_links_path(:type => ex_link.type) %></td>
     <td><%= ex_link.remote_id %></td>
-    <td><%= link_to 'Show', ex_link %></td>
-    <td><%= link_to 'Edit', edit_ex_link_path(ex_link) %></td>
-    <td><%= link_to 'Destroy', ex_link, method: :delete, data: { confirm: 'Are you sure?' } %></td>
+    <td class="uri"><%= ex_link.uri.sub(/^(.{30}).*/m, '\1...') %></td>
+    <td><%= ex_link.short_id %></td>
+    <td class="title"><%= ex_link.title.sub(/^(.{30}).*/m, '\1...') %></td>
+    <td><%= link_to '<i class="icon-pencil"></i>'.html_safe, edit_ex_link_path(ex_link) %></td>
   </tr>
 <% end %>
 </table>
 
-<br />
-
-<%= link_to 'New Ex link', new_ex_link_path %>
+<%= paginate @ex_links %>

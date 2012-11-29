@@ -1,3 +1,4 @@
+# -*- encoding: utf-8 -*-
 require 'htmlentities'
 
 class ExLink < ActiveRecord::Base
@@ -7,6 +8,18 @@ class ExLink < ActiveRecord::Base
   has_and_belongs_to_many :related_events, :class_name => 'Event'
   has_many :main_events, :foreign_key => :primary_link_id, :class_name => 'Event'
   has_many :tags,        :foreign_key => :primary_link_id
+
+  scope :search, lambda{ |query|
+    args = []
+    query.strip.split(/[　 \t\n\r]+/).each do |q|
+      q.blank? and next
+      q = "%#{q.downcase}%"
+      args += [q, q]
+    end
+    args.empty? and return
+    where(["lower(uri) like ? or lower(title) like ?"].join(' or '), *args)
+  }
+
 
   validates :uri,    :presence => true,   :uri => true
   validates :digest, :uniqueness => true
@@ -171,20 +184,30 @@ class ExLink < ActiveRecord::Base
     end
   end
 
+  module InjectCommonVars
+    def self.included(base)
+      def base.model_name; ExLink.model_name; end
+    end
+  end
+
   class Amazon < ExLink
+    include InjectCommonVars
     alias_attribute :asin, :remote_id
     alias_attribute :isbn, :remote_id
   end
 
   class NicoVideo < ExLink
+    include InjectCommonVars
     alias_attribute :video_id, :remote_id
   end
 
   class YouTube < ExLink
+    include InjectCommonVars
     alias_attribute :video_id, :remote_id
   end
 
   class Twitter < ExLink
-    alias_attribute :video_id, :remote_id
+    include InjectCommonVars
+    alias_attribute :user_id, :remote_id
   end
 end

@@ -2,6 +2,11 @@ class ExLinksController < ApplicationController
   load_and_authorize_resource :except => :redirect
 
   def index
+    @ex_links = @ex_links.page(params[:page]).per(50)
+    params.has_key? :type and
+      @ex_links = @ex_links.where(:type => params[:type].to_s)
+    params[:q].blank? or
+      @ex_links = @ex_links.search(params[:q])
     respond_with(@ex_links)
   end
 

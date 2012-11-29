@@ -86,8 +86,12 @@ ja:
         target_events: 出力対象イベント
         fetched_events: 取得済みイベント
       ex_link:
-        name: 名前
+        title: タイトル
         uri: URI
+        short_id: 短縮ID
+        remote_id: 外部ID
+        type: 種別
+        
   helpers:
     label:
       setting:
