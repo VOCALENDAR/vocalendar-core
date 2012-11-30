@@ -20,7 +20,7 @@
           histories_path(:target => history.target, :id => history.target_id) %>
       <%=
          begin
-           link_to ' <i class="icon-search"></i>'.html_safe,
+           link_to bs_icon('search'),
              polymorphic_url(history.target, :id => history.target_id)
          rescue
            # ignore all
@@ -33,7 +33,7 @@
       <% if history.user_id %>
       <% u = User.find_by_id(history.user_id) %>
       <%= link_to "##{u.try :id} (#{u.try :name})", histories_path(:user_id => u.try(:id)) %>
-      <%= link_to_if u, ' <i class="icon-search"></i>'.html_safe, u, :title => u.try(:name) %>
+      <%= link_to_if u, bs_icon('search'), u, :title => u.try(:name) %>
       <% end %>
     </td>
     <td class="note"><%= history.note %></td>

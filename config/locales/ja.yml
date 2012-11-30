@@ -65,6 +65,7 @@ ja:
         event_count: イベント数
         count: カウント
         events: イベント
+        hidden: 非表示
       calendar:
         updated_at: 更新日時
         created_at: 作成日時

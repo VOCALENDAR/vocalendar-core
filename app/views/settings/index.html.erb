@@ -36,7 +36,7 @@
         <%= l setting.updated_at %>
       </td>
       <td>
-        <%= link_to %Q{<i class="icon-trash" title="#{t 'general.delete'}"></i>}.html_safe,
+        <%= link_to bs_icon('trash', :title => t('general.delete', :default => 'Delete')),
               setting, class: 'btn btn-mini',
               confirm: t("general.delete_confirm", name: setting.var),
               method: :delete %>

@@ -19,19 +19,21 @@ module TagsHelper
     ret << link_to(label, link_url)
 
     opts[:hidden_icon] && tag.hidden? and
-      ret << '<i class="icon-eye-close tag-link-icon"></i>'.html_safe
+      ret << bs_icon("eye-close", :class => "tag-link-icon",
+                     :title => t("activerecord.attributes.tag.hidden", :default => 'Hidden'))
 
     opts[:show_icon] and
-      ret << link_to('<i class="icon-search tag-link-icon"></i>'.html_safe,
+      ret << link_to(bs_icon("search", :class => "tag-link-icon"),
                      tag, :class => 'tag-link-edit')
 
     opts[:edit_icon] && can?(:edit, tag) and
-      ret << link_to('<i class="icon-pencil tag-link-icon"></i>'.html_safe,
+      ret << link_to(bs_icon("pencil", :class => "tag-link-icon",
+                             :title => t("general.edit", :default => "Edit")),
                      edit_tag_path(tag), :class => 'tag-link-edit')
 
     opts[:link_icon] && tag.link? and
       ret << format_ex_link(tag.link, :type_icon => false,
-                            :label => '<i class="icon-globe tag-link-icon"></i>'.html_safe)
+                            :label => bs_icon("globe", :class => "tag-link-icon"))
     
     content_tag :span, ret, {:class => 'tag-link'}.merge(html_opts)
   end

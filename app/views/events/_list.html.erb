@@ -12,8 +12,7 @@
   <tr>
     <td><%= link_to event.summary, event %>
       <% if event.g_html_link? %>
-      <%= link_to ' <i class="icon-calendar"></i>'.html_safe,
-          event.g_html_link,
+      <%= link_to bs_icon('calendar'), event.g_html_link,
           :target => '_blank',
           :title => t('general.open_in_editors_calendar') 
       %>

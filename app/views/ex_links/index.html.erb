@@ -38,7 +38,7 @@
     </td>
     <td><%= content_tag :span, truncate(ex_link.title, :length => 40), :title =>  ex_link.title %></td>
     <td><%= ex_link.access_count %></td>
-    <td><%= link_to '<i class="icon-pencil"></i>'.html_safe, edit_ex_link_path(ex_link) %></td>
+    <td><%= link_to bs_icon(:pencil), edit_ex_link_path(ex_link) %></td>
   </tr>
 <% end %>
 </table>
