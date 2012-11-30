@@ -38,7 +38,8 @@ VocalendarCore::Application.routes.draw do
 
   scope 'manage' do
     resources :ex_links
-    resources :settings
+    resources :settings, :only => [:index, :destroy]
+    put 'settings/set' => 'settings#set', :as => :set_setting
     resources :histories, :only => :index
   end
 

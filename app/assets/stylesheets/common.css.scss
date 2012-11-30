@@ -77,6 +77,14 @@ footer {
 	.tag-link-icon { margin-left: 3px; }
 }
 
+.setting-list {
+	form { 
+		margin-bottom: 0;
+		.input-append button.add-on { height: 100%; }
+       	}
+	input { display: inline; }
+}
+
 .ui-widget {
 	font-size: 86%;
 }

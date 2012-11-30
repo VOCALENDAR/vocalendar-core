@@ -260,7 +260,8 @@ class ExLink < ActiveRecord::Base
     alias_attribute :isbn, :remote_id
 
     def access_uri
-      aid = Rails.configuration.amazon_tracking_id or return uri
+      aid = Setting.amazon_tracking_id
+      aid.blank? and return uri
       u = endpoint_uri!.gsub(%r{/[^/]+-22/|t(?:ag)?=[^=&;]+-22&?}, '')
       u << "#{u.include?("?") ? "&" : "?"}tag=#{aid}"
     end
