@@ -17,7 +17,7 @@
 <% cur_tags.each do |tag| %>
   <tr>
     <td>
-      <%= link_to tag.name, tag %>
+      <%= format_tag tag, :label => tag.name, :edit_icon => false, :url => tag %>
     </td>
     <td><%= link_to tag.events.active.count(:id), events_path(:tag_id => tag.id) %></td>
     <td><%= link_to bs_icon('pencil'), edit_tag_path(tag) %></td>

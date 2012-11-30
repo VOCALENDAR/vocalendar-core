@@ -15,7 +15,7 @@ module TagsHelper
     default_opts.keys.each {|k| html_opts.delete k }
 
     label = opts[:label] || "#{h(tag.name)}(#{tag.events.active.count(:id)})".html_safe
-    link_url = opts[:link_url] || tag_events_path(tag)
+    link_url = opts[:url] || tag_events_path(tag)
     ret << link_to(label, link_url)
 
     opts[:hidden_icon] && tag.hidden? and
