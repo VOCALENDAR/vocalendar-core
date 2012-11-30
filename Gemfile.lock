@@ -56,7 +56,6 @@ GEM
     carrierwave (0.7.1)
       activemodel (>= 3.2.0)
       activesupport (>= 3.2.0)
-    charlock_holmes (0.6.9)
     choice (0.1.6)
     coffee-rails (3.2.2)
       coffee-script (>= 2.2.0)
@@ -266,7 +265,6 @@ DEPENDENCIES
   addressable
   cancan
   carrierwave
-  charlock_holmes
   coffee-rails (~> 3.2.1)
   devise
   devise-i18n

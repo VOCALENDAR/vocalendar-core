@@ -41,7 +41,10 @@ gem 'mime-types'
 gem 'rmagick'
 gem 'addressable'
 gem 'htmlentities'
-gem 'charlock_holmes'
+
+platforms :ruby do
+  gem 'charlock_holmes'
+end
 
 group :development, :test do
   gem 'rspec-rails'

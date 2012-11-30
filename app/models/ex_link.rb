@@ -2,6 +2,8 @@
 require 'htmlentities'
 
 class ExLink < ActiveRecord::Base
+  include VocalendarCore::ModelLogUtils
+
   self.store_full_sti_class = true
   attr_accessible :title, :uri, :disabled
   has_and_belongs_to_many :related_events, :class_name => 'Event'
@@ -111,7 +113,7 @@ class ExLink < ActiveRecord::Base
     begin
       set_attributes_by_uri
     rescue StandardError, URI::InvalidURIError, TimeoutError => e
-      logger.debug "[ExLink##{id}] HTTP fech failed to getting title: #{e.message}"
+      log :debug, "HTTP fech failed to getting title: #{e.message}"
     end
   end
 
@@ -170,7 +172,7 @@ class ExLink < ActiveRecord::Base
     begin
       Timeout::timeout(5) {
         while true
-          logger.debug "[URI ##{id}] Fetching remote content: #{@cur_uri}"
+          log :debug, "Fetching remote content: #{@cur_uri}"
           response = Faraday.head @cur_uri
           if response.status == 301 || response.status == 302
             loc = response.headers["location"]
@@ -192,7 +194,7 @@ class ExLink < ActiveRecord::Base
         end
       }
     rescue => e
-      logger.error "[URI ##{id}] Remote title fetch error: #{e.message}"
+      log :error, "Remote title fetch error: #{e.message}"
       @cur_uri = nil
       return nil
     end
@@ -202,7 +204,32 @@ class ExLink < ActiveRecord::Base
     end
     body = response.body
     response.headers["content-type"] =~ /charset=([.a-z0-9_-]*)/i
-    code = $1 || CharlockHolmes::EncodingDetector.detect(body)[:encoding]
+    code = $1
+    unless code
+      begin
+        code = CharlockHolmes::EncodingDetector.detect(body)[:encoding]
+      rescue StandardError, NameError => e
+        log :debug, "Can't use CharlockHolmes, failing back to NKF."
+        require 'nkf'
+        code =
+          case guessed_code = NKF.guess(body)
+          when NKF::JIS
+            'iso-2022-jp'
+          when NKF::EUC
+            'euc-jp'
+          when NKF::SJIS
+            'shift_jis'
+          when NKF::UNKNOWN
+            nil
+          when NKF::UTF8
+            'utf-8'
+          when NKF::UTF16
+            'utf-16'
+          else
+            guessed_code # return Encoding::* constants directly
+          end
+      end
+    end
     case code.to_s.downcase
     when 'shift', 'ms932', 'x-sjis', 'sjis', 'shift-jis'
       code = 'shift_jis'
@@ -216,7 +243,7 @@ class ExLink < ActiveRecord::Base
       title = $1.strip
       @@htmlentities_coder.decode title.gsub(/\s+/, ' ').force_encoding(code || 'utf-8').encode('utf-8', :invalid => :replace)
     rescue => e
-      logger.error "[URI ##{id}] Failed to convert remote title encoding: #{e.message} (#{uri} : #{title})"
+      log :error, "Failed to convert remote title encoding: #{e.message} (#{uri} : #{title})"
       return nil
     end
   end
