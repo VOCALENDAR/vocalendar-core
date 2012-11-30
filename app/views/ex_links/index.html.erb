@@ -4,6 +4,8 @@
   <%= text_field_tag :q, params[:q], :class => 'search-query', :placeholder => 'Search' %>
 <% end %>
 
+<%= paginate @ex_links %>
+
 <table class="table table-condensed table-hover ex-link-list">
   <tr>
     <th><%= ExLink.human_attribute_name :type %></th>
@@ -26,12 +28,12 @@
       <%= content_tag :span, truncate(ex_link.endpoint_uri.to_s, :length => 30), :title => ex_link.endpoint_uri %>
     </td>
     <td>
-      <%= content_tag(:span, ex_link.short_id, :class => "shorturl-popover label",
+      <%= content_tag(:a, ex_link.short_id, :class => "shorturl-popover label",
           "data-placement" => "top", "data-html" => "true",
           "title" => "Short Link URL",  :rel => "popover",
           "data-content" => %q{<input type="text" readonly="true"
                                       onClick="this.focus(); this.select()"
-                                      value="} + link_redirect_path(ex_link, only_path: false) + '">'
+                                      value="} + link_redirect_path(ex_link.short_id, only_path: false) + '">'
       ) %>
     </td>
     <td><%= content_tag :span, truncate(ex_link.title, :length => 40), :title =>  ex_link.title %></td>
@@ -42,4 +44,3 @@
 </table>
 
 <%= paginate @ex_links %>
-
