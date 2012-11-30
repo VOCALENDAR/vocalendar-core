@@ -2,7 +2,9 @@ class ExternalUi::EventsController < ApplicationController
   layout "mainsite_dummy"
 
   def index
-    @events = Event.active.page(params[:page]).per(50)
+    @events = Event.active.order('start_datetime').
+      page(params[:page]).per(36).
+      where("start_datetime >= ?", DateTime.now - 3.day)
     params[:q].blank? or
       @events = @events.search(params[:q])
     params[:tag_id].blank? or

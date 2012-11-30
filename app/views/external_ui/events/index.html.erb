@@ -5,7 +5,7 @@
     <% @events.each_with_index do |event, i| %>
     <article class="VCLevent <%= event.start_date.strftime("%a").downcase %> c<%= i % 3 %>" id="event-datial-<%= event.id %>">
       <section class="body">
-        <h1 class="title"><%= event.summary %></h1>
+        <h1 class="title"><%= link_to event.summary, external_ui_event_path(event) %></h1>
         <div class="start clearfix">
           <p class="date"><%= l event.start_date %></p>
           <% unless event.allday? %>
@@ -28,9 +28,11 @@
         <p class="day"><%= sd.strftime("%d") %> </p>
         <p class="dow"><%= sd.strftime("%a").upcase %></p>
       </aside>
+      <% if false %>
       <div class="content" style="display: none; ">
         <%= auto_link(event.description).gsub(/\n/, '<br>').html_safe  %>
       </div>
+      <% end %>
     </article>
     <% end %>
   </article>
