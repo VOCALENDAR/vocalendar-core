@@ -11,14 +11,16 @@
   <tr>
     <th><%= Tag.human_attribute_name :name %></th>
     <th><%= Tag.human_attribute_name :event_count %></th>
+    <th></th>
   </tr>
 
 <% cur_tags.each do |tag| %>
   <tr>
     <td>
-      <%= format_tag tag, :url => tag, :edit_icon => false, :label => tag.name %>
+      <%= link_to tag.name, tag %>
     </td>
     <td><%= link_to tag.events.active.count(:id), events_path(:tag_id => tag.id) %></td>
+    <td><%= link_to bs_icon('pencil'), edit_tag_path(tag) %></td>
   </tr>
 <% end %>
 </table>
