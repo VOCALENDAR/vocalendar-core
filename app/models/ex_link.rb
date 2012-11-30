@@ -22,8 +22,11 @@ class ExLink < ActiveRecord::Base
     where(["lower(uri) like ? or lower(title) like ? or lower(endpoint_uri) like ?"].join(' or '), *args)
   }
 
-  validates :uri,    :presence => true,   :uri => true
+  validates :uri,    :presence => true, :uri => true
   validates :digest, :uniqueness => true
+
+  after_validation :move_digest_error
+  before_save      :set_attributes_by_uri
 
   @@remote_fetch_enabled = true
   @@htmlentities_coder = HTMLEntities.new
@@ -101,20 +104,16 @@ class ExLink < ActiveRecord::Base
   end
 
   def uri=(v)
-    unless new_record? && self[:uri] != v
+    unless new_record?
       if Rails.configuration.active_record.mass_assignment_sanitizer == :strict
         raise ArgumentError.new("Cannot update URI. Create a new record.")
       else
+        log :error, "Cannot re-assign uri, ignored! (#{caller.first})"
         return nil
       end
     end
     self[:uri] = @cur_uri = v
     self[:digest] = self.class.digest(v)
-    begin
-      set_attributes_by_uri
-    rescue StandardError, URI::InvalidURIError, TimeoutError => e
-      log :debug, "HTTP fech failed to getting title: #{e.message}"
-    end
   end
 
   def detect_type_and_remote_id
@@ -145,8 +144,18 @@ class ExLink < ActiveRecord::Base
   end
 
   def set_attributes_by_uri
-    t = get_remote_title and
-      self[:title] = t
+    uri_changed? or return
+    errors.has_key?(:uri) and return
+    set_attributes_by_uri!
+  end
+
+  def set_attributes_by_uri!
+    begin
+      t = get_remote_title and
+        self[:title] = t
+    rescue StandardError, URI::InvalidURIError, TimeoutError => e
+      log :warn, "HTTP fech failed to getting title: #{e.message}"
+    end
     @cur_uri != self.uri and
       self[:endpoint_uri] = @cur_uri
     ti = detect_type_and_remote_id
@@ -159,6 +168,11 @@ class ExLink < ActiveRecord::Base
   def update_attributes_by_uri
     set_attributes_by_uri
     save
+  end
+
+  def update_attributes_by_uri!
+    set_attributes_by_uri!
+    save!
   end
 
   def typename
@@ -247,6 +261,15 @@ class ExLink < ActiveRecord::Base
       return nil
     end
   end
+
+  def move_digest_error
+    errors.has_key? :digest or return
+    errors[:digest].each do |ev|
+      errors[:uri] << ev
+    end
+    errors.delete :digest
+  end
+  private :move_digest_error
 
   module InjectCommonVars
     def self.included(base)
