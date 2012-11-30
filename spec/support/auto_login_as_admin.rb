@@ -28,6 +28,7 @@ RSpec.configure do |config|
   })
 
   config.include Devise::TestHelpers, :type => :controller
+  config.include Devise::TestHelpers, :type => :view
 
   config.before(:each, :type => :view) do
     view.stub(:user_signed_in?).and_return(true)
