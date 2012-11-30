@@ -371,10 +371,8 @@ class Event < ActiveRecord::Base
 
   def tag_names(*conditions)
     tr = tags
-    pp conditions
     conditions.empty? or
       tr = tr.where(*conditions)
-    pp tr
     tr.map {|t| t.try(:name) }.compact
   end
 
