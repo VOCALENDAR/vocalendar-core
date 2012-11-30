@@ -209,7 +209,7 @@ class ExLink < ActiveRecord::Base
       begin
         code = CharlockHolmes::EncodingDetector.detect(body)[:encoding]
       rescue StandardError, NameError => e
-        log :debug, "Can't use CharlockHolmes, failing back to NKF."
+        log :debug, "Can't use CharlockHolmes, falling back to NKF."
         require 'nkf'
         code =
           case guessed_code = NKF.guess(body)
