@@ -363,4 +363,31 @@ describe Event do
     e.etag.should_not eq prev_etag
     e.etag.should_not be_blank
   end
+
+  it "acceept conditional tag name query" do
+    e = an_event
+    e.tag_names = %w(Tag query test)
+    e.save!
+    e.tag_names(:name => "Tag").should eq %w(Tag)
+
+    t1 = Tag.create(:name => "time-#{Time.now.to_i}")
+    sleep 1
+    t2 = Tag.create(:name => "time-#{Time.now.to_i}")
+    e.tag_ids = [t1, t2].map{|t| t.id}
+    e.save!
+
+    e.tag_names(:created_at => t1.created_at).should eq [t1.name]
+  end
+    
+  it "hides hidden tags when convert to google v3 JSON" do
+    e = an_event
+    e.tag_names = %w(This is hidden tag test)
+    e.save!
+
+    Tag.find_by_name!("hidden").update_attribute :hidden, true
+    e.tag_names(:hidden => false).should eq %w(This is tag test)
+
+    Tag.find_by_name!("test"  ).update_attribute :hidden, true
+    e.tag_names(:hidden => false).should eq %w(This is tag)
+  end
 end

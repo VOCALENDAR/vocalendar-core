@@ -5,7 +5,7 @@ class Tag < ActiveRecord::Base
   belongs_to :link, :foreign_key => :primary_link_id,
     :class_name => 'ExLink', :autosave => true
 
-  attr_accessible :name, :link_uri
+  attr_accessible :name, :link_uri, :hidden
 
   validates :name, :presence => true, :uniqueness => true,
     :format => {:with => /^\S+$/}

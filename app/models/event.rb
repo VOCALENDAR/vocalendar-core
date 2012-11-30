@@ -369,8 +369,13 @@ class Event < ActiveRecord::Base
     self.tag_names = v.strip.split(VocalendarCore::TagSeparateRegexp)
   end
 
-  def tag_names
-    tags.map {|t| t.try(:name) }.compact
+  def tag_names(*conditions)
+    tr = tags
+    pp conditions
+    conditions.empty? or
+      tr = tr.where(*conditions)
+    pp tr
+    tr.map {|t| t.try(:name) }.compact
   end
 
   def tag_names=(v)
@@ -478,7 +483,7 @@ class Event < ActiveRecord::Base
 
   def to_exfmt_google_v3(opts = {})
     opts = {:tag_names_remove => [], :tag_names_append => []}.merge opts
-    out_tags = tag_names
+    out_tags = tag_names(:hidden => false)
     has_anniversary = out_tags.delete '記念日'
     tag_str = (opts[:tag_names_append] + out_tags - opts[:tag_names_remove]).uniq.join('/')
     tag_str.blank?  or  tag_str = "【#{tag_str}】"
