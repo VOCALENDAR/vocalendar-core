@@ -10,13 +10,12 @@ VocalendarCore::Application.routes.draw do
   end
 
   namespace 'external_ui', :path => 'ex' do
-    resources :events, :only => [:index, :show] do
-      collection do
-        get 'gid/:gid' => 'events#show', :as => 'external_ui_event_by_gid'
-        get 'eid/:eid' => 'events#show', :as => 'external_ui_event_by_eid'
-        get 'uid/:uid' => 'events#show', :as => 'external_ui_event_by_uid'
-      end
+    scope 'events' do
+      get 'gid/:gid' => 'events#show', :as => 'event_by_gid'
+      get 'eid/:eid' => 'events#show', :as => 'event_by_eid'
+      get 'uid/:uid' => 'events#show', :as => 'event_by_uid'
     end
+    resources :events, :only => [:index, :show]
   end
 
   resources :events do
