@@ -58,5 +58,9 @@ module VocalendarCore
   end
 end
 
+# for Windows
+require 'openssl'
+OpenSSL::SSL::VERIFY_PEER = OpenSSL::SSL::VERIFY_NONE
+
 require "#{Rails.root}/extras/vocalendar_core/base.rb"
 require 'pp'

@@ -31,6 +31,7 @@ Welcome to the minefield &mdash; VOCALENDAR Core system!<br>
   <% if e = Event.order('updated_at desc').limit(1).last %>
   <li><%= link_to 'Detail view', external_ui_event_path(e.id) %></li>
   <% end %>
+  <li><%= link_to 'Release Event list', external_ui_release_events_path %></li>
 </ul>
 
 <h3>直接公開フォーム (TODO)</h3>
