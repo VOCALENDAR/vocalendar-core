@@ -1,0 +1,101 @@
+.ex-link-icon {
+	vertical-align: top;
+	margin-left: 2px;
+}
+
+.ex-link {
+	white-space: nowrap;
+	display: inline-block;
+}
+
+div#newReleaseBody {
+	width: 1200px;
+	font-family: sans-serif;
+}
+
+h2 {
+	margin: 0 0 30px;
+	padding: 0 0 0 0px;
+	font-size: 32px;
+	font-weight: normal;
+	color: #666;
+	line-height: 100%;
+	text-shadow: 0px 1px 0px white;
+
+}
+
+ul {
+	list-style: none;
+}
+
+article#recommends {
+	padding-bottom: 15px;
+	border-bottom: solid 1px #aaaaaa ;
+}
+
+article#newReleases {
+	margin-top: 15px;
+}
+
+article.release {
+	display: block;
+	position: relative;
+	width: 380px;
+	height: 155px;
+	margin: 10px 15px 40px 0px;
+	
+}
+
+section.releaseInfo {
+	position: absolute;
+	top: 0px;
+	left: 0px;
+	font-size: 14px;
+	font-weight: bold;
+}
+section.songInfo {
+	position: absolute;
+	top: 35px;
+	left: 130px;
+	color: #999999;
+}
+
+section.thumbnail {
+	position: absolute;
+	top: 35px;
+	left: 0px;
+	width: 120px;
+	height: 120px;
+}
+
+section.releaseInfo ul li {
+	display: block;
+	height: 20px;
+	padding-top: 5px;	
+}
+
+section.releaseInfo ul li.date {
+	position: absolute;
+	width: 150px;
+	left: 0;
+	background-color: #828282;
+	color: #ffffff;
+}
+section.releaseInfo ul li.time {
+	position: absolute;
+	width: 110px;
+	left: 155px;
+	background-color: #b7b7b7;
+	color: #ffffff;
+}
+section.releaseInfo ul li.media {
+	position: absolute;
+	width: 110px;
+	left: 270px;
+	background-color: #ffffff;
+}
+
+h3.songTitle {
+	font-size: 20px;
+	color: #0000000;
+}
