@@ -277,6 +277,11 @@ describe Event do
       next if f == 'id' # "Not yet decided to add 'id' for google sync"
       output[f].should == google_input[f]
     end
+
+    output[:start][:dateTime].should == google_input[:start][:dateTime]
+    output[:start][:timeZone].should == google_input[:start][:timeZone]
+    output[:end][:dateTime].should == google_input[:end][:dateTime]
+    output[:end][:timeZone].should == google_input[:end][:timeZone]
     output[:originalStartTime][:dateTime].should == google_input[:originalStartTime][:dateTime]
     output[:originalStartTime][:timeZone].should == google_input[:originalStartTime][:timeZone]
 
