@@ -486,7 +486,7 @@ class Event < ActiveRecord::Base
     tag_str = (opts[:tag_names_append] + out_tags - opts[:tag_names_remove]).uniq.join('/')
     tag_str.blank?  or  tag_str = "【#{tag_str}】"
     has_anniversary and tag_str = "★#{tag_str}"
-    summary = tag_str.to_s + summary.to_s
+    out_summary = tag_str.to_s + summary.to_s
     ret = {
       # :id => g_id, # TODO: If id is set, may get 404 not found.
       :iCalUID => ical_uid,
@@ -504,7 +504,7 @@ class Event < ActiveRecord::Base
         {:dateTime => end_datetime,
          :timeZone => timezone.try(:name)}
       end,
-      :summary => summary,
+      :summary => out_summary,
       :description => description,
       :location => location,
       :status => status,

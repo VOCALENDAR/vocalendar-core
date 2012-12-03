@@ -228,7 +228,7 @@ describe Event do
     end
   end
 
-  it "keeps recurring instance info while Google JSON convertion" do
+  it "keeps info while Google JSON convertion" do
     google_input =  {
       kind: "calendar#event",
       etag: "\"NybCyMgjkLQM6Il-p8A5652MtaE/Q09EdnpMU3pKeEVBQUFBQUFBQUFBQT09\"",
@@ -273,10 +273,8 @@ describe Event do
     e.load_exfmt :google_v3, google_input.dup, :calendar_id => 'dummy_gcal_id'
     output = e.to_exfmt :google_v3
 
-    pending "Not yet decided to add 'id' for google sync" do
-      output[:id].should == google_input[:id]
-    end
-    %w(summary status start end recurrence iCalUID recurringEventId).each do |f|
+    %w(id summary status start end iCalUID recurringEventId).each do |f|
+      next if f == 'id' # "Not yet decided to add 'id' for google sync"
       output[f].should == google_input[f]
     end
     output[:originalStartTime][:dateTime].should == google_input[:originalStartTime][:dateTime]
