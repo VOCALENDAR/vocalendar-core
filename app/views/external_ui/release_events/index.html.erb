@@ -6,13 +6,9 @@
 <article class='release recommend'>
 	<section class='thumbnail'>
 		<%=
-			thumbnail = 'noImageNewRelease.jpg'
-			thumbnail = release.image.thumb.url if release.image?
-			if release.location?
-			  image_tag( thumbnail, :alt=>release.summary)
-			else
-			  link_to( image_tag(thumbnail, :alt=>release.summary), release.location)
-			end
+			thumbnail = release.image? ? release.image.thumb.url : 'noImageNewRelease.jpg'
+			imgtag = image_tag( thumbnail, :alt=>release.summary, :width=>'200px', :height=>'200px')
+ 			release.location? ? imgtag : link_to( imgtag, release.location)
 		%>
 	</section>
 	<section class='releaseInfo'>
@@ -77,11 +73,8 @@
 	<section class='thumbnail'>
 		<%=
 			thumbnail = release.image? ? release.image.thumb.url : 'noImageNewRelease.jpg'
- 			if release.location?
-			  image_tag( thumbnail, :alt=>release.summary, :width=>'120px', :height=>'120px')
-			else
-			  link_to( image_tag(thumbnail, :alt=>release.summary, :width=>'120px', :height=>'120px'), release.location)
-			end
+			imgtag = image_tag( thumbnail, :alt=>release.summary, :width=>'120px', :height=>'120px')
+ 			release.location? ? imgtag : link_to( imgtag, release.location)
 		%>
 	</section>
 
