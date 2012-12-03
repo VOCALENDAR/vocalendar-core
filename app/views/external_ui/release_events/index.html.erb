@@ -76,12 +76,11 @@
 	</section>
 	<section class='thumbnail'>
 		<%=
-			thumbnail = 'noImageNewRelease.jpg'
-			thumbnail = release.image.thumb.url if release.image?
-			if release.location?
+			thumbnail = release.image? ? release.image.thumb.url : 'noImageNewRelease.jpg'
+ 			if release.location?
 			  image_tag( thumbnail, :alt=>release.summary, :width=>'120px', :height=>'120px')
 			else
-			  link_to( image_tag(thumbnail, :alt=>release.summary), release.location)
+			  link_to( image_tag(thumbnail, :alt=>release.summary, :width=>'120px', :height=>'120px'), release.location)
 			end
 		%>
 	</section>

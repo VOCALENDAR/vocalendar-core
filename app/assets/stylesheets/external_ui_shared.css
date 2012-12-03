@@ -29,6 +29,11 @@ ul {
 	clear: both;
 }
 
+li {
+	vertical-align: middle;
+
+}
+
 article#recommends {
 	padding-bottom: 15px;
 	border-bottom: solid 1px #aaaaaa ;
@@ -52,13 +57,11 @@ section.releaseInfo {
 	top: 0px;
 	left: 0px;
 	font-size: 14px;
-	font-weight: bold;
 }
 section.songInfo {
 	position: absolute;
 	top: 35px;
 	left: 130px;
-	color: #999999;
 }
 
 section.thumbnail {
@@ -78,28 +81,35 @@ section.releaseInfo ul li {
 
 section.releaseInfo ul li.date {
 	position: absolute;
-	width: 150px;
+	width: 135px;
 	left: 0;
 	background-color: #828282;
 	color: #ffffff;
+	padding-left: 15px;
+	font-weight: bold;
+
 }
 section.releaseInfo ul li.time {
 	position: absolute;
-	width: 110px;
+	width: 105px;
 	left: 155px;
 	background-color: #b7b7b7;
 	color: #ffffff;
+	font-size: 12px;
+	padding-left: 5px;
 }
 section.releaseInfo ul li.media {
 	position: absolute;
 	width: 110px;
 	left: 270px;
 	background-color: #ffffff;
+	font-size: 12px;
+	padding-top: 6px;
 }
 
 h3.songTitle {
-	font-size: 20px;
-	color: #000000;
+	margin-top: 5px;
+	font-size: 18px;
 }
 
 h3.songTitle a {
@@ -123,18 +133,24 @@ section.songInfo ul li {
 	margin: 2px 5px 2px 0px;
 }
 
+ul.producers li {
+	font-size: 14px;
+}
+
 ul.vocaloid li {
-	margin: 2px 5px;
 	padding: 2px 5px 1px 5px;
-	background-color:#cccccc;
+	background-color:#eeeeee;
 	border: 1px solid #aaaaaa;
-	border-radius: 5px;
-	-moz-border-radius: 5px;
-	-webkit-border-radius: 5px;
+	color: #999999;
+	border-radius: 10px;
+	-moz-border-radius: 10px;
+	-webkit-border-radius: 10px;
+	font-size: 11px;
 
 }
 
 p.description {
 	clear: both;
 	height: 120px;
+	font-size: 11px;
 }
