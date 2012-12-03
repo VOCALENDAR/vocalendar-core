@@ -5,12 +5,10 @@
 <% @recommends.each_with_index do |release, i| %>
 <article class='release recommend'>
 	<section class='thumbnail'>
-		<%= 
-			if release.location == ''
-			  image_tag(release.image.rect200.url, :alt=>release.summary)
-			else
-			  link_to( image_tag(release.image.rect200.url, :alt=>release.summary), release.location)
-			end
+		<%=
+			thumbnail = release.image? ? release.image.thumb.url : 'noImageNewRelease.jpg'
+			imgtag = image_tag( thumbnail, :alt=>release.summary, :width=>'200px', :height=>'200px')
+ 			release.location? ? imgtag : link_to( imgtag, release.location)
 		%>
 	</section>
 	<section class='releaseInfo'>
@@ -37,7 +35,7 @@
 		</p>
 	</section>
 
-</article>	
+</article>
 <% end %>
 </section>
 </article>
@@ -52,7 +50,7 @@
 			<!-- 曜日のロジックはHelperかな？ -->
 			<li class='date'><%= release.start_datetime.strftime("%m月%d日") %> <%= %w(日 月 火 水 木 金 土)[release.start_datetime.strftime("%w").to_i] %>曜日</li>
 			<li class='time'><%= release.start_datetime.strftime("%H:%M") %> 公開予定</li>
-			<li class='media'><%= release.media_str %></li>
+			<li class='media'><span class='<%= release.media_str.split(' ')[0] %>'>■</span><%= release.media_str.split(' ')[0] %></li>
 		</ul>
 	</section>
 	<section class='songInfo'>
@@ -73,17 +71,14 @@
 		</p>
 	</section>
 	<section class='thumbnail'>
-		<%= 
-			# imageが無い場合は？
-			if release.location == ''
-			  image_tag(release.image.thumb.url, :alt=>release.summary)
-			else
-			  link_to( image_tag(release.image.thumb.url, :alt=>release.summary), release.location)
-			end
+		<%=
+			thumbnail = release.image? ? release.image.thumb.url : 'noImageNewRelease.jpg'
+			imgtag = image_tag( thumbnail, :alt=>release.summary, :width=>'120px', :height=>'120px')
+ 			release.location? ? imgtag : link_to( imgtag, release.location)
 		%>
 	</section>
 
-</article>	
+</article>
 <% end %>
 </section>
 </article>
