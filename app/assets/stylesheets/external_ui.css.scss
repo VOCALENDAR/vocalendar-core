@@ -28,12 +28,16 @@ li {
 }
 
 article#recommends {
-  padding-bottom: 15px;
   border-bottom: solid 1px #aaaaaa ;
+  height: 325px;
 }
 
 article#newReleases {
   margin-top: 15px;
+}
+
+div.row {
+  clear: both;
 }
 
 article.release {
@@ -42,6 +46,7 @@ article.release {
   width: 380px;
   height: 155px;
   margin: 10px 15px 40px 0px;
+  float: left;
 
 }
 
@@ -94,7 +99,7 @@ section.releaseInfo ul li.time {
 section.releaseInfo ul li.media {
   position: absolute;
   width: 110px;
-  left: 270px;
+  left: 265px;
   background-color: #ffffff;
   font-size: 12px;
 }
@@ -154,6 +159,7 @@ article.release.recommend {
   position: relative;
   width: 580px;
   height: 200px;
+  float: left;
 }
 
 article.recommend section.releaseInfo {
