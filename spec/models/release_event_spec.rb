@@ -1,3 +1,4 @@
+# -*- encoding: utf-8 -*-
 require 'spec_helper'
 
 describe ReleaseEvent do
@@ -11,6 +12,32 @@ describe ReleaseEvent do
 
   let(:a_relinfo) do
     ReleaseEvent.new valid_attrs
+  end
+
+  it "can be create by request param" do
+    rparam = {
+      "summary"=>"テスト",
+      "tag_names_str"=>"タグ",
+      "location"=>"場所",
+      "uri"=>"http://www.yahoo.co.jp/",
+      "twitter_hash"=>"twash",
+      "start_date"=>"2012-12-10",
+      "start_time"=>"00:00",
+      "allday"=>"0",
+      "end_date"=>"",
+      "end_time"=>"",
+      "description"=>"desc!\r\n゛たよ",
+      "producers_str"=>"Pさん",
+      "movie_authors_str"=>"どうが",
+      "illust_authors_str"=>"えし",
+      "vocaloid_chars"=>["初音ミク", "GUMI"],
+      "media"=>["YouTube", "Viemo"]
+    }
+    r = ReleaseEvent.new(rparam)
+    r.save.should be_true
+
+    r = ReleaseEvent.create!(rparam)
+    r.should be_valid
   end
 
   it "provides extra filed accessors" do

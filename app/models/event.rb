@@ -172,13 +172,15 @@ class Event < ActiveRecord::Base
 
   after_initialize :init
   def init
-    @extra_tags = ExtraTagContainer.new(self)
     @tag_changed = false
   end
-  attr_reader   :extra_tags
   attr_accessor :temp_start_time, :temp_end_time
 
   alias_attribute :name, :summary
+
+  def extra_tags
+    @extra_tags ||= ExtraTagContainer.new(self)
+  end
 
   def recurring_instance?
     g_recurring_event_id?
