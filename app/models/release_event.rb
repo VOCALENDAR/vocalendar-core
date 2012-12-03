@@ -4,7 +4,6 @@ class ReleaseEvent < Event
       extra_tags[f].names
     }
 
-
     define_method("#{f.pluralize}_str") {
       extra_tags[f].names_str
     }
