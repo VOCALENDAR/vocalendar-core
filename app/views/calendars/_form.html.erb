@@ -24,10 +24,11 @@
 <% if @calendar.new_record? || @calendar.io_type == 'dst' %>
 <%= f.label :tags %> 
 <div class="tag-check-list">
-<% Tag.all.each do |tag| %>
+<% Tag.order('name').each do |tag| %>
   <span class="checkbox-set">
     <%= f.check_box :tag_ids, {:name => "calendar[tag_ids][]", :id => "calendar_tag_ids_#{tag.id}"}, tag.id, nil %>
     <%= f.label "tag_ids_#{tag.id}", tag.name %>
+    <%= bs_icon('eye-close') if tag.hidden? %>
   </span>
 <% end %>
 </div>
