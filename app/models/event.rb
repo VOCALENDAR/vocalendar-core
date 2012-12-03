@@ -158,9 +158,9 @@ class Event < ActiveRecord::Base
   validates :start_time, :presence => true, :unless => :allday?
   validates :end_time,   :presence => true, :unless => :allday?
   validates :temp_start_time, :unless => :allday?,
-    :format => {:with => /^(\d{2}:\d{2})$/}, :allow_nil => true
+    :format => {:with => /^(|\d{2}:\d{2})$/}, :allow_nil => true
   validates :temp_end_time, :unless => :allday?,
-    :format => {:with => /^(\d{2}:\d{2})$/}, :allow_nil => true
+    :format => {:with => /^(|\d{2}:\d{2})$/}, :allow_nil => true
 
   before_validation :set_dummy_values_for_cancelled,
     :cascade_start_date, :cascade_end_datetime, :cascade_end_date,
