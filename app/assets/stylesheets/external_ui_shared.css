@@ -26,6 +26,7 @@ h2 {
 
 ul {
 	list-style: none;
+	clear: both;
 }
 
 article#recommends {
@@ -43,7 +44,7 @@ article.release {
 	width: 380px;
 	height: 155px;
 	margin: 10px 15px 40px 0px;
-	
+
 }
 
 section.releaseInfo {
@@ -71,7 +72,8 @@ section.thumbnail {
 section.releaseInfo ul li {
 	display: block;
 	height: 20px;
-	padding-top: 5px;	
+	padding-top: 6px;
+
 }
 
 section.releaseInfo ul li.date {
@@ -97,5 +99,42 @@ section.releaseInfo ul li.media {
 
 h3.songTitle {
 	font-size: 20px;
-	color: #0000000;
+	color: #000000;
+}
+
+h3.songTitle a {
+	text-decoration: none;
+	color: #000000;
+	cursor: pointer;
+}
+h3.songTitle a:link {
+	text-decoration: none;
+	color: #000000;
+	cursor: pointer;
+}
+
+ul {
+
+}
+
+section.songInfo ul li {
+	display: block;
+	float: left;
+	margin: 2px 5px 2px 0px;
+}
+
+ul.vocaloid li {
+	margin: 2px 5px;
+	padding: 2px 5px 1px 5px;
+	background-color:#cccccc;
+	border: 1px solid #aaaaaa;
+	border-radius: 5px;
+	-moz-border-radius: 5px;
+	-webkit-border-radius: 5px;
+
+}
+
+p.description {
+	clear: both;
+	height: 120px;
 }
