@@ -12,6 +12,17 @@ class Tag < ActiveRecord::Base
 
   after_validation :copy_link_errors
 
+  class << self
+    def cleanup_unused_tags(gap = nil)
+      gap ||= 30.minutes
+      where("created_at < ?", DateTime.now - gap).each do |tag|
+        tag.events.count > 0 and next
+        Rails.logger.info "Removing unused tag #{tag.name}"
+        tag.destroy
+      end
+    end
+  end
+
   def link?
     !!link
   end

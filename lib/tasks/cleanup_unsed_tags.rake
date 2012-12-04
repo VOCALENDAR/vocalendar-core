@@ -1,9 +1,5 @@
 # -*- ruby -*-
 desc "Remove tags that have no events"
 task :cleanup_unused_tags => :environment do
-  Tag.where("created_at < ?", DateTime.now - 30.minutes).each do |tag|
-    tag.events.count > 0 and next
-    Rails.logger.info "Removing unused tag #{tag.name}"
-    tag.destroy
-  end
+  Tag.cleanup_unused_tags
 end
