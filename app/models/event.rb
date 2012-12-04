@@ -425,9 +425,8 @@ class Event < ActiveRecord::Base
 
     summary = attrs["summary"].to_s.strip
     in_tags = opts[:tag_names_append]
-    while summary.sub!(/^【(.*?)】/, '')
+    summary.sub!(/^【(.*?)】/, '') and
       in_tags += $1.split(VocalendarCore::TagSeparateRegexp)
-    end
     summary.sub!(/^★/, '') and in_tags << '記念日'
     self.tag_names = (in_tags - opts[:tag_names_remove]).uniq
 
