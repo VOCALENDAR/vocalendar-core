@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 class Calendar < ActiveRecord::Base
   include VocalendarCore::ModelLogUtils
   include VocalendarCore::HistoryUtils::Model
