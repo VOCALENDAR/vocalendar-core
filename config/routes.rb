@@ -16,6 +16,7 @@ VocalendarCore::Application.routes.draw do
       get 'uid/:uid' => 'events#show', :as => 'event_by_uid'
     end
     resources :events, :only => [:index, :show]
+    resources :release_events, :only => [:index, :show]
   end
 
   resources :events do

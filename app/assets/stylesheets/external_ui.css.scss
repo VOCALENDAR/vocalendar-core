@@ -1,1 +1,223 @@
 @import "external_ui_shared";
+@charset "utf-8";
+
+div#newReleaseBody {
+  width: 1200px;
+  font-family: sans-serif;
+}
+
+h2 {
+  margin: 0 0 30px;
+  padding: 0 0 0 0px;
+  font-size: 32px;
+  font-weight: normal;
+  color: #666;
+  line-height: 100%;
+  text-shadow: 0px 1px 0px white;
+
+}
+
+ul {
+  list-style: none;
+  clear: both;
+}
+
+li {
+  vertical-align: middle;
+
+}
+
+article#recommends {
+  border-bottom: solid 1px #aaaaaa ;
+  height: 325px;
+}
+
+article#newReleases {
+  margin-top: 15px;
+}
+
+div.row {
+  clear: both;
+}
+
+article.release {
+  display: block;
+  position: relative;
+  width: 380px;
+  height: 155px;
+  margin: 10px 15px 40px 0px;
+  float: left;
+
+}
+
+section.releaseInfo {
+  position: absolute;
+  top: 0px;
+  left: 0px;
+  font-size: 14px;
+}
+section.songInfo {
+  position: absolute;
+  top: 35px;
+  left: 130px;
+}
+
+section.thumbnail {
+  position: absolute;
+  top: 35px;
+  left: 0px;
+  width: 120px;
+  height: 120px;
+}
+
+section.releaseInfo ul li {
+  display: block;
+  height: 16px;
+  padding-top: 4px;
+
+}
+
+section.releaseInfo ul li.date {
+  position: absolute;
+  width: 140px;
+  left: 0;
+  background-color: #828282;
+  color: #ffffff;
+  padding-left: 10px;
+  font-weight: bold;
+
+}
+section.releaseInfo ul li.time {
+  position: absolute;
+  width: 100px;
+  left: 155px;
+  background-color: #b7b7b7;
+  color: #ffffff;
+  font-size: 12px;
+  padding-left: 5px;
+}
+section.releaseInfo ul li.media {
+  position: absolute;
+  width: 110px;
+  left: 265px;
+  background-color: #ffffff;
+  font-size: 12px;
+}
+
+
+h3.songTitle {
+  margin: 5px 0px 0px 0px;
+  font-size: 16px;
+}
+
+h3.songTitle a {
+  text-decoration: none;
+  color: #000000;
+  cursor: pointer;
+}
+h3.songTitle a:link {
+  text-decoration: none;
+  color: #000000;
+  cursor: pointer;
+}
+
+section.songInfo ul {
+  margin: 2px 0px 2px 0px;
+}
+
+section.songInfo ul li {
+  display: block;
+  float: left;
+  margin: 2px 5px 2px 0px;
+}
+
+ul.producers li {
+  font-size: 12px;
+}
+
+ul.vocaloid li {
+  padding: 2px 5px 1px 5px;
+  background-color:#eeeeee;
+  border: 1px solid #aaaaaa;
+  color: #999999;
+  border-radius: 10px;
+  -moz-border-radius: 10px;
+  -webkit-border-radius: 10px;
+  font-size: 11px;
+
+}
+
+p.description {
+  clear: both;
+  font-size: 11px;
+  padding-top: 5px;
+}
+
+
+article.release.recommend {
+  display: block;
+  position: relative;
+  width: 580px;
+  height: 200px;
+  float: left;
+}
+
+article.recommend section.releaseInfo {
+  top: 0px;
+  left: 210px;
+  font-size: 16px;
+}
+article.recommend section.songInfo {
+  top: 40px;
+  left: 220px;
+}
+
+article.recommend section.thumbnail {
+  top: 0px;
+  left: 0px;
+  width: 200px;
+  height: 200px;
+}
+
+article.recommend section.releaseInfo ul li {
+  height: 20px;
+  padding-top: 5px;
+
+}
+
+article.recommend section.releaseInfo ul li.date {
+  width: 135px;
+  padding-left: 5px;
+}
+
+article.recommend section.releaseInfo ul li.time {
+  width: 100px;
+  left: 145px;
+  font-size: 12px;
+  padding-top: 7px;
+  height: 18px;
+  padding-left: 5px;
+}
+
+article.recommend section.releaseInfo ul li.media {
+  width: 100px;
+  left: 255px;
+}
+
+article.recommend h3.songTitle {
+  font-size: 18px;
+}
+
+article.recommend ul.producers li {
+  font-size: 14px;
+}
+
+article.recommend ul.vocaloid li {
+  padding: 3px 5px 1px 5px;
+  font-size: 12px;
+
+}
+
+article.recommend p.description {
+  font-size: 12px;
+}

@@ -1,0 +1,2 @@
+module ExternalUi::ReleaseEventsHelper
+end
