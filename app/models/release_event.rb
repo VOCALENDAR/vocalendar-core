@@ -1,4 +1,6 @@
 class ReleaseEvent < Event
+  before_save :copy_link_to_location
+
   %w(producer media vocaloid_char movie_author illust_author).each do |f|
     define_method(f.pluralize) {
       extra_tags[f].names
@@ -26,5 +28,10 @@ class ReleaseEvent < Event
       extra_tags[f] = v
     }
     attr_accessible "#{f.pluralize}_tags"
+  end
+
+  private
+  def copy_link_to_location
+    self[:location] = primary_link_uri
   end
 end
