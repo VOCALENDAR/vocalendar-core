@@ -1,7 +1,5 @@
 module ExLinksHelper
   def format_ex_link(link, opts = {})
-    link.blank? and return ""
-
     default_opts = {
       :max_length => 60,
       :short_url => true,
@@ -11,6 +9,14 @@ module ExLinksHelper
     html_opts = opts.dup
     default_opts.keys.each { |k| html_opts.delete k }
     opts = default_opts.merge opts
+
+    if link.blank?
+      if opts[:label].blank?
+        return "".html_safe
+      else
+        return truncate(opts[:label], :length => opts[:max_length])
+      end
+    end
 
     ret = "".html_safe
 
