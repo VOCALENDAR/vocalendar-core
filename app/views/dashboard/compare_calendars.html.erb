@@ -70,6 +70,13 @@
     <td><%= vals[1].inspect %></td>
   </tr>
   <% end %>
+  <tr>
+    <th rowspan="2">(all)</th>
+  </tr>
+  <tr>
+    <td><pre><%= @diff[:a][id].pretty_inspect %></pre></td>
+    <td><pre><%= @diff[:b][id].pretty_inspect %></pre></td>
+  </tr>
   <% end %>
 </table>
 <% end %>

@@ -208,7 +208,7 @@ class Calendar < ActiveRecord::Base
              transparency sequence etag htmlLink).each do |attr|
             e.delete attr
           end
-          e["summary"].to_s.strip!
+          e["summary"] = e["summary"] = e["summary"].to_s.gsub(/】\s*/, '】').strip
           e["status"] == "tentative" and e["status"] = "confirmed"
           all_events[cal][eitem["id"]] = e
         end
@@ -219,6 +219,8 @@ class Calendar < ActiveRecord::Base
     op_events = all_events[another]
 
     diff = {
+      :a       => my_events,
+      :b       => op_events,
       :added   => (op_events.keys - my_events.keys).map {|id| op_events[id]},
       :deleted => (my_events.keys - op_events.keys).map {|id| my_events[id]},
     }
