@@ -1,4 +1,4 @@
-# -*- encoding: utf-8 -*-
+# -*- coding: utf-8 -*-
 require 'htmlentities'
 
 class ExLink < ActiveRecord::Base
@@ -84,6 +84,12 @@ class ExLink < ActiveRecord::Base
 
     def remote_fetch_enabled=(v)
       @@remote_fetch_enabled = v
+    end
+
+    def fetch_missing_titles
+      where(:title => "").each do |link|
+        link.update_attributes_by_uri!
+      end
     end
   end
 
