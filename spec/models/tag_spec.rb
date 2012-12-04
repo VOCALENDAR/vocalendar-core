@@ -22,4 +22,15 @@ describe Event do
     t.should be_hidden
     Tag.find_by_name("hidden_test").should be_hidden
   end
+
+  it '#cleanup_unused_tags returns deleted tags' do
+    Tag.cleanup_unused_tags(-1.seconds)
+    targets = []
+    targets << Tag.create!(:name => 'del1')
+    targets << Tag.create!(:name => 'del2')
+    deleted = Tag.cleanup_unused_tags(-1.seconds).sort_by {|t| t.id }
+    deleted.should eq targets
+
+  end
+
 end

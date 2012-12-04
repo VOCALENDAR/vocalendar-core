@@ -15,11 +15,14 @@ class Tag < ActiveRecord::Base
   class << self
     def cleanup_unused_tags(gap = nil)
       gap ||= 30.minutes
-      where("created_at < ?", DateTime.now - gap).each do |tag|
-        tag.events.count > 0 and next
+      deleted = []
+      where("created_at <= ?", DateTime.now - gap).each do |tag|
+        tag.events.count(:id) > 0 and next
         Rails.logger.info "Removing unused tag #{tag.name}"
         tag.destroy
+        deleted << tag
       end
+      deleted
     end
   end
 
