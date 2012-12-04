@@ -1,0 +1,92 @@
+<div id='newReleaseBody'>
+<article id='recommends'>
+<section>
+<h2>RECOMMEND</h2>
+<% @recommends.each_with_index do |release, i| %>
+<article class='release recommend'>
+	<section class='thumbnail'>
+		<%=
+			thumbnail = release.image? ? release.image.thumb.url : 'noImageNewRelease.jpg'
+			imgtag = image_tag( thumbnail, :alt=>release.summary, :width=>'200px', :height=>'200px')
+ 			release.location? ? link_to( imgtag, release.location) : imgtag
+		%>
+	</section>
+	<section class='releaseInfo'>
+		<ul>
+			<li class='date'><%= release.start_datetime.strftime("%m月%d日") %> <%= %w(日 月 火 水 木 金 土)[release.start_datetime.strftime("%w").to_i] %>曜日</li>
+			<li class='time'><%= release.start_datetime.strftime("%H:%M") %> 公開予定</li>
+			<li class='media'><%= release.media_str %></li>
+		</ul>
+	</section>
+	<section class='songInfo'>
+		<h3 class='songTitle'><%= link_to release.summary, external_ui_release_event_path(release) %></h3>
+		<ul class='producers'>
+			<% release.producers.each do | producer | %>
+			<li><%= producer %></li>
+			<% end %>
+		</ul>
+		<ul class='vocaloid'>
+			<% release.vocaloid_chars.each do | vocaloid | %>
+			<li><%= vocaloid %></li>
+			<% end %>
+		</ul>
+		<p class='description'>
+			<%= auto_link(release.description).gsub(/\n/, '<br>').html_safe %>
+		</p>
+	</section>
+
+</article>
+<% end %>
+</section>
+</article>
+
+<article id='newReleases'>
+<section>
+<h2>NEW RELEASE</h2>
+<% @releases.each_with_index do |release, i| %>
+<% if i % 3 == 0 %>
+<div class='row'>
+<% end %>
+<article class='release'>
+	<section class='releaseInfo'>
+		<ul>
+			<!-- 曜日のロジックはHelperかな？ -->
+			<li class='date'><%= release.start_datetime.strftime("%m月%d日") %> <%= %w(日 月 火 水 木 金 土)[release.start_datetime.strftime("%w").to_i] %>曜日</li>
+			<li class='time'><%= release.start_datetime.strftime("%H:%M") %> 公開予定</li>
+			<li class='media'><span class='<%= release.media_str.split(' ')[0] %>'>■</span><%= release.media_str.split(' ')[0] %></li>
+		</ul>
+	</section>
+	<section class='songInfo'>
+		<h3 class='songTitle'><%= link_to release.summary, external_ui_release_event_path(release) %></h3>
+		<!-- リンク化してタグ検索ができるように -->
+		<ul class='producers'>
+			<% release.producers.each do | producer | %>
+			<li><%= producer %></li>
+			<% end %>
+		</ul>
+		<ul class='vocaloid'>
+			<% release.vocaloid_chars.each do | vocaloid | %>
+			<li><%= vocaloid %></li>
+			<% end %>
+		</ul>
+		<p class='description'>
+			<%= auto_link(release.description).gsub(/\n/, '<br>').html_safe %>
+		</p>
+	</section>
+	<section class='thumbnail'>
+		<%=
+			thumbnail = release.image? ? release.image.thumb.url : 'noImageNewRelease.jpg'
+			imgtag = image_tag( thumbnail, :alt=>release.summary, :width=>'120px', :height=>'120px')
+ 			release.location? ? link_to( imgtag, release.location) : imgtag
+		%>
+	</section>
+
+</article>
+<% if i % 3 == 0 %>
+</div>
+<% end %>
+<% end %>
+</section>
+</article>
+
+</div>
