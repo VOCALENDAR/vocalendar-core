@@ -1,5 +1,6 @@
 ﻿# coding: utf-8
 class EventsController < ApplicationController
+  include VocalendarCore::HistoryUtils::Controller
   load_and_authorize_resource
 
   before_filter :set_type_variable
@@ -43,6 +44,7 @@ class EventsController < ApplicationController
   # POST /events.json
   def create
     @event.save
+    @event.errors.empty? and add_history
     respond_with @event
   end
 
@@ -50,6 +52,7 @@ class EventsController < ApplicationController
   # PUT /events/1.json
   def update
     @event.update_attributes(params[@type.underscore])
+    @event.errors.empty? and add_history
     respond_with @event
   end
 
@@ -57,6 +60,7 @@ class EventsController < ApplicationController
   # DELETE /events/1.json
   def destroy
     @event.update_attirbute :status, 'cancelled'
+    add_history
     respond_with @event
   end
 

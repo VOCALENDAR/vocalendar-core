@@ -1,4 +1,5 @@
 class SettingsController < ApplicationController
+  include VocalendarCore::HistoryUtils::Controller
   load_resource :except => :set
   authorize_resource
 
@@ -18,12 +19,14 @@ class SettingsController < ApplicationController
     unless name.blank?
       Setting.__send__ "#{name}=", params[:value]
       add_flash_msg :notice, "Setting #{name} has been updated successfully."
+      add_history :note => name
     end
     redirect_to settings_path
   end
 
   def destroy
     @setting.destroy
+    add_history :target_id => nil, :note => name
     respond_with @setting
   end
 end

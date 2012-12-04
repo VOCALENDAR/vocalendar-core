@@ -1,4 +1,5 @@
 class ExLinksController < ApplicationController
+  include VocalendarCore::HistoryUtils::Controller
   load_and_authorize_resource :except => :redirect
 
   def index
@@ -23,16 +24,19 @@ class ExLinksController < ApplicationController
 
   def create
     @ex_link.save
+    @ex_link.errors.empty? and add_history
     respond_with(@ex_link)
   end
 
   def update
     @ex_link.update_attributes(params[:ex_link])
+    @ex_link.errors.empty? and add_history
     respond_with(@ex_link)
   end
 
   def destroy
     @ex_link.destroy
+    add_history
     respond_with(@ex_link)
   end
 
