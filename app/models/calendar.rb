@@ -163,7 +163,7 @@ class Calendar < ActiveRecord::Base
           event = Event.find_by_g_id(eitem.id) || Event.new
           begin
             event.load_exfmt :google_v3, eitem,
-              :calendar_id => external_id,
+              :calendar_id      => external_id,
               :default_timezone => default_timezone,
               :tag_names_append => tag_names_append,
               :tag_names_remove => tag_names_remove
