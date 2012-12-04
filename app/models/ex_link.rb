@@ -145,6 +145,12 @@ class ExLink < ActiveRecord::Base
       uri.path =~ %r{^/([^/]+)} ||
         uri.fragment =~ %r{^!/([^/]+)} and
         remote_id = $1
+    when %r{^(?:www\.)?tweetvite.com}
+      type = 'ExLink::TweetVite'
+      uri.path =~ %r{^/event/([^/]+)} and remote_id = $1
+    when %r{^(?:www\.)?atnd.org}
+      type = 'ExLink::Atnd'
+      uri.path =~ %r{^/event/([^/]+)} and remote_id = $1
     end
     {type: type, remote_id: remote_id}
   end
@@ -292,7 +298,7 @@ class ExLink < ActiveRecord::Base
       aid = Setting.amazon_tracking_id
       aid.blank? and return uri
       u = endpoint_uri!.gsub(%r{/[^/]+-22/|t(?:ag)?=[^=&;]+-22&?}, '')
-      u << "#{u.include?("?") ? "&" : "?"}tag=#{aid}"
+      u << "#{u.include?('?') ? '&' : '?'}tag=#{aid}"
     end
   end
 
@@ -310,4 +316,15 @@ class ExLink < ActiveRecord::Base
     include InjectCommonVars
     alias_attribute :user_id, :remote_id
   end
+
+  class Atnd < ExLink
+    include InjectCommonVars
+    alias_attribute :event_id, :remote_id
+  end
+
+  class TweetVite < ExLink
+    include InjectCommonVars
+    alias_attribute :event_id, :remote_id
+  end
+
 end
