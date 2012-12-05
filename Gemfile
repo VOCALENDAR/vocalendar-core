@@ -41,6 +41,8 @@ gem 'mime-types'
 gem 'rmagick'
 gem 'addressable'
 gem 'htmlentities'
+gem 'flot-rails'
+gem 'coffeebeans'
 
 platforms :ruby do
   gem 'charlock_holmes'

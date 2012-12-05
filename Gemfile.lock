@@ -65,6 +65,9 @@ GEM
       coffee-script-source
       execjs
     coffee-script-source (1.4.0)
+    coffeebeans (1.0.1)
+      actionpack (>= 3.0.0)
+      coffee-script
     devise (2.1.2)
       bcrypt-ruby (~> 3.0)
       orm_adapter (~> 0.1)
@@ -78,6 +81,8 @@ GEM
     extlib (0.9.15)
     faraday (0.8.4)
       multipart-post (~> 1.1)
+    flot-rails (0.0.2)
+      jquery-rails
     font-awesome-sass-rails (2.0.0.0)
       railties (>= 3.1.1)
       sass-rails (>= 3.1.1)
@@ -268,9 +273,11 @@ DEPENDENCIES
   carrierwave
   charlock_holmes
   coffee-rails (~> 3.2.1)
+  coffeebeans
   devise
   devise-i18n
   enumerated_attribute!
+  flot-rails
   google-api-client
   htmlentities
   jquery-rails

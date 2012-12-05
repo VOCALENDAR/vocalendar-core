@@ -1,40 +1,66 @@
-<p id="notice"><%= notice %></p>
+<h2><%= t ".title" %></h2>
 
-<p>
-  <b>ID:</b>
-  <%= @ex_link.id%>
-</p>
+<div class="well">
+  <%= link_to t("general.edit"), edit_ex_link_path(@ex_link), :class => 'btn' %>
+  <%= link_to t(".update_attributes_by_uri"), update_by_uri_ex_link_path(@ex_link), :class => 'btn', :method => :put %>
+  <%= link_to t("general.back_to_list"), ex_links_path, :class => 'btn' %>
+  <%= link_to t('general.delete'), @ex_link, method: :delete, data: { confirm: t('general.delete_confirm', name: "Link ##{@ex_link.id}") }, :class => 'btn btn-danger pull-right' %>
+</div>
 
-<p>
-  <b>Short ID:</b>
-  <%= @ex_link.short_id %>
-</p>
+<table class="table table-hover">
+  <% %w(id short_id type title uri endpoint_uri remote_id
+        updated_at created_at).each do |field| %>
+  <tr>
+    <th><%= ExLink.human_attribute_name field %></th>
+    <td><%= @ex_link.__send__ field %></td>
+  </tr>
+  <% end %>
+</table>
 
-<p>
-  <b>Type:</b>
-  <%= @ex_link.typename.camelcase %>
-</p>
+<h3><%= t ".access_history" %></h3>
 
-<p>
-  <b>Title:</b>
-  <%= @ex_link.title %>
-</p>
+<div id="access-graph" style="height: 180px">
+</div>
 
-<p>
-  <b>Uri:</b>
-  <%= @ex_link.uri %>
-</p>
+<%= coffee_script_tag do %>
+<%
+   acdata = {}
+   today = Date.today
+   ((today - 30.days)..(today)).each { |d| acdata[d] = 0 }
+   @ex_link.accesses.where("created_at > ?", today - 30.days).each do |a|
+     acdata[a.created_at.to_date] += 1
+   end
+   indexes = (0...acdata.values.size).to_a
+   data    = indexes.zip(acdata.values)
+   i = 0
+   ticks   = indexes.zip(acdata.keys.map{|d| i+=1; ((i-1)%5 == 0) ? d.strftime("%m/%d") : ""})
+%>
+jQuery ($) ->
+  $.plot "#access-graph", [
+    {data: <%=raw data.to_json %>}
+  ], {
+    series: {
+      points: {show: true},
+      lines: {show: true},
+    },
+    xaxis: {ticks: <%=raw ticks.to_json %> },
+    yaxis: {min: 0, minTickSize: 1},
+  }
+<% end %>
 
-<p>
-  <b>Endpoint Uri:</b>
-  <%= @ex_link.endpoint_uri %>
-</p>
-
-<p>
-  <b>RemoteID:</b>
-  <%= @ex_link.remote_id %>
-</p>
-
-
-<%= link_to 'Edit', edit_ex_link_path(@ex_link) %> |
-<%= link_to 'Back', ex_links_path %>
+<table class="table table-condensed table-hover">
+  <thead>
+    <tr>
+      <th><%= ExLinkAccess.human_attribute_name :created_at %></th>
+      <th><%= ExLinkAccess.human_attribute_name :user_agent %></th>
+    </tr>
+  </thead>
+  <tbody>
+    <% @ex_link.accesses.limit(10).each do |a| %>
+    <tr>
+      <td><%= l a.created_at %></td>
+      <td><%= a.user_agent %></td>
+    </tr>
+    <% end %>
+  </tbody>
+</table>

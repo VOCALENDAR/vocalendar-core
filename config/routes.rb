@@ -37,7 +37,11 @@ VocalendarCore::Application.routes.draw do
   end
 
   scope 'manage' do
-    resources :ex_links
+    resources :ex_links do
+      member do
+        put 'update_by_uri' => 'ex_links#update_by_uri'
+      end
+    end
     resources :settings, :only => [:index, :destroy]
     put 'settings/set' => 'settings#set', :as => :set_setting
     resources :histories, :only => :index

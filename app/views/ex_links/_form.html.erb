@@ -12,11 +12,16 @@
     <%= @ex_link.endpoint_uri %>
   </div>
   <div class="field">
-    <%= f.label :disabled %>
+    <br>
+    <span class="checkbox-set">
     <%= f.check_box :disabled %>
+    <%= f.label :disabled %>
+    <span class="checkbox-set">
   </div>
   <br>
   <div class="actions">
     <%= f.submit :class => 'btn btn-primary' %>
+    <%= link_to t("general.show"), @ex_link, :class => 'btn' unless @ex_link.new_record? %>
+    <%= link_to t("general.back_to_list"), ex_links_path, :class => 'btn' %>
   </div>
 <% end %>

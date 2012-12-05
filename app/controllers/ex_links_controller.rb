@@ -40,6 +40,11 @@ class ExLinksController < ApplicationController
     respond_with(@ex_link)
   end
 
+  def update_by_uri
+    @ex_link.update_attributes_by_uri!
+    respond_with(@ex_link)
+  end
+
   def redirect
     @ex_link = ExLink.find params[:short_id].to_s.to_i(36)
     @ex_link.disabled? and raise ProcessError.new("This link has been disabled.", 410)

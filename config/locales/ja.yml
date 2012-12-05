@@ -174,6 +174,10 @@ ja:
   ex_links:
     index:
       title: 外部リンク一覧
+    show:
+      title: 外部リンク詳細
+      access_history: アクセス履歴
+      update_attributes_by_uri: URIを取得して自動更新
   users:
     inedex:
       title: ユーザ一覧

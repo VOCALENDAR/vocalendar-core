@@ -15,4 +15,5 @@
 //= require jquery.ui.all
 //= require jquery-ui-timepicker-addon
 //= require bootstrap
+//= require jquery.flot
 //= require_tree .
