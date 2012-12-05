@@ -127,6 +127,8 @@ ja:
     back: 戻る
     show: 表示
     user_setting: ユーザ設定
+    admin: 管理
+    alerts: チェック
   settings:
     index:
       title: 全体設定一覧
