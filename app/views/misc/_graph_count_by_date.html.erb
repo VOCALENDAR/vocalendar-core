@@ -1,0 +1,30 @@
+<%
+   rand_id = rand(10000)
+   plotdata = Hash.new {|h, k| h[k] = 0}
+   data.each do |obj|
+     plotdata[obj.__send__(field).to_date] += 1
+   end
+   range ||= (plotdata.keys.min || Date.today)..(plotdata.keys.max || Date.today)
+   range.each {|d| plotdata[d] ||= 0 }
+   i        = 0
+   indexes  = (0...range.to_a.size).to_a
+   daykeys  = range.to_a
+   idxdata  = indexes.zip(daykeys.map {|d| plotdata[d]})
+   ticks    = indexes.zip(daykeys.map{|d| i+=1; ((i-1)%5 == 0) ? d.strftime("%m/%d") : ""})
+%>
+<div id="count-graph-<%= rand_id%>" style="height: 120px">
+</div>
+<%= coffee_script_tag do %>
+jQuery ($) ->
+  $.plot "#count-graph-<%= rand_id %>", [
+    {data: <%=raw idxdata.to_json %>}
+  ], {
+    series: {
+      points: {show: true},
+      lines: {show: true},
+    },
+    xaxis: {ticks: <%=raw ticks.to_json %> },
+    yaxis: {min: 0, minTickSize: 1},
+    grid: { borderWidth: 1, borderColor: "#999" },
+  }
+<% end %>

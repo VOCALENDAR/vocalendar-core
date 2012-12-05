@@ -19,34 +19,9 @@
 
 <h3><%= t ".access_history" %></h3>
 
-<div id="access-graph" style="height: 180px">
-</div>
-
-<%= coffee_script_tag do %>
-<%
-   acdata = {}
-   today = Date.today
-   ((today - 30.days)..(today)).each { |d| acdata[d] = 0 }
-   @ex_link.accesses.where("created_at > ?", today - 30.days).each do |a|
-     acdata[a.created_at.to_date] += 1
-   end
-   indexes = (0...acdata.values.size).to_a
-   data    = indexes.zip(acdata.values)
-   i = 0
-   ticks   = indexes.zip(acdata.keys.map{|d| i+=1; ((i-1)%5 == 0) ? d.strftime("%m/%d") : ""})
-%>
-jQuery ($) ->
-  $.plot "#access-graph", [
-    {data: <%=raw data.to_json %>}
-  ], {
-    series: {
-      points: {show: true},
-      lines: {show: true},
-    },
-    xaxis: {ticks: <%=raw ticks.to_json %> },
-    yaxis: {min: 0, minTickSize: 1},
-  }
-<% end %>
+<%= graph_count_by_date @ex_link.accesses.where("created_at >= ?", Date.today - 30.days),
+      :created_at,
+      (Date.today - 30.days)..Date.today %>
 
 <table class="table table-condensed table-hover">
   <thead>

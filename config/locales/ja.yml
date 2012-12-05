@@ -142,6 +142,7 @@ ja:
   dashboard:
     index:
       title: ダッシュボード
+      recent_created_events: 最近登録されたイベント
     alerts:
       title: チェックツール
   events:
