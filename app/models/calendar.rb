@@ -51,6 +51,12 @@ class Calendar < ActiveRecord::Base
   end
 
   def publish_events(opts = {})
+    lock do
+      publish_events_without_lock(opts)
+    end
+  end
+
+  def publish_events_without_lock(opts = {})
     opts = {:force => false, :max => 2000}.merge opts
     log :info, "Start event publish"
 
@@ -146,6 +152,12 @@ class Calendar < ActiveRecord::Base
   end
 
   def fetch_events(opts = {})
+    lock do
+      fetch_events_without_lock(opts)
+    end
+  end
+
+  def fetch_events_without_lock(opts = {})
     opts = {:force => false, :max => 2000}.merge opts
     log :info, "Start event sync"
     count = 0
@@ -269,6 +281,31 @@ class Calendar < ActiveRecord::Base
   end
 
   private
+  def lockfile_path
+    require 'tmpdir'
+    "#{Dir.tmpdir}/vc-calendar-sync_#{id}.lock"
+  end
+
+  def lock
+    mode = File::LOCK_EX | File::LOCK_NB
+    failmsg = "Can't get lock for calendar##{id}."
+    if block_given?
+      open(lockfile_path, "w") do |f|
+        f.flock mode or
+          raise VocalendarCore::CalendarSyncError.new(failmsg)
+        yield
+      end
+    else
+      @lock_fh = open(lockfile_path, "w")
+      @lock_fh.flock mode or 
+        raise VocalendarCore::CalendarSyncError.new(failmsg)
+    end
+  end
+
+  def unlock
+    @lock_fh.try(:close) rescue IOError
+  end
+
   def trim_attrs
     self[:name].strip!
     self[:external_id].strip!
