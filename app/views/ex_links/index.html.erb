@@ -30,7 +30,8 @@
     <td>
       <%= content_tag(:a, ex_link.short_id, :class => "shorturl-popover label",
           "data-placement" => "top", "data-html" => "true",
-          "title" => "Short Link URL",  :rel => "popover",
+          :rel => "popover", :id => "shortlink-popover-#{ex_link.id}",
+          "title" => %Q{<button class="close" onClick="$('#shortlink-popover-#{ex_link.id}').popover('hide');">&times;</button> Short Link URL},
           "data-content" => %q{<input type="text" readonly="true"
                                       onClick="this.focus(); this.select()"
                                       value="} + link_redirect_path(ex_link.short_id, only_path: false) + '">'
