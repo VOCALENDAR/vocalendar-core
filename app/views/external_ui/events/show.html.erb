@@ -1,11 +1,11 @@
-<section id="VS_detailContainer" class="clearfix">
+<section id="VS_detailContainer">
 
 <h2 id="VCLsearchDetailTitle"><%= t ".title" %></h2>
 <article id="EventDtail">
   <article class="VCLevent" id="datepanel">
     <section class="body">
       <h1 class="title"><%= @event.summary %></h1>
-      <div class="start clearfix">
+      <div class="start">
         <p class="date"><%= l @event.start_date %></p>
         <% unless @event.allday? %>
         <p class="time"><%= @event.start_datetime.strftime("%H:%M") %></p>
@@ -27,12 +27,13 @@
       <p class="day"><%= sd.strftime("%d") %> </p>
       <p class="dow"><%= sd.strftime("%a").upcase %></p>
     </aside>
-    <div class="content">
-      <%= auto_link(@event.description).gsub(/\n/, '<br>').html_safe %>
-    </div>
+  </article>
+  <article class="description">
+    <%= simple_format auto_link(@event.description) %>
   </article>
 </article>
 
+<%= event_gcal_copy_link @event, nil, :class => 'VCL_exec_button' %>
+
 </section>
 
-<%= event_gcal_copy_link @event, nil, :class => 'VCLexecute' %>
