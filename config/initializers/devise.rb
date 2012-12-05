@@ -214,7 +214,11 @@ Devise.setup do |config|
         strategy_class: VocalendarCore::GoogleOauth2Wrap
       }
   end
-  config.omniauth :twitter, 'ifk27Iym60DQG6tvbuOtg', 'lLUCfWLxvbZtCpjvvooqwYtoxkdtez9WRdyOzYSZjE' # TODO: read from setting file
+  if Rails.configuration.twitter_api_key_configured
+    config.omniauth :twitter,
+      Rails.configuration.twitter_consumer_key,
+      Rails.configuration.twitter_consumer_secret
+  end
 
   # ==> Warden configuration
   # If you want to use other strategies, that are not supported by Devise, or
