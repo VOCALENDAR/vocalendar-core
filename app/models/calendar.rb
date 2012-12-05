@@ -77,13 +77,20 @@ class Calendar < ActiveRecord::Base
             :tag_names_append => tag_names_append,
             :tag_names_remove => tag_names_remove
           result = gapi_event_request :import, {}, body.to_json
+
+	  # Note: timeZone cannot be set by import?
+	  # To make sure, call patch request to force to update timezone.
+	  if !event.allday? && result.data.start["timeZone"] != event.timezone.try(:name)
+	    patch_ret = gapi_event_request :patch, {:eventId => result.data.id}, body.to_json
+	  end
+
           count += 1
           last_event_updated_at = event.updated_at
           log :info, "(#{count+count_fail}/#{count_total}) Event '#{event.summary}' (##{event.id}) has been published successfully."
           add_history(:target    => 'event',
                       :target_id => event.id,
                       :action    => 'published',
-                      :note      => "To calendar##{id} (#{name})")
+                      :note      => "To calendar##{id} #{name} (remote event ID: #{result.data.id})")
           count >= opts[:max] and break
         rescue VocalendarCore::GoogleAPIError => e
 	  count_fail += 1
