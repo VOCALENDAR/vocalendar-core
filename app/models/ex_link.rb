@@ -264,7 +264,7 @@ class ExLink < ActiveRecord::Base
     when 'utf8', 'unicode'
       code = 'utf-8'
     end
-    body =~ %r{<title>(.*?)</title>}m or return nil
+    body =~ %r{<title>(.*?)</title>}im or return nil
     begin
       title = $1.strip
       @@htmlentities_coder.decode title.gsub(/\s+/, ' ').force_encoding(code || 'utf-8').encode('utf-8', :invalid => :replace)
