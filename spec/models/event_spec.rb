@@ -218,6 +218,10 @@ describe Event do
     e.etag.should          == google_input["etag"]
     e.ical_uid.should      == google_input["iCalUID"]
     e.g_calendar_id.should == 'dummy_gcal_id'
+    e.created_at.should    == google_input["created"]
+
+    e.save!
+    Event.find(e.id).created_at.should == google_input["created"]
 
     output = e.to_exfmt :google_v3
     pending "Not yet decided to add 'id' for google sync" do

@@ -442,6 +442,7 @@ class Event < ActiveRecord::Base
       g_creator_email: attrs["creator"].try(:email),
       g_creator_display_name: attrs["creator"].try(:display_name),
       ical_uid: attrs["iCalUID"].to_s,
+      created_at: attrs["created"],
     }, :without_protection => true)
     if attrs["location"].to_s[0..3] == 'http'
       self.primary_link ||= ExLink.scan(attrs["location"]).first
