@@ -13,6 +13,7 @@ gem 'mysql2', :group => :production
 group :assets do
   gem 'sass-rails',   '~> 3.2.3'
   gem 'coffee-rails', '~> 3.2.1'
+  gem 'libv8', '~> 3.11.8', :platforms => :ruby
   gem 'therubyracer', :platform => :ruby
   gem 'uglifier', '>= 1.0.3'
 end
