@@ -186,6 +186,8 @@ ja:
       title: "ユーザ情報の編集: %{name}"
     show:
       title: "ユーザ情報: %{name}"
+      add_twitter_authinfo: "Twitter認証連携を追加"
+      add_google_authinfo: "Google認証連携を追加"
 
   history:
     actions:
