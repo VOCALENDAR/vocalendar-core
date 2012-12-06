@@ -39,9 +39,10 @@ module ExLinksHelper
     content_tag :span, ret, {:class => 'ex-link'}.merge(html_opts)
   end
 
-  def auto_link(text)
+  def auto_link(text, opts = {})
+    opts = {:type_icon => false, :max_length => 80}.merge(opts)
     ExLink.gsub(h(text)) {|link, uri_text|
-      format_ex_link link, :label => uri_text, :type_icon => false, :max_length => 80
+      format_ex_link link, opts.merge(:label => uri_text)
     }.html_safe
   end
 end
