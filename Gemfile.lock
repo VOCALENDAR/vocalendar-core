@@ -122,6 +122,7 @@ GEM
       rails
     launchy (2.1.2)
       addressable (~> 2.3)
+    libv8 (3.11.8.3)
     mail (2.4.4)
       i18n (>= 0.4.0)
       mime-types (~> 1.16)
@@ -285,6 +286,7 @@ DEPENDENCIES
   kaminari
   kaminari-bootstrap
   kaminari-i18n
+  libv8 (~> 3.11.8)
   mime-types
   mysql2
   omniauth (~> 1.0.0)

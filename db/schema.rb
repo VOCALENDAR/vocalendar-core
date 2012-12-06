@@ -130,7 +130,6 @@ ActiveRecord::Schema.define(:version => 20121129224426) do
 
   add_index "ex_links", ["digest"], :name => "index_ex_links_on_digest", :unique => true
   add_index "ex_links", ["type", "remote_id"], :name => "index_ex_links_on_type_and_remote_id"
-  add_index "ex_links", ["uri"], :name => "index_ex_links_on_uri"
 
   create_table "histories", :force => true do |t|
     t.string   "target",      :null => false
