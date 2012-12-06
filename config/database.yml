@@ -19,7 +19,12 @@ test:
   timeout: 10000
 
 production:
-  adapter: sqlite3
-  database: db/production.sqlite3
+  adapter: mysql2
+  database: vocalendar
+  host: <%= ENV['RAILS_DATABASE_HOST'] || 'localhost' %>
+  port: 3306
+  username: <%= ENV['RAILS_DATABASE_USERNAME'] || 'example' %>
+  password: <%= ENV['RAILS_DATABASE_PASSWORD'] %>
+  encoding: utf8
   pool: 5
   timeout: 5000
