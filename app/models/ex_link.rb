@@ -264,10 +264,10 @@ class ExLink < ActiveRecord::Base
     when 'utf8', 'unicode'
       code = 'utf-8'
     end
-    body =~ %r{<title>(.*?)</title>}im or return nil
     begin
-      title = $1.strip
-      @@htmlentities_coder.decode title.gsub(/\s+/, ' ').force_encoding(code || 'utf-8').encode('utf-8', :invalid => :replace)
+      body = body.force_encoding(code || 'utf-8').encode('utf-8', :invalid => :replace)
+      body =~ %r{<title>(.*?)</title>}im or return nil
+      @@htmlentities_coder.decode $1.strip.gsub(/\s+/, ' ')
     rescue => e
       log :error, "Failed to convert remote title encoding: #{e.message} (#{uri} : #{title})"
       return nil
