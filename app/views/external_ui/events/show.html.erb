@@ -1,7 +1,7 @@
 <section id="VS_detailContainer">
 
 <h2 id="VCLsearchDetailTitle"><%= t ".title" %></h2>
-<article id="EventDtail">
+<article class="EventDetail">
   <article class="VCLevent" id="datepanel">
     <section class="body">
       <h1 class="title"><%= @event.summary %></h1>
@@ -28,7 +28,23 @@
       <p class="dow"><%= sd.strftime("%a").upcase %></p>
     </aside>
   </article>
-  <article class="description">
+  <article class="description clearfix">
+    <div class="remote-embed-widget" style="float: right;">
+    <% @event.related_links.each do |link| # TODO: primari_uri を先に見る! helper に移動!! %>
+    <% if link.type == 'ExLink::Amazon' %>
+       <iframe src="http://rcm-jp.amazon.co.jp/e/cm?t=<%= Setting.amazon_tracking_id %>&o=9&p=8&l=as1&asins=<%= link.asin %>&ref=tf_til&fc1=000000&IS2=1&lt1=_blank&m=amazon&lc1=41A587&bc1=cccccc&bg1=FFFFFF&f=ifr" style="width:120px;height:240px;" scrolling="no" marginwidth="0" marginheight="0" frameborder="0"></iframe>
+       <% break %>
+    <% end %>
+    <% if link.type == 'ExLink::NicoVideo' && link.video_id.to_s[0..1] == 'sm' %>
+       <iframe width="312" height="176" src="http://ext.nicovideo.jp/thumb/<%= link.video_id %>" scrolling="no" style="border:solid 1px #CCC;" frameborder="0"><a href="http://www.nicovideo.jp/watch/<%= link.video_id %>"><%= link.title %></a></iframe>
+       <% break %>
+    <% end %>
+    <% if link.type == 'ExLink::NicoVideo' && link.video_id.to_s[0..1] == 'lv' %>
+      <iframe width="312" height="176" src="http://live.nicovideo.jp/embed/<%= link.remote_id %>" scrolling="no" style="border:solid 1px #CCC;" frameborder="0"><a href="http://live.nicovideo.jp/watch/<%= link.remote_id %>"><%= link.title %></a></iframe>
+       <% break %>
+    <% end %>
+    <% end %>
+    </div>
     <%= simple_format auto_link(@event.description) %>
   </article>
 </article>

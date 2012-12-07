@@ -17,9 +17,14 @@
 #VS_detailContainer {
   position: relative;
 
-  #EventDtail {
+  .EventDetail {
     margin-bottom: 20px;
     box-shadow: 0px 2px 7px #999;
+    position: relative;
+  }
+
+  .remote-embed-widget {
+    float: right;
   }
 
   .VCLevent {
@@ -41,6 +46,7 @@
     border: 1px solid #777;
     border-radius: 0px 0px 5px 5px;
     background-color: #f0f0f0;
+    min-height: 130px;
 
     a {
       color: #41A587;
