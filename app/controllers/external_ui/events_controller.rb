@@ -10,7 +10,7 @@ class ExternalUi::EventsController < ApplicationController
     params[:tag_id].blank? or
       @events = @events.by_tag_ids(params[:tag_id])
 
-    respond_with @events
+    respond_with @events, :layout => detect_layout
   end
 
   def show
@@ -25,6 +25,11 @@ class ExternalUi::EventsController < ApplicationController
       @event = ae.find_by_ical_uid! params[:uid]
     end
 
-    respond_with @event
+    respond_with @event, :layout => detect_layout
+  end
+
+  private
+  def detect_layout
+    params[:embed].blank? ? "mainsite_dummy" : "external_ui_embed"
   end
 end
