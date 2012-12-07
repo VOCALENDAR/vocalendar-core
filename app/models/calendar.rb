@@ -207,8 +207,11 @@ class Calendar < ActiveRecord::Base
           end
         end
       ensure
-        new_item_stamp and
+        if new_item_stamp
+          latest_synced_item_updated_at == new_item_stamp and
+            new_item_stamp += 1.second
           update_attribute :latest_synced_item_updated_at, new_item_stamp
+        end
       end
     end
 

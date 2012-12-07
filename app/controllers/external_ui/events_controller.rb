@@ -10,7 +10,17 @@ class ExternalUi::EventsController < ApplicationController
     params[:tag_id].blank? or
       @events = @events.by_tag_ids(params[:tag_id])
 
-    respond_with @events
+    respond_with @events, :layout => detect_layout
+  end
+
+  def cd_releases
+    load_cd_releases
+    respond_with @events, :layout => detect_layout
+  end
+
+  def cd_releases_body
+    load_cd_releases
+    respond_with @events, :layout => nil
   end
 
   def show
@@ -25,6 +35,33 @@ class ExternalUi::EventsController < ApplicationController
       @event = ae.find_by_ical_uid! params[:uid]
     end
 
-    respond_with @event
+    respond_with @event, :layout => detect_layout
   end
+
+  private
+  def detect_layout
+    request.xhr? and false
+    params[:embed].blank? ? "mainsite_dummy" : "external_ui_embed"
+  end
+
+  def load_cd_releases
+    pivot = nil
+    begin
+      pivot = Date.parse(params[:pivot])
+    rescue
+      pivot = Date.today
+    end
+    start_date = pivot - 1.month
+    start_date = Time.new(start_date.year, start_date.month, 1, 0, 0, 0).to_datetime
+    end_date   = pivot + 2.month
+    end_date   = Time.new(end_date.year, end_date.month, 1, 0, 0, 0).to_datetime
+    @events = Event.active.reorder('start_datetime').
+      where("start_datetime >= ?", start_date).
+      where("start_datetime < ?",  end_date).
+      joins(:tags).where("tags.name" => "CD")
+    @start_date = start_date
+    @end_date   = end_date
+    @pivot_date = pivot
+  end
+
 end

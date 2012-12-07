@@ -17,6 +17,28 @@
   <% end %>
 </table>
 
+<h3><%= ExLink.human_attribute_name :tags %>
+  (<%= @ex_link.tags.length %>)</h3>
+<ul>
+<% @ex_link.tags.each do |tag| %>
+<li><%= format_tag tag %></li>
+<% end %>
+</ul>
+
+<h3><%= ExLink.human_attribute_name :main_events %>
+  (<%= @ex_link.main_events.length %>)</h3>
+<%=
+   @events = @ex_link.main_events.limit(20)
+   render 'events/list' if @events.length > 0
+%>
+
+<h3><%= ExLink.human_attribute_name :related_events %>
+  (<%= @ex_link.related_events.length %>)</h3>
+<%=
+   @events = @ex_link.related_events.limit(20)
+   render 'events/list' if @events.length > 0
+%>
+
 <h3><%= t ".access_history" %></h3>
 
 <%= graph_count_by_date @ex_link.accesses.where("created_at >= ?", Date.today - 30.days),
