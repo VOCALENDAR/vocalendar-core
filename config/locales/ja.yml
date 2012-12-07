@@ -94,6 +94,10 @@ ja:
         remote_id: 外部ID
         type: 種別
         disabled: 無効化
+        tags: リンクしているタグ
+        evnets: 全ての関連イベント
+        related_events: 関連リンクイベント
+        main_events: プライマリリンクイベント
       ex_link_access:
         ipaddr: IPアドレス
         user_agent: UserAgent(ブラウザ)
