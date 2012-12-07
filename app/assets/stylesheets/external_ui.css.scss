@@ -319,3 +319,61 @@ article.recommend {
   }
 }
 
+.cd-releases {
+  width: 100%;
+  position: relative;
+  overflow-x: auto;
+  .month-slot {
+    margin: 20px;
+    width: 300px;
+    height: 100%;
+    position: relative;
+    display:inline-block;
+    a {
+      text-decoration: none;
+      color: black;
+    }
+    a:hover {
+      text-shadow: 0 1px 1px yellow;
+    }
+    .item-block {
+      background: image-url("cd-title-back.png");
+      height: 24px;
+      overflow: hidden;
+      .item-inner {
+	overflow: hidden;
+       	margin: 2px 10px;
+       	font-size: 12px;
+       	line-height: 20px;
+      	white-space: nowrap;
+       	vertical-align: middle;
+       	text-align: center;
+      }
+    }
+    .item-spacer {
+      height: 24px;
+    }
+  }
+  .month-marker {
+    color: #888;
+    text-align: center;
+    text-shadow: 0px -1px -1px #4d4d4d;
+    text-shadow: 0px 2px 2px #fff;
+    font-size: 30px;
+    font-weight: bold;
+    font-style: italic;
+    margin-top: 10px;
+  }
+}
+.cd-navi-marker {
+  width: 40%;
+  margin-left: auto;
+  margin-right: auto;
+  height: 20px;
+  background-color: #ccc;
+  color: white;
+  color: white;
+  padding: 10px;
+  text-align: center;
+}
+

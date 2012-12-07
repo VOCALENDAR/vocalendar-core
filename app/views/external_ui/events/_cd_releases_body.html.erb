@@ -1,0 +1,47 @@
+<%
+ slots = Hash.new {|h, k| h[k] = []}
+ @events.each do |e|
+   slots[e.start_date.strftime("%b %Y")] << e
+ end
+ maxsize = slots.map{|m,evs| evs.size}.max
+ slots.each {|m,evs| evs.push(*([nil] * (maxsize - evs.size))); evs.reverse! } # pad with nil
+ rand_id = rand(10000)
+%>
+
+<% if params[:no_prev_mark].blank? %>
+<div id="prev-container-<%= rand_id %>"></div>
+<div class="cd-navi-marker"
+onClick="$(this).remove(); $('#prev-container-<%= rand_id%>').load('<%= url_for(:action => 'cd_releases_body', :pivot => (@pivot_date - 3.months).strftime("%F"), :no_next_mark => 1) %>');">
+▲
+</div>
+<% end %>
+
+<div class="cd-releases">
+
+<% slots.each do |mon, evs| %>
+<div class="month-slot">
+  <% evs.each do |e| %>
+  <% if e %>
+  <div class="item-block">
+    <div class="item-inner">
+      <%= link_to e.summary, external_ui_event_path(e.id) %>
+    </div>
+  </div>
+  <% else %>
+  <div class="item-spacer"></div>
+  <% end %>
+  <% end %>
+  <div class="month-marker">
+    <%= mon %>
+  </div>
+</div>
+<% end %>
+</div>
+
+<% if params[:no_next_mark].blank? %>
+<div class="cd-navi-marker"
+onClick="$(this).remove(); $('#next-container-<%= rand_id%>').load('<%= url_for(:action => 'cd_releases_body', :pivot => (@pivot_date + 3.months).strftime("%F"), :no_prev_mark => 1) %>'); ">
+▼
+</div>
+<div id="next-container-<%= rand_id%>"></div>
+<% end %>
