@@ -15,6 +15,7 @@ module ExLinksHelper
       if opts[:label].blank?
         return "".html_safe
       else
+        label = opts[:label]
         if opts[:max_length]
           safe_flag = label.html_safe?
           label = truncate(label, :length => opts[:max_length])
