@@ -22,8 +22,11 @@ module ExLinksHelper
     ret = "".html_safe
 
     label = opts[:label] || (link.title? ? link.title : link.uri)
+
+    safe_flag = label.html_safe?
     opts[:max_length] and
       label = truncate(label, :length => opts[:max_length])
+    safe_flag and label = label.html_safe
 
     link.disabled? and
       return content_tag :span, content_tag(:del, label), {:class => 'ex-link'}.merge(html_opts)
