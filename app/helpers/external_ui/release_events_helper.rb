@@ -5,7 +5,7 @@ module ExternalUi::ReleaseEventsHelper
     
     clazz = media_str.downcase
     
-    if clazz == "ニコ動" then
+    if clazz == "ニコ動" 
       clazz = 'niconico'
     end
     
