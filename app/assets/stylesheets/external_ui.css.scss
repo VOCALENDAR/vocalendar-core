@@ -198,6 +198,19 @@ section.releaseInfo ul {
     left: 265px;
     background-color: #ffffff;
     font-size: 12px;
+
+    span.niconico {
+      color: #0000ff;
+    }
+    span.youtube {
+      color: #ff0000;
+    }
+    span.soundcloud {
+      color: #ffff00;
+    }
+    span.vimeo {
+      color: #ff00ff;
+    }
   }
 }
 
@@ -323,6 +336,8 @@ article.recommend {
     }
 
     li.media {
+      height: 17px;
+      padding-top: 7px;
       width: 100px;
       left: 255px;
     }
@@ -333,7 +348,7 @@ article.recommend {
   }
 
   ul.vocaloid li {
-    padding: 3px 5px 1px 5px;
+    padding: 5px 7px 3px 7px;
     font-size: 12px;
 
   }
