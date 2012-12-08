@@ -17,6 +17,7 @@ class Calendar < ActiveRecord::Base
                          :tag_names_append_str,
                          :tag_names_remove_str]
   attr_accessible *basic_allowed_attrs
+  attr_accessible *basic_allowed_attrs, :as => :editor
   attr_accessible *(basic_allowed_attrs + [:user_id]), :as => :admin
 
   validates :name, :presence => true
@@ -207,8 +208,11 @@ class Calendar < ActiveRecord::Base
           end
         end
       ensure
-        new_item_stamp and
+        if new_item_stamp
+          latest_synced_item_updated_at == new_item_stamp and
+            new_item_stamp += 1.second
           update_attribute :latest_synced_item_updated_at, new_item_stamp
+        end
       end
     end
 

@@ -5,6 +5,7 @@ module ExLinksHelper
       :short_url => true,
       :type_icon => true,
       :label => nil,
+      :title => nil,
     }
     html_opts = opts.dup
     default_opts.keys.each { |k| html_opts.delete k }
@@ -21,14 +22,17 @@ module ExLinksHelper
     ret = "".html_safe
 
     label = opts[:label] || (link.title? ? link.title : link.uri)
+
+    safe_flag = label.html_safe?
     opts[:max_length] and
       label = truncate(label, :length => opts[:max_length])
+    safe_flag and label = label.html_safe
 
     link.disabled? and
       return content_tag :span, content_tag(:del, label), {:class => 'ex-link'}.merge(html_opts)
 
     uri = opts[:short_url] ? link_redirect_path(link.short_id) : link.uri
-    ret += link_to label, uri, :title => link.uri
+    ret += link_to label, uri, :title => (opts[:title] || link.uri)
 
     opts[:type_icon] and
       ret += image_tag("site-icons/#{link.typename}.png",
@@ -42,7 +46,7 @@ module ExLinksHelper
   def auto_link(text, opts = {})
     opts = {:type_icon => false, :max_length => 80}.merge(opts)
     ExLink.gsub(h(text)) {|link, uri_text|
-      format_ex_link link, opts.merge(:label => uri_text)
+      format_ex_link link, opts.merge(:label => uri_text, :title => link.title)
     }.html_safe
   end
 end
