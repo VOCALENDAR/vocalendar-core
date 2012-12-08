@@ -15,7 +15,7 @@
 		<ul>
 			<li class='date'><%= release.start_datetime.strftime("%m月%d日") %> <%= %w(日 月 火 水 木 金 土)[release.start_datetime.strftime("%w").to_i] %>曜日</li>
 			<li class='time'><%= release.start_datetime.strftime("%H:%M") %> 公開予定</li>
-			<li class='media'><%= release.media_str %></li>
+			<li class='media'><span class='<%= media_to_class release.media[0] %>'>■</span><%= release.media[0] %></li>
 		</ul>
 	</section>
 	<section class='songInfo'>
@@ -53,7 +53,7 @@
 			<!-- 曜日のロジックはHelperかな？ -->
 			<li class='date'><%= release.start_datetime.strftime("%m月%d日") %> <%= %w(日 月 火 水 木 金 土)[release.start_datetime.strftime("%w").to_i] %>曜日</li>
 			<li class='time'><%= release.start_datetime.strftime("%H:%M") %> 公開予定</li>
-			<li class='media'><span class='<%= release.media_str.split(' ')[0] %>'>■</span><%= release.media_str.split(' ')[0] %></li>
+			<li class='media'><span class='<%= media_to_class release.media[0] %>'>■</span><%= release.media[0] %></li>
 		</ul>
 	</section>
 	<section class='songInfo'>
@@ -75,9 +75,9 @@
 	</section>
 	<section class='thumbnail'>
 		<%=
-			thumbnail = release.image? ? release.image.thumb.url : 'noImageNewRelease.jpg'
+			thumbnail = release.image? ? release.image.thumb.url : '/assets/noImageNewRelease.jpg'
 			imgtag = image_tag( thumbnail, :alt=>release.summary, :width=>'120px', :height=>'120px')
- 			release.location? ? link_to( imgtag, release.location) : imgtag
+			format_ex_link( release.primary_link,  :label=>imgtag.html_safe )
 		%>
 	</section>
 

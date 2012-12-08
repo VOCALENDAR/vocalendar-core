@@ -23,11 +23,7 @@ class ExternalUi::ReleaseEventsController < ApplicationController
   end
 
   def show
-    ae = ReleaseEvent.active
-    if params[:id]
-      @release= ae.find params[:id]
-    end
-
+    @release = ReleaseEvent.active.find(params[:id])
     respond_with @release
   end
   
