@@ -10,6 +10,7 @@ class User < ActiveRecord::Base
   devise :trackable, :omniauthable
   enum_attr :role, %w(admin editor)
   attr_accessible :name, :email
+  attr_accessible :name, :email, :as => :editor
   attr_accessible :name, :email, :role, :as => :admin
 
   validates :twitter_uid, :uniqueness => true, :allow_nil => true
