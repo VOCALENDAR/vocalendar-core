@@ -77,7 +77,7 @@
 		<%=
 			thumbnail = release.image? ? release.image.thumb.url : '/assets/noImageNewRelease.jpg'
 			imgtag = image_tag( thumbnail, :alt=>release.summary, :width=>'120px', :height=>'120px')
-			format_ex_link( release.primary_link,  :label=>imgtag.html_safe )
+			format_ex_link( release.primary_link,  :label=>imgtag, :max_length=> false, :type_icon=>false )
 		%>
 	</section>
 
