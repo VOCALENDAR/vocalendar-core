@@ -17,6 +17,7 @@ class Calendar < ActiveRecord::Base
                          :tag_names_append_str,
                          :tag_names_remove_str]
   attr_accessible *basic_allowed_attrs
+  attr_accessible *basic_allowed_attrs, :as => :editor
   attr_accessible *(basic_allowed_attrs + [:user_id]), :as => :admin
 
   validates :name, :presence => true
