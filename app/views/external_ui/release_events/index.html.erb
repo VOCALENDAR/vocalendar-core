@@ -1,4 +1,6 @@
 <div id='newReleaseBody'>
+
+<% if @recommends.size > 0 %>
 <article id='recommends'>
 <section>
 <h2>RECOMMEND</h2>
@@ -15,19 +17,19 @@
 		<ul>
 			<li class='date'><%= release.start_datetime.strftime("%m月%d日") %> <%= %w(日 月 火 水 木 金 土)[release.start_datetime.strftime("%w").to_i] %>曜日</li>
 			<li class='time'><%= release.start_datetime.strftime("%H:%M") %> 公開予定</li>
-			<li class='media'><%= release.media_str %></li>
+			<li class='media'><span class='<%= media_to_class release.media[0] %>'>■</span><%= release.media[0] %></li>
 		</ul>
 	</section>
 	<section class='songInfo'>
 		<h3 class='songTitle'><%= link_to release.summary, external_ui_release_event_path(release) %></h3>
 		<ul class='producers'>
 			<% release.producers.each do | producer | %>
-			<li><%= producer %></li>
+			<li><%= link_to( producer, external_ui_release_events_path(:tag_id => Tag.find_by_name(producer).id)) %></li>
 			<% end %>
 		</ul>
 		<ul class='vocaloid'>
 			<% release.vocaloid_chars.each do | vocaloid | %>
-			<li><%= vocaloid %></li>
+			<li><%= link_to( vocaloid, external_ui_release_events_path(:tag_id => Tag.find_by_name(vocaloid).id)) %></li>
 			<% end %>
 		</ul>
 		<p class='description'>
@@ -39,6 +41,7 @@
 <% end %>
 </section>
 </article>
+<% end %>
 
 <article id='newReleases'>
 <section>
@@ -53,7 +56,7 @@
 			<!-- 曜日のロジックはHelperかな？ -->
 			<li class='date'><%= release.start_datetime.strftime("%m月%d日") %> <%= %w(日 月 火 水 木 金 土)[release.start_datetime.strftime("%w").to_i] %>曜日</li>
 			<li class='time'><%= release.start_datetime.strftime("%H:%M") %> 公開予定</li>
-			<li class='media'><span class='<%= release.media_str.split(' ')[0] %>'>■</span><%= release.media_str.split(' ')[0] %></li>
+			<li class='media'><span class='<%= media_to_class release.media[0] %>'>■</span><%= release.media[0] %></li>
 		</ul>
 	</section>
 	<section class='songInfo'>
@@ -61,12 +64,12 @@
 		<!-- リンク化してタグ検索ができるように -->
 		<ul class='producers'>
 			<% release.producers.each do | producer | %>
-			<li><%= producer %></li>
+			<li><%= link_to( producer, external_ui_release_events_path(:tag_id => Tag.find_by_name(producer).id)) %></li>
 			<% end %>
 		</ul>
 		<ul class='vocaloid'>
 			<% release.vocaloid_chars.each do | vocaloid | %>
-			<li><%= vocaloid %></li>
+			<li><%= link_to( vocaloid, external_ui_release_events_path(:tag_id => Tag.find_by_name(vocaloid).id)) %></li>
 			<% end %>
 		</ul>
 		<p class='description'>
@@ -75,9 +78,9 @@
 	</section>
 	<section class='thumbnail'>
 		<%=
-			thumbnail = release.image? ? release.image.thumb.url : 'noImageNewRelease.jpg'
+			thumbnail = release.image? ? release.image.thumb.url : '/assets/noImageNewRelease.jpg'
 			imgtag = image_tag( thumbnail, :alt=>release.summary, :width=>'120px', :height=>'120px')
- 			release.location? ? link_to( imgtag, release.location) : imgtag
+			format_ex_link( release.primary_link,  :label=>imgtag, :max_length=> false, :type_icon=>false )
 		%>
 	</section>
 
