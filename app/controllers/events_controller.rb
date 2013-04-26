@@ -21,7 +21,8 @@ class EventsController < ApplicationController
     params[:include_delete].blank? and
       @events = @events.active
 
-    respond_with @events, :include=> [:tags]
+    puts 'index'
+    respond_with @events, :include=> [:tags], :responder => GoogleResponder, :type => params[:type]
   end
 
   # GET /events/1
