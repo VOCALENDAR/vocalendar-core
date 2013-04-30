@@ -1,6 +1,6 @@
 # coding: utf-8
 
-class GoogleResponder < AppResponder
+class GoogleResponder < ActionController::Responder
 
   def to_json
 
@@ -58,10 +58,13 @@ class GoogleResponder < AppResponder
 
 
     }
+
+
     # entry( イベント情報 )
     entry = []
     @events.each_with_index { |event, i|
 
+    puts event
       eventfeedurl = 'http://www.google.com/calendar/feeds/' + event.g_calendar_id + '/public/full/' + event.g_id
       entry[i] = {
                   :id => {:$t => eventfeedurl },
