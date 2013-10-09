@@ -1,13 +1,13 @@
 # coding: utf-8
 
-class GoogleResponder < AppResponder
+class GoogleResponder < ActionController::Responder
 
   def to_json
 
     puts 'to_json'
     puts options
 
-
+    # Google互換を指定されていなければディフォルトのJSONを出力
     if options[:type] != 'Google'
       to_format
       return
