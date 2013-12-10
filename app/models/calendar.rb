@@ -261,7 +261,7 @@ class Calendar < ActiveRecord::Base
 
   def gapi_list_each_page(params = {}, &block)
     params = {
-      :singleEvents => false,
+      :singleEvents => true,
       :showDeleted => true,
       :orderBy => 'updated',
     }.merge(params)
