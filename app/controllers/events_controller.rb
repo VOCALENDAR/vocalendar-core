@@ -8,7 +8,8 @@ class EventsController < ApplicationController
   # GET /events
   # GET /events.json
   def index
-    @events = @events.page(params[:page]).per(50).order('updated_at desc')
+    
+    @events = @events.page(params[:page]).per(params[:limit].blank? ? 50 : [params[:limit].to_i, 50].min ).order('updated_at desc')
     unless params[:tag_id].blank?
       tids = params[:tag_id]
       String === tids and tids = tids.split(',')
@@ -16,11 +17,16 @@ class EventsController < ApplicationController
     end
     params[:g_calendar_id].blank? or
       @events = @events.where(:g_calendar_id => params[:g_calendar_id])
+    params[:startTime].blank? or
+      @events = @events.where('start_datetime >= ?', params[:startTime])
+    params[:endTime].blank? or
+    @events = @events.where('end_datetime <= ?', params[:endTime])
     params[:q].blank? or
       @events = @events.search(params[:q])
     params[:include_delete].blank? and
       @events = @events.active
 
+      
     puts 'index'
     respond_with @events, :include=> [:tags], :responder => GoogleResponder, :type => params[:type]
   end

@@ -7,7 +7,7 @@ class GoogleResponder < ActionController::Responder
     puts 'to_json'
     puts options
 
-
+    # Google互換を指定されていなければディフォルトのJSONを出力
     if options[:type] != 'Google'
       to_format
       return
