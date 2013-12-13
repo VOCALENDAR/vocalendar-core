@@ -7,7 +7,9 @@ class User < ActiveRecord::Base
   has_many :histories, :class_name => 'History',
     :conditions => {:target => 'user'}, :foreign_key => 'target_id'
 
-  devise :trackable, :omniauthable
+  has_many :favorites
+
+    devise :trackable, :omniauthable
   enum_attr :role, %w(admin editor)
   attr_accessible :name, :email
   attr_accessible :name, :email, :as => :editor

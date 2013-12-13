@@ -5,15 +5,15 @@ class Event < ActiveRecord::Base
       def names_str
         names.join(' ')
       end
-      
+
       def names_str=(v)
         self.names = v.strip.split(VocalendarCore::TagSeparateRegexp)
       end
-      
+
       def names
         map {|t| t.try(:name) }.compact
       end
-      
+
       def names=(v)
         self.clear
         [v].flatten.compact.map {|t| t.strip }.
@@ -114,7 +114,7 @@ class Event < ActiveRecord::Base
 
   has_many :all_tags,  :through => :all_tag_relations, :source => :tag
   has_many :tags,      :through => :main_tag_relations
-  
+
   has_one  :recurrent_parent, :class_name => 'Event',
     :primary_key => 'g_recurring_event_id', :foreign_key => 'g_id',
     :conditions => "g_id IS NOT NULL" # NOTE: ...any other way?
@@ -132,6 +132,8 @@ class Event < ActiveRecord::Base
 
   has_and_belongs_to_many :related_links, :class_name => 'ExLink'
   belongs_to :primary_link, :class_name => 'ExLink', :autosave => true
+
+  has_many :favorites
 
   mount_uploader :image, EventImageUploader
 
@@ -207,7 +209,7 @@ class Event < ActiveRecord::Base
 
   def update_related_links
     self.related_link_ids =
-      (related_links + 
+      (related_links +
        ExLink.scan(description) +
        ExLink.scan(location)
        ).uniq.map {|l| l.id }.compact.uniq
@@ -492,14 +494,14 @@ class Event < ActiveRecord::Base
     ret = {
       # :id => g_id, # TODO: If id is set, may get 404 not found.
       :iCalUID => ical_uid,
-      :start => 
-      if allday? 
+      :start =>
+      if allday?
         {:date => start_date}
       else
         {:dateTime => start_datetime,
          :timeZone => timezone.try(:name)}
       end,
-      :end => 
+      :end =>
       if allday?
         {:date => end_date}
       else
