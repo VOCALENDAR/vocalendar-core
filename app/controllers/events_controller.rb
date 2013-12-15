@@ -8,7 +8,8 @@ class EventsController < ApplicationController
   # GET /events
   # GET /events.json
   def index
-    @events = @events.page(params[:page]).per(50).order('updated_at desc')
+    
+    @events = @events.page(params[:page]).per(params[:limit].blank? ? 50 : [params[:limit].to_i, 50].min ).order('updated_at desc')
     unless params[:tag_id].blank?
       tids = params[:tag_id]
       String === tids and tids = tids.split(',')
@@ -16,18 +17,27 @@ class EventsController < ApplicationController
     end
     params[:g_calendar_id].blank? or
       @events = @events.where(:g_calendar_id => params[:g_calendar_id])
+    params[:startTime].blank? or
+      @events = @events.where('start_datetime >= ?', params[:startTime])
+    params[:endTime].blank? or
+    @events = @events.where('end_datetime <= ?', params[:endTime])
     params[:q].blank? or
       @events = @events.search(params[:q])
     params[:include_delete].blank? and
       @events = @events.active
+      
+    
 
-    respond_with @events, :include=> [:tags]
+      
+    puts 'index'
+    respond_with @events, :include=> [:tags, :related_links],
+                :responder => GoogleResponder, :type => params[:type], :callback=>params[:callback]
   end
 
   # GET /events/1
   # GET /events/1.json
   def show
-    respond_with @event, :include=> [:tags]
+    respond_with @event, :include=> [:tags, :related_links], :callback=>params[:callback]
   end
 
   # GET /events/new
@@ -59,7 +69,7 @@ class EventsController < ApplicationController
   # DELETE /events/1
   # DELETE /events/1.json
   def destroy
-    @event.update_attirbute :status, 'cancelled'
+    @event.status = 'cancelled'
     add_history
     respond_with @event
   end
@@ -68,4 +78,11 @@ class EventsController < ApplicationController
   def set_type_variable
     @type = 'Event'
   end
+
+
+  def favorites
+    Favorite.where(:user_id => 9, :event_id => params[:event_id])
+    #Favorite.where(:user_id => current_user.id, :event_id => params[:event_id])
+  end
+
 end

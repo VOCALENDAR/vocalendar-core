@@ -17,7 +17,6 @@ class ExternalUi::ReleaseEventsController < ApplicationController
       page(params[:page]).per( 3 * 5 ).
       where("start_datetime >= ?", DateTime.now - 3.day)
 
-      # んー、このorが理解できない・・・。if文の代わりなんだろうけど。
       params[:tag_id].blank? or
         @releases = @releases.by_tag_ids(params[:tag_id])
 

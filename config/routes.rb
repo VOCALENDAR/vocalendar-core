@@ -38,6 +38,10 @@ VocalendarCore::Application.routes.draw do
     resources :histories, :only => :index
   end
 
+  resources :events do
+    resource :favorite, only:[:show, :update, :destroy]
+  end
+
   scope 'manage' do
     resources :ex_links do
       member do
