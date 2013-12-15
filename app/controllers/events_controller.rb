@@ -25,16 +25,19 @@ class EventsController < ApplicationController
       @events = @events.search(params[:q])
     params[:include_delete].blank? and
       @events = @events.active
+      
+    
 
       
     puts 'index'
-    respond_with @events, :include=> [:tags], :responder => GoogleResponder, :type => params[:type]
+    respond_with @events, :include=> [:tags, :related_links],
+                :responder => GoogleResponder, :type => params[:type], :callback=>params[:callback]
   end
 
   # GET /events/1
   # GET /events/1.json
   def show
-    respond_with @event, :include=> [:tags]
+    respond_with @event, :include=> [:tags, :related_links], :callback=>params[:callback]
   end
 
   # GET /events/new
@@ -75,4 +78,11 @@ class EventsController < ApplicationController
   def set_type_variable
     @type = 'Event'
   end
+
+
+  def favorites
+    Favorite.where(:user_id => 9, :event_id => params[:event_id])
+    #Favorite.where(:user_id => current_user.id, :event_id => params[:event_id])
+  end
+
 end
