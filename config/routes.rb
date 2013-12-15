@@ -39,7 +39,7 @@ VocalendarCore::Application.routes.draw do
   end
 
   resources :events do
-    resource :favorite, only:[:show, :update, :destroy]
+    resource :favorite, :only => [:show, :update, :destroy]
   end
 
   scope 'manage' do
