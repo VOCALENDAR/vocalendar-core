@@ -9,6 +9,7 @@ class EventsController < ApplicationController
   # GET /events.json
   def index
     
+    params[:favorites].blank? or @events = @events.joins(:favorites)
     @events = @events.page(params[:page]).per(params[:limit].blank? ? 50 : [params[:limit].to_i, 50].min ).order('updated_at desc')
     unless params[:tag_id].blank?
       tids = params[:tag_id]
@@ -26,7 +27,7 @@ class EventsController < ApplicationController
     params[:include_delete].blank? and
       @events = @events.active
       
-    @events.find_each do |event|
+    @events.each do |event|
       event[:favorite_count] = favorites(event).count
       event[:favorited] = my_favorite(event).exists?
     end
@@ -34,7 +35,8 @@ class EventsController < ApplicationController
       
     puts 'index'
     respond_with @events, :include=> [:tags, :related_links],
-                :responder => GoogleResponder, :type => params[:type], :callback=>params[:callback]
+                          :responder => GoogleResponder, :type => params[:type],
+                          :callback=>params[:callback]
   end
 
   # GET /events/1
@@ -43,7 +45,8 @@ class EventsController < ApplicationController
 
     @event[:favorite_count] = favorites(@event).count
     @event[:favorited] = my_favorite(@event).exists?
-    respond_with @event, :include=> [:tags, :related_links], :callback=>params[:callback]
+    respond_with @event, :include=> [:tags, :related_links], 
+                         :callback=>params[:callback]
   end
 
   # GET /events/new
