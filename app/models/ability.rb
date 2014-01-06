@@ -2,8 +2,9 @@ class Ability
   include CanCan::Ability
 
   def initialize(user)
+
+    user or return can [:index, :show], Event
     user && user.admin? and return can :manage, :all
-    user or return
 
     if user.editor?
       can :manage, [Event, ReleaseEvent, Tag, ExLink, :dashboard]
