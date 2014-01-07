@@ -58,7 +58,7 @@ class Calendar < ActiveRecord::Base
   end
 
   def publish_events_without_lock(opts = {})
-    opts = {:force => false, :max => 2000}.merge opts
+    opts = {:force => false, :max => 20000}.merge opts
     log :info, "Start event publish"
 
     target_events = self.target_events.reorder('events.updated_at')
@@ -159,7 +159,7 @@ class Calendar < ActiveRecord::Base
   end
 
   def fetch_events_without_lock(opts = {})
-    opts = {:force => false, :max => 2000}.merge opts
+    opts = {:force => false, :max => 20000}.merge opts
     log :info, "Start event sync"
     count = 0
     add_history :action => :fetch_started
@@ -264,6 +264,7 @@ class Calendar < ActiveRecord::Base
       :singleEvents => true,
       :showDeleted => true,
       :orderBy => 'updated',
+      :timeMax => '2040-01-01T00:00:00Z',
     }.merge(params)
 
     while true
@@ -301,7 +302,7 @@ class Calendar < ActiveRecord::Base
       end
     else
       @lock_fh = open(lockfile_path, "w")
-      @lock_fh.flock mode or 
+      @lock_fh.flock mode or
         raise VocalendarCore::CalendarSyncError.new(failmsg)
     end
   end
