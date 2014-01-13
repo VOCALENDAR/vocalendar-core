@@ -44,6 +44,8 @@ gem 'addressable'
 gem 'htmlentities'
 gem 'flot-rails'
 gem 'coffeebeans'
+gem 'nokogiri', '~>1.6'
+gem 'execjs', '~>2.0.2'
 
 platforms :ruby do
   gem 'charlock_holmes'

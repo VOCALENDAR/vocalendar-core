@@ -31,6 +31,7 @@ module VocalendarCore
 
     # The default locale is :en and all translations from config/locales/*.rb,yml are auto loaded.
     # config.i18n.load_path += Dir[Rails.root.join('my', 'locales', '*.{rb,yml}').to_s]
+    I18n.enforce_available_locales = true # ruby 4.0.2 over 
     config.i18n.default_locale = :ja
 
     # Configure the default encoding used in templates for Ruby 1.9.
@@ -57,6 +58,10 @@ module VocalendarCore
     config.assets.version = '1.0'
   end
 end
+
+# for Windows
+#require 'openssl'
+#OpenSSL::SSL::VERIFY_PEER = OpenSSL::SSL::VERIFY_NONE
 
 require "#{Rails.root}/extras/vocalendar_core/base.rb"
 require 'pp'
