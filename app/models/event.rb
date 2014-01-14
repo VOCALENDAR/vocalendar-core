@@ -133,7 +133,10 @@ class Event < ActiveRecord::Base
   has_and_belongs_to_many :related_links, :class_name => 'ExLink'
   belongs_to :primary_link, :class_name => 'ExLink', :autosave => true
 
+  # condition付きが作れる。らむだ？lambda？
   has_many :favorites
+  
+  attr_accessor :favorite_count
 
   mount_uploader :image, EventImageUploader
 

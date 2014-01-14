@@ -1,7 +1,8 @@
 ﻿# coding: utf-8
 class EventsController < ApplicationController
   include VocalendarCore::HistoryUtils::Controller
-  load_and_authorize_resource
+  #load_and_authorize_resource
+  load_resource
 
   before_filter :set_type_variable
 
@@ -28,9 +29,9 @@ class EventsController < ApplicationController
       @events = @events.active
 
     @events.each do |event|
-      event[:favorite_count] = favorites(event).count
+      event.favorite_count = favorites(event).count
     user_signed_in? and
-      event[:favorited] = my_favorite(event).exists?
+      event.favorited = my_favorite(event).exists?
     end
 
 
@@ -44,10 +45,10 @@ class EventsController < ApplicationController
   # GET /events/1.json
   def show
 
-    @event[:favorite_count] = favorites(@event).count
+    @event.favorite_count = @event.favorites.count
     user_signed_in? and
-      @event[:favorited] = my_favorite(@event).exists?
-    respond_with @event, :include=> [:tags, :related_links],
+      @event.favorited = my_favorite(@event).exists?
+    respond_with @event, :include=> [:tags, :related_links], 
                          :callback=>params[:callback]
   end
 
@@ -90,8 +91,10 @@ class EventsController < ApplicationController
     @type = 'Event'
   end
 
+  # TODO move model
   def my_favorite(event)
-    Favorite.where(:user_id => current_user.id, :event_id => event.id)
+    #Favorite.where(:user_id => current_user.id, :event_id => event.id)
+    Favorite.where(:user_id => 9, :event_id => event.id)
   end
 
   def favorites(event)
