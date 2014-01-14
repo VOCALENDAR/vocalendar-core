@@ -137,6 +137,7 @@ class Event < ActiveRecord::Base
   has_many :favorites
   
   attr_accessor :favorite_count
+  attr_accessor :favorited
 
   mount_uploader :image, EventImageUploader
 
