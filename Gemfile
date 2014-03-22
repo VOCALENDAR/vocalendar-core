@@ -1,6 +1,6 @@
 source 'https://rubygems.org'
 
-gem 'rails', '3.2.9'
+gem 'rails', '4.0.2'
 
 # Bundle edge Rails instead:
 # gem 'rails', :git => 'git://github.com/rails/rails.git'
@@ -10,12 +10,15 @@ gem 'mysql2', :group => :production
 
 # Gems used only for assets and not required
 # in production environments by default.
+
+gem 'bootstrap-sass'
+
 group :assets do
-  gem 'sass-rails',   '~> 3.2.3'
-  gem 'coffee-rails', '~> 3.2.1'
+  gem 'sass-rails' #,   '~> 3.2.3'
+  gem 'coffee-rails' #, '~> 3.2.1'
   gem 'libv8', '~> 3.11.8', :platforms => :ruby
   gem 'therubyracer', :platform => :ruby
-  gem 'uglifier', '>= 1.0.3'
+  gem 'uglifier' #, '>= 1.0.3'
 end
 
 gem 'jquery-rails'
@@ -33,10 +36,9 @@ gem 'omniauth-twitter'
 gem 'devise'
 gem 'devise-i18n'
 gem 'cancan'
-gem 'enumerated_attribute', :git => "git://github.com/jeffp/enumerated_attribute.git" # use git for https://github.com/jeffp/enumerated_attribute/pull/9
+gem 'enumerize'
 gem 'rails_admin'
-#gem 'rails_admin-i18n'
-gem 'rails_admin-i18n', :git => 'git://github.com/sugi/rails_admin-i18n.git'
+gem 'rails_admin-i18n'
 gem 'carrierwave'
 gem 'mime-types'
 gem 'rmagick'

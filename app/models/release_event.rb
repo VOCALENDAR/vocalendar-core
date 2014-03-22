@@ -17,17 +17,17 @@ class ReleaseEvent < Event
     define_method("#{f.pluralize}=") { |v|
       extra_tags[f].names = v
     }
-    attr_accessible f.pluralize
+    #attr_accessible f.pluralize
 
     define_method("#{f.pluralize}_str=") { |v|
       extra_tags[f].names_str = v
     }
-    attr_accessible "#{f.pluralize}_str"
+    #attr_accessible "#{f.pluralize}_str"
 
     define_method("#{f}_tags=") { |v|
       extra_tags[f] = v
     }
-    attr_accessible "#{f.pluralize}_tags"
+    #attr_accessible "#{f.pluralize}_tags"
   end
 
   private

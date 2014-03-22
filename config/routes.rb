@@ -1,12 +1,14 @@
 VocalendarCore::Application.routes.draw do
-  match 'l/:short_id', :controller => :ex_links, :action => :redirect, :as => 'link_redirect', :format => false
+  #rails 4 add :via=>:get
+  match 'l/:short_id', :controller => :ex_links, :action => :redirect, :as => 'link_redirect', :format => false, :via=>:get
 
   mount RailsAdmin::Engine => '/rails_admin', :as => 'rails_admin'
 
   devise_for :users, :controllers => { :omniauth_callbacks => "users/omniauth_callbacks" }
   devise_scope :user do
     get   'sign_in',  :to => 'devise/sessions#new',     :as => :new_user_session
-    match 'sign_out', :to => 'devise/sessions#destroy', :as => :destroy_user_session
+    #rails 4 add :via=>:get
+    match 'sign_out', :to => 'devise/sessions#destroy', :as => :destroy_user_session, :via=>:get
   end
 
   namespace 'external_ui', :path => 'ex' do
@@ -39,7 +41,7 @@ VocalendarCore::Application.routes.draw do
   end
 
   resources :events do
-    resource :favorite, :only => [:show, :update, :destroy]
+    resource :favorite, :only => [:show, :create, :destroy]
   end
 
   scope 'manage' do
@@ -53,7 +55,8 @@ VocalendarCore::Application.routes.draw do
     resources :histories, :only => :index
   end
 
-  match 'dashboard(/:action)', :controller => 'dashboard', :as => 'dashboard'
+  # rail 4 add :via=>:get
+  match 'dashboard(/:action)', :controller => 'dashboard', :as => 'dashboard', :via=>:get
 
   # The priority is based upon order of creation:
   # first created -> highest priority.

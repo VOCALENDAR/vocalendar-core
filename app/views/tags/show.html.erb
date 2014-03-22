@@ -3,7 +3,14 @@
 <div class="well">
   <%= link_to t('general.edit'), edit_tag_path(@tag), :class => 'btn' %>
   <%= link_to t("general.back_to_list"), url_for(:action => :index), :class => 'btn' %>
-  <%= link_to %Q{<i class="icon-trash icon-white" title="#{t 'general.delete'}"></i> #{t 'general.delete'}}.html_safe, @tag, confirm: t("general.delete_confirm", name: "#{@tag.name} (#{@tag.id})"), method: :delete , :class => 'btn btn-danger pull-right' if can? :destroy, @tag %>
+  <%= link_to %Q{<i class="icon-trash icon-white" title="#{t 'general.delete'}"></i>
+   #{t 'general.delete'}}.html_safe, 
+   @tag, 
+   method: :delete , 
+   :class => 'btn btn-danger pull-right' if can? :destroy, 
+   @tag, 
+   data: {confirm: t("general.delete_confirm", name: "#{@tag.name} (#{@tag.id})")}
+   %>
 
 </div>
 

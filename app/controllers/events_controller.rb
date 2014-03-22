@@ -2,7 +2,7 @@
 class EventsController < ApplicationController
   include VocalendarCore::HistoryUtils::Controller
   #load_and_authorize_resource
-  load_resource
+  load_resource except: [:create]
 
   before_filter :set_type_variable
 
@@ -10,6 +10,7 @@ class EventsController < ApplicationController
   # GET /events.json
   def index
 
+    # TODO 総ページ数が必要じゃない？
     params[:favorites].blank? or @events = @events.joins(:favorites)
     @events = @events.page(params[:page]).per(params[:limit].blank? ? 50 : [params[:limit].to_i, 50].min ).order('updated_at desc')
     unless params[:tag_id].blank?
@@ -44,14 +45,13 @@ class EventsController < ApplicationController
   # GET /events/1
   # GET /events/1.json
   def show
-
     @event.favorite_count = @event.favorites.count
     user_signed_in? and
       @event.favorited = my_favorite(@event).exists?
     respond_with @event, :include=> [:tags, :related_links], 
                          :callback=>params[:callback]
   end
-
+  
   # GET /events/new
   # GET /events/new.json
   def new
@@ -65,6 +65,7 @@ class EventsController < ApplicationController
   # POST /events
   # POST /events.json
   def create
+    @event = Event.new(update_params)
     @event.save
     @event.errors.empty? and add_history
     respond_with @event
@@ -73,7 +74,7 @@ class EventsController < ApplicationController
   # PUT /events/1
   # PUT /events/1.json
   def update
-    @event.update_attributes(params[@type.underscore])
+    @event.update(update_params)
     @event.errors.empty? and add_history
     respond_with @event
   end
@@ -93,12 +94,22 @@ class EventsController < ApplicationController
 
   # TODO move model
   def my_favorite(event)
-    #Favorite.where(:user_id => current_user.id, :event_id => event.id)
-    Favorite.where(:user_id => 9, :event_id => event.id)
+    Favorite.where(:user_id => current_user.id, :event_id => event.id)
+    #Favorite.where(:user_id => 9, :event_id => event.id)
   end
 
   def favorites(event)
     Favorite.where(:event_id => event.id)
+  end
+  
+  private
+  def update_params
+    # TODO @typeの使い方
+    #params[@type.underscore].require(:event).permit(:summary, :tag_name_str, :locaton, :uri,
+    params.require(:event).permit(:summary, :tag_names_str, :location, :uri,
+                                  :twitter_hash, :start_date, :start_time,
+                                  :allday, :end_date, :end_time, :remove_image,
+                                  :description)
   end
 
 end

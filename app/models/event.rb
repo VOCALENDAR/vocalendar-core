@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 class Event < ActiveRecord::Base
+  
   class ExtraTagContainer < Hash
     class TagContainer < Array
       def names_str
@@ -77,7 +78,9 @@ class Event < ActiveRecord::Base
     end
   end
 
-  scope :active, where(:status => 'confirmed')
+  # rali 4 chenge lamda
+  scope :active, ->{where(:status => 'confirmed') }
+
   scope :by_tag_ids, (lambda do |ids|
     joins(:all_tag_relations).where('event_tag_relations.tag_id' => ids)
   end)
@@ -108,27 +111,36 @@ class Event < ActiveRecord::Base
     :class_name => 'EventTagRelation',
     :order => 'target_field, pos',
   }
-  has_many :all_tag_relations,   tagrel_opts.merge(:dependent => :delete_all)
-  has_many :main_tag_relations,  tagrel_opts.merge(:conditions => {:target_field => ""})
-  has_many :extra_tag_relations, tagrel_opts.merge(:conditions => "target_field != ''")
+  #scope :order_target_field_pos, -> { order(:target_field, :pos) }
+  
+  # rails 4 change lamda
+  # TODO まとめる？
+  has_many :all_tag_relations, -> { order(:target_field, :pos) }, class_name: "EventTagRelation",  dependent: :delete_all
+  has_many :main_tag_relations,-> { where(target_field: "").order(:target_field, :pos) }, class_name: "EventTagRelation"
+  has_many :extra_tag_relations,->{ where("target_field != ''").order(:target_field, :pos) }, class_name: "EventTagRelation" 
 
   has_many :all_tags,  :through => :all_tag_relations, :source => :tag
   has_many :tags,      :through => :main_tag_relations
 
-  has_one  :recurrent_parent, :class_name => 'Event',
-    :primary_key => 'g_recurring_event_id', :foreign_key => 'g_id',
-    :conditions => "g_id IS NOT NULL" # NOTE: ...any other way?
-  has_many :recurrent_children, :class_name => 'Event',
+  has_one  :recurrent_parent, -> {  where("g_id IS NOT NULL") },# NOTE: ...any other way?
+    :primary_key =>'g_recurring_event_id', :foreign_key => 'g_id',
+    :class_name => 'Event'
+    
+  has_many :recurrent_children, -> {  where( "g_recurring_event_id IS NOT NULL" ) }, # NOTE: ...any other way?
     :foreign_key => 'g_recurring_event_id', :primary_key => 'g_id',
-    :conditions => "g_recurring_event_id IS NOT NULL" # NOTE: ...any other way?
+    :class_name => 'Event'
+    
+  has_many :histories, -> { where( :target => 'event' ) },
+    :foreign_key => 'target_id' ,
+    :class_name => 'History'
+    
+  has_one  :src_calendar, 
+    :foreign_key => 'external_id', :primary_key => 'g_calendar_id',
+    :class_name => 'Calendar'
 
-  has_many :histories, :class_name => 'History',
-    :conditions => {:target => 'event'}, :foreign_key => 'target_id'
-
-  has_one  :src_calendar, :class_name => 'Calendar',
-    :foreign_key => 'external_id', :primary_key => 'g_calendar_id'
-  has_many :dst_calendars, :class_name => 'Calendar', :through => :all_tags,
-    :source => :calendars, :conditions => {'calendars.io_type' => 'dst'}
+  has_many :dst_calendars, -> { where( 'calendars.io_type' => 'dst' ) },
+    :class_name => 'Calendar', :through => :all_tags,
+    :source => :calendars
 
   has_and_belongs_to_many :related_links, :class_name => 'ExLink'
   belongs_to :primary_link, :class_name => 'ExLink', :autosave => true
@@ -136,16 +148,18 @@ class Event < ActiveRecord::Base
   # condition付きが作れる。らむだ？lambda？
   has_many :favorites
   
+  # TODO JSONに反映されない・・・
   attr_accessor :favorite_count
   attr_accessor :favorited
 
   mount_uploader :image, EventImageUploader
 
-  attr_accessible :description, :location, :summary,
-    :start_date, :start_datetime, :end_date, :end_datetime,
-    :start_time, :end_time, :country, :lang, :allday,
-    :twitter_hash, :timezone, :tag_names, :tag_names_str,
-    :image, :image_cache, :name, :primary_link_uri, :uri
+# rails 4 chenge strong_parameters
+  #attr_accessible :description, :location, :summary,
+  # :start_date, :start_datetime, :end_date, :end_datetime,
+  # :start_time, :end_time, :country, :lang, :allday,
+  # :twitter_hash, :timezone, :tag_names, :tag_names_str,
+  # :image, :image_cache, :name, :primary_link_uri, :uri
 
   validates :g_id,    :uniqueness => true, :allow_nil => true
   validates :etag,    :presence => true
@@ -164,9 +178,9 @@ class Event < ActiveRecord::Base
   validates :start_time, :presence => true, :unless => :allday?
   validates :end_time,   :presence => true, :unless => :allday?
   validates :temp_start_time, :unless => :allday?,
-    :format => {:with => /^(|\d{2}:\d{2})$/}, :allow_nil => true
+    :format => {:with => /\A(|\d{2}:\d{2})\Z/}, :allow_nil => true
   validates :temp_end_time, :unless => :allday?,
-    :format => {:with => /^(|\d{2}:\d{2})$/}, :allow_nil => true
+    :format => {:with => /\A(|\d{2}:\d{2})\Z/}, :allow_nil => true
 
   before_validation :set_dummy_values_for_cancelled,
     :cascade_start_date, :cascade_end_datetime, :cascade_end_date,
@@ -616,4 +630,4 @@ class Event < ActiveRecord::Base
 end
 
 # Load all STI child classes to get proper results from self.subclesses
-require 'release_event'
+#require 'release_event'

@@ -49,17 +49,19 @@ module VocalendarCore
     # This will create an empty whitelist of attributes available for mass-assignment for all models
     # in your app. As such, your models will need to explicitly whitelist or blacklist accessible
     # parameters by using an attr_accessible or attr_protected declaration.
-    config.active_record.whitelist_attributes = true
+    # comment out for strong_parameters rails 4
+    # config.active_record.whitelist_attributes = false
 
     # Enable the asset pipeline
     config.assets.enabled = true
 
     # Version of your assets, change this if you want to expire all your assets
     config.assets.version = '1.0'
+    
   end
 end
 
-# for Windows
+# TODO for Windowsの時だけ有効にできないか？
 #require 'openssl'
 #OpenSSL::SSL::VERIFY_PEER = OpenSSL::SSL::VERIFY_NONE
 

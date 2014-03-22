@@ -29,7 +29,7 @@ class ExLinksController < ApplicationController
   end
 
   def update
-    @ex_link.update_attributes(params[:ex_link])
+    @ex_link.update_attributes(update_params)
     @ex_link.errors.empty? and add_history
     respond_with(@ex_link)
   end
@@ -59,4 +59,12 @@ class ExLinksController < ApplicationController
     end
     redirect_to @ex_link.access_uri
   end
+  
+  private
+  def update_params
+    params.require(:ex_link).permit(:title, :disabled)
+  end
+
+  
+  
 end
