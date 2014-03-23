@@ -14,7 +14,7 @@
 
 <% if user_signed_in? && current_user.admin? %>
 <%= f.label :role %>
-<%= f.enum_select :role, :include_blank => true %>
+<%= f.select :role, User.role.options, :include_blank => true %>
 <% end %>
 
 <% end %>

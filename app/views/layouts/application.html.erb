@@ -65,7 +65,7 @@
                 </a>
                 <ul class="dropdown-menu">
                   <li><%= link_to t("general.all"), events_path if can? :index, Event %></li>
-                  <li><%= link_to t("activerecord.models.release_event"), release_events_path if can? :index, ReleaseEvent %></li>
+<!--                  <li><!%= link_to t("activerecord.models.release_event"), release_events_path if can? :index, ReleaseEvent %></li> -->
                 </ul>
               </li>
               <% end %>

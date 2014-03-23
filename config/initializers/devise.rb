@@ -6,6 +6,9 @@ Devise.setup do |config|
   # note that it will be overwritten if you use your own mailer class with default "from" parameter.
   config.mailer_sender = "please-change-me-at-config-initializers-devise@example.com"
 
+  # device 3.1.0 after required
+  config.secret_key = 'vocalendar-3939'
+  
   # Configure the class responsible to send e-mails.
   # config.mailer = "Devise::Mailer"
 

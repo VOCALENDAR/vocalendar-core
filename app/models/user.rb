@@ -1,19 +1,25 @@
 class User < ActiveRecord::Base
+  extend Enumerize
   include VocalendarCore::ModelLogUtils
 
-  scope :admins, where(:role => 'admin')
-  scope :editors, where(:role => %w(admin editor))
+  scope :admins, ->{ where(:role => 'admin') }
+  scope :editors, ->{ where(:role => %w(admin editor))}
 
-  has_many :histories, :class_name => 'History',
-    :conditions => {:target => 'user'}, :foreign_key => 'target_id'
+  has_many :histories, ->{ where( :target => 'user') }, 
+    :class_name => 'History',
+    :foreign_key => 'target_id'
 
-  has_many :favorites
+  #has_many :favorites
 
-    devise :trackable, :omniauthable
-  enum_attr :role, %w(admin editor)
-  attr_accessible :name, :email
-  attr_accessible :name, :email, :as => :editor
-  attr_accessible :name, :email, :role, :as => :admin
+  devise :trackable, :omniauthable
+  # for enumerated_attribute
+  #enum_attr :role, %w(admin editor)
+  enumerize :role, in: [:admin, :editor] #, default: :editor
+      
+  # rails 4 chenge strong_parameters
+  # attr_accessible :name, :email
+  # attr_accessible :name, :email, :as => :editor
+  # attr_accessible :name, :email, :role, :as => :admin
 
   validates :twitter_uid, :uniqueness => true, :allow_nil => true
   validates :google_uid,  :uniqueness => true, :allow_nil => true
@@ -23,7 +29,9 @@ class User < ActiveRecord::Base
   class << self
     def find_for_google_oauth2(auth, current_user = nil, request = nil)
       !auth || !auth.uid and return nil
-      u = current_user || find_or_initialize_by_google_uid(auth.uid)
+      
+      # rails 4 find_or_initialize_by_* is deprecated 
+      u = current_user || find_or_initialize_by( google_uid: auth.uid )
       c = auth["credentials"]
       u.assign_attributes({
         :google_uid              => auth.uid, # for current_user
@@ -34,7 +42,10 @@ class User < ActiveRecord::Base
         :google_token_issued_at  => DateTime.now,
         :google_auth_scope       => auth["scope"],
         :google_auth_valid       => true,
-      }, :without_protection => true)
+      }
+      # TODO んー、外していいのか？
+      # , :without_protection => true
+      )
       u.email.blank? and u.email = auth["info"]["email"]
       u.name.blank?  and u.name  = auth["info"]["name"] || u.email
       u.auto_created = u.new_record?

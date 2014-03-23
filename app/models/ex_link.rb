@@ -5,7 +5,9 @@ class ExLink < ActiveRecord::Base
   include VocalendarCore::ModelLogUtils
 
   self.store_full_sti_class = true
-  attr_accessible :title, :uri, :disabled
+  # rails 4 chenge strong_parameters
+  # attr_accessible :title, :uri, :disabled
+
   has_and_belongs_to_many :related_events, :class_name => 'Event'
   has_many :main_events, :foreign_key => :primary_link_id, :class_name => 'Event'
   has_many :tags,        :foreign_key => :primary_link_id
@@ -63,7 +65,7 @@ class ExLink < ActiveRecord::Base
     end
 
     def find_or_create_by_uri(uri)
-      find_or_create_by_digest(digest(uri), uri: uri)
+      find_or_create_by( digest: digest(uri), uri: uri)
     end
 
     def find_or_initialize_by_uri(uri)

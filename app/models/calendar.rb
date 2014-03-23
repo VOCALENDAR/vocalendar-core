@@ -3,22 +3,25 @@ class Calendar < ActiveRecord::Base
   include VocalendarCore::ModelLogUtils
   include VocalendarCore::HistoryUtils::Model
 
-  default_scope order('io_type desc, name')
+  default_scope -> {order('io_type desc, name') }
 
   has_many :fetched_events, :class_name => 'Event',
     :foreign_key => 'g_calendar_id', :primary_key => 'external_id'
   has_many :target_events, :through => :tags, :source => :events
-  has_many :histories, :class_name => 'History',
-    :conditions => {:target => 'calendar'}, :foreign_key => 'target_id'
+  has_many :histories, ->{ where( :target => 'calendar' ) }, 
+    :class_name => 'History',
+    :foreign_key => 'target_id'
   has_and_belongs_to_many :tags
   belongs_to :user
 
   basic_allowed_attrs = [:name, :external_id, :io_type, :tag_ids,
                          :tag_names_append_str,
                          :tag_names_remove_str]
-  attr_accessible *basic_allowed_attrs
-  attr_accessible *basic_allowed_attrs, :as => :editor
-  attr_accessible *(basic_allowed_attrs + [:user_id]), :as => :admin
+
+  # rails 4 chenge strong_parameters
+  #attr_accessible *basic_allowed_attrs
+  #attr_accessible *basic_allowed_attrs, :as => :editor
+  #attr_accessible *(basic_allowed_attrs + [:user_id]), :as => :admin
 
   validates :name, :presence => true
   validates :external_id, :presence => true, :uniqueness => true
@@ -58,7 +61,7 @@ class Calendar < ActiveRecord::Base
   end
 
   def publish_events_without_lock(opts = {})
-    opts = {:force => false, :max => 2000}.merge opts
+    opts = {:force => false, :max => 20000}.merge opts
     log :info, "Start event publish"
 
     target_events = self.target_events.reorder('events.updated_at')
@@ -159,7 +162,7 @@ class Calendar < ActiveRecord::Base
   end
 
   def fetch_events_without_lock(opts = {})
-    opts = {:force => false, :max => 2000}.merge opts
+    opts = {:force => false, :max => 20000}.merge opts
     log :info, "Start event sync"
     count = 0
     add_history :action => :fetch_started
@@ -264,6 +267,7 @@ class Calendar < ActiveRecord::Base
       :singleEvents => true,
       :showDeleted => true,
       :orderBy => 'updated',
+      :timeMax => '2040-01-01T00:00:00Z',
     }.merge(params)
 
     while true
@@ -301,7 +305,7 @@ class Calendar < ActiveRecord::Base
       end
     else
       @lock_fh = open(lockfile_path, "w")
-      @lock_fh.flock mode or 
+      @lock_fh.flock mode or
         raise VocalendarCore::CalendarSyncError.new(failmsg)
     end
   end
