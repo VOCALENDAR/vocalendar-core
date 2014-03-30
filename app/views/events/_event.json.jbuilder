@@ -1,3 +1,22 @@
+if params['minInfo'] 
+
+	json.(event,
+		:allday,
+		:end_date,
+		:end_datetime,
+		:g_eid,
+		:g_html_link,
+		:g_id,
+		:ical_uid,
+		:id,
+		:start_date,
+		:start_datetime,
+		:status,
+		:summary
+		)
+	
+	return
+end 
 pp 'event'
 json.(event,
 		:allday,
