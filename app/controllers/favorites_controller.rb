@@ -36,9 +36,9 @@ class FavoritesController < ApplicationController
   # TODO move model
   private
     def favorites
-      # Favorite.where(:user_id => current_user.id, :event_id => params[:event_id])
+      Favorite.where(:user_id => current_user.id, :event_id => params[:event_id])
       # for test
-      Favorite.where(:user_id => 9, :event_id => params[:event_id])
+      # Favorite.where(:user_id => 9, :event_id => params[:event_id])
     end
   
 end
