@@ -21,9 +21,11 @@ class EventsController < ApplicationController
     params[:g_calendar_id].blank? or
       @events = @events.where(:g_calendar_id => params[:g_calendar_id])
     params[:startTime].blank? or
-      @events = @events.where('start_datetime >= ?', params[:startTime])
+      @events = @events.where('( allday=? and start_datetime >= ? ) or ( allday=? and end_datetime >= ? )', true, params[:startTime], false, params[:startTime])
+      #@events = @events.where('start_datetime >= ?', params[:startTime])
     params[:endTime].blank? or
-    @events = @events.where('end_datetime <= ?', params[:endTime])
+      @events = @events.where('( allday=? and start_datetime <= ? ) or ( allday=? and start_datetime <= ? )', true, params[:startTime], false, params[:endTime])
+      #@events = @events.where('end_datetime <= ?', params[:endTime])
     params[:q].blank? or
       @events = @events.search(params[:q])
     params[:include_delete].blank? and
