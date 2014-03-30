@@ -19,7 +19,7 @@ class Ability
       can [:show, :edit, :update], User, :id => user.id
       can [:index, :show], Event
       can [:index, :show], Tag
-      can :manage, :Favorite
+      can :manage, Favorite
       #can [:show, :update, :edit, :destroy], Event, :user_id => user.id
       #can [:new, :create], Event
     end
