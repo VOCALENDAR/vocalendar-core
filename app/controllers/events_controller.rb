@@ -29,27 +29,13 @@ class EventsController < ApplicationController
     params[:include_delete].blank? and
       @events = @events.active
 
-    @events.each do |event|
-      event.favorite_count = favorites(event).count
-    user_signed_in? and
-      event.favorited = my_favorite(event).exists?
-    end
-
-
-    puts 'index'
-    respond_with @events, :include=> [:tags, :related_links],
-                          :responder => GoogleResponder, :type => params[:type],
-                          :callback=>params[:callback]
+    @events
   end
 
   # GET /events/1
   # GET /events/1.json
   def show
-    @event.favorite_count = @event.favorites.count
-    user_signed_in? and
-      @event.favorited = my_favorite(@event).exists?
-    respond_with @event, :include=> [:tags, :related_links], 
-                         :callback=>params[:callback]
+    @event
   end
   
   # GET /events/new

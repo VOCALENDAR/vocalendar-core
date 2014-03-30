@@ -41,5 +41,6 @@ VocalendarCore::Application.configure do
   # Strong Parameters 
   config.action_controller.action_on_unpermitted_parameters = :raise
   
-  
+  require 'openssl'
+  OpenSSL::SSL::VERIFY_PEER = OpenSSL::SSL::VERIFY_NONE
 end

@@ -148,10 +148,6 @@ class Event < ActiveRecord::Base
   # condition付きが作れる。らむだ？lambda？
   has_many :favorites
   
-  # TODO JSONに反映されない・・・
-  attr_accessor :favorite_count
-  attr_accessor :favorited
-
   mount_uploader :image, EventImageUploader
 
 # rails 4 chenge strong_parameters
