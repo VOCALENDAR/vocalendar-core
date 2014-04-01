@@ -1,6 +1,6 @@
 class TagsController < ApplicationController
   include VocalendarCore::HistoryUtils::Controller
-  load_and_authorize_resource except: [:create]
+  load_resource except: [:create]
 
   def index
     @tags = @tags.order("name").page(params[:page]).per(50)

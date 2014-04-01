@@ -21,35 +21,23 @@ class EventsController < ApplicationController
     params[:g_calendar_id].blank? or
       @events = @events.where(:g_calendar_id => params[:g_calendar_id])
     params[:startTime].blank? or
-      @events = @events.where('start_datetime >= ?', params[:startTime])
+      @events = @events.where('( allday=? and start_datetime >= ? ) or ( allday=? and end_datetime >= ? )', true, params[:startTime], false, params[:startTime])
+      #@events = @events.where('start_datetime >= ?', params[:startTime])
     params[:endTime].blank? or
-    @events = @events.where('end_datetime <= ?', params[:endTime])
+      @events = @events.where('( allday=? and start_datetime <= ? ) or ( allday=? and start_datetime <= ? )', true, params[:startTime], false, params[:endTime])
+      #@events = @events.where('end_datetime <= ?', params[:endTime])
     params[:q].blank? or
       @events = @events.search(params[:q])
     params[:include_delete].blank? and
       @events = @events.active
 
-    @events.each do |event|
-      event.favorite_count = favorites(event).count
-    user_signed_in? and
-      event.favorited = my_favorite(event).exists?
-    end
-
-
-    puts 'index'
-    respond_with @events, :include=> [:tags, :related_links],
-                          :responder => GoogleResponder, :type => params[:type],
-                          :callback=>params[:callback]
+    @events
   end
 
   # GET /events/1
   # GET /events/1.json
   def show
-    @event.favorite_count = @event.favorites.count
-    user_signed_in? and
-      @event.favorited = my_favorite(@event).exists?
-    respond_with @event, :include=> [:tags, :related_links], 
-                         :callback=>params[:callback]
+    @event
   end
   
   # GET /events/new

@@ -64,7 +64,8 @@ gem 'rails-erd', :group => :development
 # gem 'bcrypt-ruby', '~> 3.0.0'
 
 # To use Jbuilder templates for JSON
-# gem 'jbuilder'
+gem 'jbuilder'
+gem 'jpbuilder'
 
 # Use unicorn as the app server
 # gem 'unicorn'

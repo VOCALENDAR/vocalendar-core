@@ -3,16 +3,23 @@ class Ability
 
   def initialize(user)
 
-    user or return can [:index, :show], Event
+    if !user
+      can [:index, :show], Event
+      can [:index, :show], Tag
+      return
+    end
     user && user.admin? and return can :manage, :all
 
     if user.editor?
-      can :manage, [Event, ReleaseEvent, Tag, ExLink, :dashboard]
+      can :manage, [Event, Favorite, Tag, ExLink, :dashboard]
       can [:index, :show], Calendar
       can [:show, :edit, :update], User, :id => user.id
       can :index, History
     elsif user
       can [:show, :edit, :update], User, :id => user.id
+      can [:index, :show], Event
+      can [:index, :show], Tag
+      can :manage, Favorite
       #can [:show, :update, :edit, :destroy], Event, :user_id => user.id
       #can [:new, :create], Event
     end
