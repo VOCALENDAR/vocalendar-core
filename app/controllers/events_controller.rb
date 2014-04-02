@@ -20,12 +20,13 @@ class EventsController < ApplicationController
     end
     params[:g_calendar_id].blank? or
       @events = @events.where(:g_calendar_id => params[:g_calendar_id])
+
     params[:startTime].blank? or
-      @events = @events.where('( allday=? and start_datetime >= ? ) or ( allday=? and end_datetime >= ? )', true, params[:startTime], false, params[:startTime])
-      #@events = @events.where('start_datetime >= ?', params[:startTime])
+      @events = @events.where('( allday=? and start_date >= ? ) or ( allday=? and end_datetime >= ? )', true, toDate(Date, params[:startTime]), false, toDate(DateTime, params[:startTime]))
     params[:endTime].blank? or
-      @events = @events.where('( allday=? and start_datetime <= ? ) or ( allday=? and start_datetime <= ? )', true, params[:startTime], false, params[:endTime])
-      #@events = @events.where('end_datetime <= ?', params[:endTime])
+      @events = @events.where('( allday=? and start_date <= ? ) or ( allday=? and start_datetime <= ? )', true, toDate(Date, params[:endTime]), false, toDate(DateTime, params[:endTime]))
+
+        
     params[:q].blank? or
       @events = @events.search(params[:q])
     params[:include_delete].blank? and
@@ -100,4 +101,19 @@ class EventsController < ApplicationController
                                   :description)
   end
 
+  FORMAT = ["%Y-%m-%dT%H:%M:%S", "%Y/%m/%dT%H:%M:%S"]
+  def toDate(clazz, s)
+    
+    parsed = nil
+    FORMAT.each do |format|
+      begin
+        parsed = clazz.strptime(s, format)
+        break
+      rescue ArgumentError
+      end
+    end 
+    return parsed
+  end
+    
+    
 end
