@@ -31,13 +31,13 @@ class EventsController < ApplicationController
     params[:include_delete].blank? and
       @events = @events.active
 
-    @events
+    respond_with @events
   end
 
   # GET /events/1
   # GET /events/1.json
   def show
-    @event
+    respond_with @event
   end
   
   # GET /events/new
