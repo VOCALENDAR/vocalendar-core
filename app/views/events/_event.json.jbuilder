@@ -14,6 +14,12 @@ if params['minInfo']
 		:status,
 		:summary
 		)
+	json.tags(event.all_tags,
+			 :created_at,
+			 :hidden,
+			 :id,
+			 :name
+			 )
 	
 	return
 end 
