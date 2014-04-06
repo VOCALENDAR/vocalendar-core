@@ -138,7 +138,8 @@ class User < ActiveRecord::Base
       :google_token_expires_at => auth.expires_at,
       :google_token_issued_at  => auth.issued_at,
       :google_auth_valid       => true,
-    }, :without_protection => true)
+    })
+    #, :without_protection => true)
     log :debug, "Google API: access token refresh success."
   end
 
