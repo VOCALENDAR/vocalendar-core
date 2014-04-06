@@ -21,8 +21,7 @@ if params['minInfo']
 			 :name
 			 )
 	
-	return
-end 
+else
 pp 'event'
 json.(event,
 		:allday,
@@ -75,3 +74,4 @@ pp 'myfavo'
 user_signed_in? and 
 	json.favorited(event.favorites.where( event_id: event.id, user_id: current_user.id ).exists?)
 
+end 
