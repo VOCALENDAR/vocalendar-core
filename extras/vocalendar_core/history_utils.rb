@@ -23,7 +23,7 @@ module VocalendarCore
       include Core
       def history_default_param
         {
-          :target      => self.class.model_name.underscore,
+          :target      => self.class.model_name.to_s.underscore,
           :target_type => 'model',
           :target_id   => self.id,
         }
