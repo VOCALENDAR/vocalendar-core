@@ -459,7 +459,7 @@ class Event < ActiveRecord::Base
       g_creator_display_name: attrs["creator"].try(:display_name),
       ical_uid: attrs["iCalUID"].to_s,
       created_at: attrs["created"],
-    }, :without_protection => true)
+    })#, :without_protection => true)
     if attrs["location"].to_s[0..3] == 'http'
       self.primary_link ||= ExLink.scan(attrs["location"]).first
     end
@@ -472,7 +472,7 @@ class Event < ActiveRecord::Base
         timezone: attrs.start["timeZone"] || default_timezone,
         allday: !!attrs.start["date"],
         recur_string: attrs.recurrence.to_a.join("\n"),
-      }, :without_protection => true)
+      })#, :without_protection => true)
     end
     if attrs["recurringEventId"]
       orig_sd = attrs["originalStartTime"]
@@ -480,13 +480,13 @@ class Event < ActiveRecord::Base
         g_recurring_event_id: attrs.recurringEventId,
         recur_orig_start_date: orig_sd["date"] || orig_sd.dateTime.to_date,
         recur_orig_start_datetime: orig_sd["dateTime"] || orig_sd.date.to_time.to_date,
-      }, :without_protection => true)
+      })#, :without_protection => true)
     else
       assign_attributes({
         g_recurring_event_id: nil,
         recur_orig_start_date: nil,
         recur_orig_start_datetime: nil,
-      }, :without_protection => true)
+      })#, :without_protection => true)
 
     end
   end
