@@ -67,7 +67,7 @@ class User < ActiveRecord::Base
         :twitter_secret => auth["credentials"]["secret"],
         :twitter_token_issued_at => DateTime.now,
         :twitter_auth_valid => true,
-      }, :without_protection => true)
+      })#, :without_protection => true)
       u.auto_created = u.new_record?
       u.name.blank? and u.name = auth["info"]["name"]
       u.new_record? && count(:id) < 1 and u.role = :admin
