@@ -30,13 +30,6 @@ class ApplicationController < ActionController::Base
 
   private
 
-  # デバッグモード
-  def set_debug_mode
-    if params[:debug]
-      Rails.logger.level = Logger::DEBUG
-    end
-  end
-  
   def set_common_vars
     @current_controller_name = controller_name
     @current_action_name     = action_name
