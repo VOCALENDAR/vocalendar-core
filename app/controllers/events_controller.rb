@@ -11,8 +11,13 @@ class EventsController < ApplicationController
   def index
 
     # TODO 総ページ数が必要じゃない？
-    params[:favorites].blank? or @events = @events.joins(:favorites)
-    @events = @events.page(params[:page]).per(params[:limit].blank? ? 50 : [params[:limit].to_i, 50].min ).order('updated_at desc')
+    @events = @events.includes(:tags).references(:tags)
+    if params[:minInfo].blank?
+      @events = @events.includes(:related_links).references(:related_links)
+      @events = @events.includes(:favorites).references(:favorites)
+    end
+
+    @events = @events.page(params[:page]).per(params[:limit].blank? ? 50 : [params[:limit].to_i, 50].min ).order('events.updated_at desc')
     unless params[:tag_id].blank?
       tids = params[:tag_id]
       String === tids and tids = tids.split(',')
@@ -38,6 +43,11 @@ class EventsController < ApplicationController
   # GET /events/1
   # GET /events/1.json
   def show
+    @event = Event
+          .includes(:tags).references(:tags)
+          .includes(:related_links).references(:related_links)
+          .includes(:favorites).references(:favorites)
+          .where(id: params[:id])
     respond_with @event
   end
   
@@ -81,16 +91,6 @@ class EventsController < ApplicationController
     @type = 'Event'
   end
 
-  # TODO move model
-  def my_favorite(event)
-    Favorite.where(:user_id => current_user.id, :event_id => event.id)
-    #Favorite.where(:user_id => 9, :event_id => event.id)
-  end
-
-  def favorites(event)
-    Favorite.where(:event_id => event.id)
-  end
-  
   private
   def update_params
     # TODO @typeの使い方
