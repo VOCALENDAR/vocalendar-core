@@ -14,7 +14,7 @@ if params['minInfo']
 		:status,
 		:summary
 		)
-	json.tags(event.all_tags,
+	json.tags(event.tags,
 			 :created_at,
 			 :hidden,
 			 :id,
@@ -22,7 +22,6 @@ if params['minInfo']
 			 )
 	
 else
-pp 'event'
 json.(event,
 		:allday,
 		:country,
@@ -61,17 +60,21 @@ json.related_links(event.related_links,
 		:id,
 		:uri
 		)
-pp 'tag'
-json.tags(event.all_tags,
+json.tags(event.tags,
 		 :created_at,
 		 :hidden,
 		 :id,
 		 :name
 		 )
-pp 'favorite'
-json.favorite_count(event.favorites.count)
-pp 'myfavo'
-user_signed_in? and 
-	json.favorited(event.favorites.where( event_id: event.id, user_id: current_user.id ).exists?)
+json.favorite_count(event.favorites.size)
+if user_signed_in?
+	fav = false
+	event.favorites.each do |favorite|
+		if favorite.user_id == current_user.id
+			fav = true
+		end
+	end
+	json.favorited(fav)
+end
 
 end 
