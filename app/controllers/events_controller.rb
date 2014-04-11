@@ -15,6 +15,9 @@ class EventsController < ApplicationController
     if params[:minInfo].blank?
       @events = @events.includes(:related_links).references(:related_links)
       @events = @events.includes(:favorites).references(:favorites)
+      if !params[:favorites].blank? and user_signed_in?
+        @events = @events.where(favorites: {user_id: current_user.id})
+      end
     end
 
     @events = @events.page(params[:page]).per(params[:limit].blank? ? 50 : [params[:limit].to_i, 50].min ).order('events.updated_at desc')
