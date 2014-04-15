@@ -30,10 +30,23 @@ class ApplicationController < ActionController::Base
 
   private
 
+  @@log_level = { debug: Logger::DEBUG,
+                  info:  Logger::INFO,
+                  warn:  Logger::WARN,
+                  error: Logger::ERROR,
+                  fatal: Logger::FATAL
+  } 
   # デバッグモード
   def set_debug_mode
     if params[:debug]
       Rails.logger.level = Logger::DEBUG
+    else
+      if config.log_level
+        Rails.logger.level = @@log_level[config.log_level]
+        return
+      end
+      Rails.env.production? and Rails.logger.level = Logger::INFO
+      
     end
   end
   
