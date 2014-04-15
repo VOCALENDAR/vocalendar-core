@@ -68,13 +68,7 @@ json.tags(event.tags,
 		 )
 json.favorite_count(event.favorites.size)
 if user_signed_in?
-	fav = false
-	event.favorites.each do |favorite|
-		if favorite.user_id == current_user.id
-			fav = true
-		end
-	end
-	json.favorited(fav)
+	json.favorited(!!event.favorites.find{ |favorite| favorite.user_id == current_user.id })
 end
 
 end 
