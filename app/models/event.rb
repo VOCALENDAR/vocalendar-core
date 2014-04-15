@@ -145,9 +145,10 @@ class Event < ActiveRecord::Base
   has_and_belongs_to_many :related_links, :class_name => 'ExLink'
   belongs_to :primary_link, :class_name => 'ExLink', :autosave => true
 
-  # condition付きが作れる。らむだ？lambda？
   has_many :favorites
-  
+  # だめだった・・・
+  #has_many :my_favorites, -> { where( user_id: current_user.id)}, class_name: 'Favorite'
+    
   mount_uploader :image, EventImageUploader
 
 # rails 4 chenge strong_parameters
