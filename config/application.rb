@@ -61,9 +61,5 @@ module VocalendarCore
   end
 end
 
-# TODO for Windowsの時だけ有効にできないか？
-#require 'openssl'
-#OpenSSL::SSL::VERIFY_PEER = OpenSSL::SSL::VERIFY_NONE
-
 require "#{Rails.root}/extras/vocalendar_core/base.rb"
 require 'pp'
