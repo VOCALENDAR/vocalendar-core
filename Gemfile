@@ -11,10 +11,10 @@ gem 'mysql2', :group => :production
 # Gems used only for assets and not required
 # in production environments by default.
 
-gem 'bootstrap-sass'
+gem 'bootstrap-sass'#, '< 3.0'
 
 group :assets do
-  gem 'sass-rails' #,   '~> 3.2.3'
+  gem 'sass-rails' ,   '~> 4.0.0'
   gem 'coffee-rails' #, '~> 3.2.1'
   gem 'libv8', '~> 3.11.8', :platforms => :ruby
   gem 'therubyracer', :platform => :ruby
@@ -31,9 +31,9 @@ gem 'responders'
 gem 'rails-settings-cached'
 gem 'google-api-client', :require => 'google/api_client'
 gem 'omniauth', '~> 1.0.0'
-gem 'omniauth-google-oauth2'
+gem 'omniauth-google-oauth2', '=0.2.2' # 0.2.4にすると動かなくなる。
 gem 'omniauth-twitter'
-gem 'devise'
+gem 'devise', '=3.2.2 '
 gem 'devise-i18n'
 gem 'cancan'
 gem 'enumerize'
@@ -41,7 +41,7 @@ gem 'rails_admin'
 gem 'rails_admin-i18n'
 gem 'carrierwave'
 gem 'mime-types'
-gem 'rmagick'
+#gem 'rmagick'
 gem 'addressable'
 gem 'htmlentities'
 gem 'flot-rails'
