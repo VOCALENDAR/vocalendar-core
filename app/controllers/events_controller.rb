@@ -50,7 +50,7 @@ class EventsController < ApplicationController
           .includes(:tags).references(:tags)
           .includes(:related_links).references(:related_links)
           .includes(:favorites).references(:favorites)
-          .where(id: params[:id])
+          .where(id: params[:id]).first!
     respond_with @event
   end
   
