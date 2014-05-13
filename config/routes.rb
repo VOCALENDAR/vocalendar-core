@@ -1,4 +1,5 @@
 VocalendarCore::Application.routes.draw do
+  use_doorkeeper
   #rails 4 add :via=>:get
   match 'l/:short_id', :controller => :ex_links, :action => :redirect, :as => 'link_redirect', :format => false, :via=>:get
 

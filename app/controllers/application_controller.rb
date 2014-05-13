@@ -27,6 +27,7 @@ class ApplicationController < ActionController::Base
   before_filter :check_admin_oauth_scope
   before_filter :set_common_vars
   before_filter :set_debug_mode
+  before_filter :post_google_analystics
 
   private
 
@@ -50,6 +51,29 @@ class ApplicationController < ActionController::Base
     end
   end
   
+  def post_google_analystics
+  
+    proxy_addr = "proxy.jfe-systems.com"
+    proxy_port = "8080"
+  
+    uri = URI.parse("http://www.google-analytics.com/collect")
+    Net::HTTP::Proxy(proxy_addr, proxy_port).start(uri.host, uri.port){ |http|
+      header = {
+        "User-Agent" => request.user_agent
+      }
+      version = 1
+      tracking_id = "UA-46391605-1"
+      type = "pageview"
+      document_path = CGI.escape(request.fullpath)
+  
+      body = "v=#{version}&tid=#{tracking_id}&t=#{type}&dp=#{document_path}&cid=core"
+  
+      response = http.post(uri.path, body, header)
+    }
+  
+  end
+
+
   def set_common_vars
     @current_controller_name = controller_name
     @current_action_name     = action_name
