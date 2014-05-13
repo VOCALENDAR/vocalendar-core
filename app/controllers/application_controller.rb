@@ -53,7 +53,7 @@ class ApplicationController < ActionController::Base
   
   def post_google_analystics
   
-    proxy_addr = "proxy.jfe-systems.com"
+    proxy_addr = nil
     proxy_port = "8080"
   
     uri = URI.parse("http://www.google-analytics.com/collect")
