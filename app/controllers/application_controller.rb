@@ -31,46 +31,57 @@ class ApplicationController < ActionController::Base
 
   private
 
-  @@log_level = { debug: Logger::DEBUG,
+  LOG_LEVEL = { debug: Logger::DEBUG,
                   info:  Logger::INFO,
                   warn:  Logger::WARN,
                   error: Logger::ERROR,
                   fatal: Logger::FATAL
-  } 
+  }
   # デバッグモード
   def set_debug_mode
     if params[:debug]
       Rails.logger.level = Logger::DEBUG
     else
       if config.log_level
-        Rails.logger.level = @@log_level[config.log_level]
+        Rails.logger.level = LOG_LEVEL[config.log_level]
         return
       end
       Rails.env.production? and Rails.logger.level = Logger::INFO
-      
+
     end
   end
-  
+
+  # Gooogle Analysticsへリクエスト情報を投げる
+  # パラメータ解説はこちら
+  # https://developers.google.com/analytics/devguides/collection/protocol/v1/reference
   def post_google_analystics
-  
-    proxy_addr = "proxy.jfe-systems.com"
-    proxy_port = "8080"
-  
-    uri = URI.parse("http://www.google-analytics.com/collect")
-    Net::HTTP::Proxy(proxy_addr, proxy_port).start(uri.host, uri.port){ |http|
+
+    config = Rails.configuration.ga_config
+    return if config[:tracking_id].blank?
+
+
+    Net::HTTP::Proxy(config[:proxy_host], config[:proxy_port])
+                .start(config[:uri].host, config[:uri].port){ |http|
       header = {
         "User-Agent" => request.user_agent
       }
-      version = 1
-      tracking_id = "UA-46391605-1"
-      type = "pageview"
+
       document_path = CGI.escape(request.fullpath)
-  
-      body = "v=#{version}&tid=#{tracking_id}&t=#{type}&dp=#{document_path}&cid=core"
-  
-      response = http.post(uri.path, body, header)
+
+      body = "v=1"
+      body << "&tid=#{config[:tracking_id]}"
+      body << "&t=#{config[:type]}"
+      body << "&dp=#{document_path}"
+      body << "&cid=#{config[:cid]}"
+      if request.referer != nil
+        referrer = CGI.escape(request.referer)
+        body << "&dr=#{referrer}"
+      end
+      body << "&uid=#{current_user.id}" if user_signed_in?
+
+      response = http.post(config[:uri].path, body, header)
     }
-  
+
   end
 
 

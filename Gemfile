@@ -40,6 +40,7 @@ gem 'doorkeeper'
 gem 'enumerize'
 gem 'rails_admin'
 gem 'rails_admin-i18n'
+gem 'font-awesome-sass' # productionで必要だった。
 gem 'carrierwave'
 gem 'mime-types'
 gem 'rmagick'
