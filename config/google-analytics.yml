@@ -1,0 +1,8 @@
+production:
+  tracking_id: "UA-28637999-1"
+
+development:
+  tracking_id: "UA-46391605-1"
+
+test:
+  tracking_id: "UA-46391605-1"
