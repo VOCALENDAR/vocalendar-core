@@ -20,7 +20,9 @@ class EventsController < ApplicationController
       end
     end
 
-    @events = @events.page(params[:page]).per(params[:limit].blank? ? 50 : [params[:limit].to_i, 50].min ).order('events.updated_at desc')
+    sortString = if params[:order].blank?
+      'events.start_datetime asc, events.allday desc' else 'events.updated_at desc' end
+    @events = @events.page(params[:page]).per(params[:limit].blank? ? 50 : [params[:limit].to_i, 50].min ).order(sortString)
     unless params[:tag_id].blank?
       tids = params[:tag_id]
       String === tids and tids = tids.split(',')
