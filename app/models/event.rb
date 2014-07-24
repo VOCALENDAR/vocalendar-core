@@ -451,11 +451,8 @@ class Event < ActiveRecord::Base
     attrs["description"].to_s.each_line do |line|
       last_line = line
     end
-    pp last_line
     last_line.scan(/^Tag::(.+)/) if last_line != nil
     in_tags += $1.split(/\s/) if $1
-    pp last_line
-    
     
     self.tag_names = (in_tags - opts[:tag_names_remove]).uniq
 
