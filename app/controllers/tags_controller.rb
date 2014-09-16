@@ -3,7 +3,10 @@ class TagsController < ApplicationController
   load_resource except: [:create]
 
   def index
+    @tags = @tags.includes(:link).references(:link)
     @tags = @tags.order("name").page(params[:page]).per(50)
+    @tag_count = Tag.includes(:events).group(:tag_id).references(:events).count(:event_id)
+      
     respond_with(@tags)
   end
 
