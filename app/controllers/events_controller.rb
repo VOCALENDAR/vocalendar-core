@@ -32,11 +32,11 @@ class EventsController < ApplicationController
       @events = @events.where(:g_calendar_id => params[:g_calendar_id])
 
     params[:startTime].blank? or
-      @events = @events.where('( allday=? and end_date > ? ) or ( allday=? and end_datetime >= ? )', true, toDate(Date, params[:startTime]), false, toDate(DateTime, params[:startTime]))
+      @events = @events.where('( allday=? and end_date > ? ) or ( allday=? and end_datetime > ? )', true, toDate(Date, params[:startTime]), false, toDate(DateTime, params[:startTime]))
     params[:endTime].blank? or
       @events = @events.where('( allday=? and start_date <= ? ) or ( allday=? and start_datetime <= ? )', true, toDate(Date, params[:endTime]), false, toDate(DateTime, params[:endTime]))
 
-        
+
     params[:q].blank? or
       @events = @events.search(params[:q])
     params[:include_delete].blank? and
@@ -55,7 +55,7 @@ class EventsController < ApplicationController
           .where(id: params[:id]).first!
     respond_with @event
   end
-  
+
   # GET /events/new
   # GET /events/new.json
   def new
@@ -108,12 +108,12 @@ class EventsController < ApplicationController
 
   FORMAT = ["%Y-%m-%dT%H:%M:%S%z", "%Y/%m/%dT%H:%M:%S%z"]
   def toDate(clazz, s)
-    
+
     # 日付のみなら時間を足す
     s.length > 10 or s.concat("T00:00:00")
     # 日付・時間のみならタイムゾーン（日本は+9:00）を足す
     s.length > 19 or s.concat("+9:00")
-    
+
     parsed = nil
     FORMAT.each do |format|
       begin
@@ -121,9 +121,9 @@ class EventsController < ApplicationController
         break
       rescue ArgumentError
       end
-    end 
+    end
     return parsed
   end
-    
-    
+
+
 end
