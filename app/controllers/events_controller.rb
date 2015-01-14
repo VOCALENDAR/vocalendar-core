@@ -34,7 +34,7 @@ class EventsController < ApplicationController
     params[:startTime].blank? or
       @events = @events.where('( allday=? and end_date > ? ) or ( allday=? and end_datetime > ? )', true, toDate(Date, params[:startTime]), false, toDate(DateTime, params[:startTime]))
     params[:endTime].blank? or
-      @events = @events.where('( allday=? and start_date <= ? ) or ( allday=? and start_datetime <= ? )', true, toDate(Date, params[:endTime]), false, toDate(DateTime, params[:endTime]))
+      @events = @events.where('( allday=? and start_date < ? ) or ( allday=? and start_datetime < ? )', true, toDate(Date, params[:endTime]), false, toDate(DateTime, params[:endTime]))
 
 
     params[:q].blank? or
@@ -113,6 +113,8 @@ class EventsController < ApplicationController
     s.length > 10 or s.concat("T00:00:00")
     # 日付・時間のみならタイムゾーン（日本は+9:00）を足す
     s.length > 19 or s.concat("+9:00")
+
+    pp s
 
     parsed = nil
     FORMAT.each do |format|
