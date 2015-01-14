@@ -114,8 +114,6 @@ class EventsController < ApplicationController
     # 日付・時間のみならタイムゾーン（日本は+9:00）を足す
     s.length > 19 or s.concat("+9:00")
 
-    pp s
-
     parsed = nil
     FORMAT.each do |format|
       begin
