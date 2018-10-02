@@ -43,13 +43,14 @@ gem 'rails_admin-i18n'
 gem 'font-awesome-sass' # productionで必要だった。
 gem 'carrierwave'
 gem 'mime-types'
-gem 'rmagick'
+#gem 'rmagick'
 gem 'addressable'
 gem 'htmlentities'
 gem 'flot-rails'
 gem 'coffeebeans'
 gem 'nokogiri', '~>1.6'
 gem 'execjs', '~>2.0.2'
+gem 'actionpack'
 
 platforms :ruby do
   gem 'charlock_holmes'

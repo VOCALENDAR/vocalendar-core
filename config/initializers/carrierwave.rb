@@ -1,5 +1,5 @@
-require 'carrierwave/orm/activerecord'
 require 'carrierwave/processing/mime_types'
+require 'carrierwave/orm/activerecord'
 CarrierWave.configure do |config|
   config.permissions = 0644
   config.directory_permissions = 0755

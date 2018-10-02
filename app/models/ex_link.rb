@@ -166,7 +166,7 @@ class ExLink < ActiveRecord::Base
   def set_attributes_by_uri!
     begin
       t = get_remote_title and
-        self[:title] = t
+        self[:title] = t.truncate(255)
     rescue StandardError, URI::InvalidURIError, TimeoutError => e
       log :warn, "HTTP fech failed to getting title: #{e.message}"
     end

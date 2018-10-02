@@ -87,6 +87,7 @@ class EventsController < ApplicationController
   # DELETE /events/1.json
   def destroy
     @event.status = 'cancelled'
+    @event.save
     add_history
     respond_with @event
   end

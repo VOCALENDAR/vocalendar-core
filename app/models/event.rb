@@ -91,20 +91,21 @@ class Event < ActiveRecord::Base
     sqls = []
     args = []
     tag_ids = []
+    tag_sql = nil 
     query.strip.split(/[　 \t\n\r]+/).each do |q|
       q.blank? and next
       qw = "%#{q.downcase}%"
-      args += [qw, qw]
-      sqls << "lower(summary) like ? or lower(description) like ?"
+      args += [qw, qw, qw]
+      sqls << "( lower(summary) like ? or lower(description) like ? or lower(location) like ? )"
       tag_ids << Tag.find_by_name(q).try(:id)
     end
     tag_ids.compact!
     unless tag_ids.empty?
-      sqls <<  "event_tag_relations.tag_id IN (?)"
+      tag_sql = "event_tag_relations.tag_id IN (?)"
       args << tag_ids
     end
     sqls.empty? and return
-    joins(:all_tag_relations).where(sqls.join(' or '), *args)
+    joins(:all_tag_relations).where([sqls.join(' and '), tag_sql].compact.join(' or '), *args)
   end)
 
   tagrel_opts = {
