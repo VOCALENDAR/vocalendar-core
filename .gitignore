@@ -10,6 +10,9 @@
 # Ignore bundler config
 /.bundle
 
+# Ignore vendor libraries
+/vendor/*/*
+
 # Ignore other development config
 /.env
 /.rspec
@@ -34,3 +37,6 @@
 \#*#
 *.sqlite3-journal
 erd.*
+
+# Don't ignore keepfile
+!.gitkeep
