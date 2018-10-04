@@ -1,0 +1,131 @@
+---
+- name: check vboxsf on /vagrant
+  shell: |
+    set -e
+    if df -T /vagrant 2>/dev/null |grep -q vboxsf; then
+      echo -n 'yes'
+    else
+      echo -n 'no'
+    fi
+  register: vboxsf
+  changed_when: false
+- name: check WSL
+  shell: |
+    set -e
+    if grep -q Microsoft /proc/version; then
+      echo -n 'yes'
+    else
+      echo -n 'no'
+    fi
+  register: wsl
+  changed_when: false
+- name: Get facts without become
+  setup:
+  become: False
+- name: install packges
+  apt: name={{item}}
+  with_items:
+    - "{{'default-libmysqlclient-dev' if ansible_distribution_release == 'stretch' else 'libmysqlclient-dev'}}"
+    - git
+    - libicu-dev # for charlock_holmes
+    - imagemagick # for paperclip (with minimagick)
+    - libsqlite3-dev
+    - lv
+    - locales-all
+    - bash-completion
+    - vim
+  when:
+    - not ((item == "libmysqlclient-dev" or item == "default-libmysqlclient-dev") and not use_mysql)
+    - not (item == "libicu-dev" and not use_icu)
+    - not (item == "imagemagick" and not use_imagemagick)
+    - not (item == "git" and not use_git)
+    - not (item == "libsqlite3-dev" and not use_sqlite)
+- name: set rc dot files
+  copy:
+    src: "{{item}}"
+    dest: "{{ansible_env.HOME}}/.{{item}}"
+  with_items:
+    - env
+    - irbrc
+    - pryrc
+  become: False
+- name: source .bashrc from .bash_profile
+  lineinfile:
+    dest: "{{ansible_env.HOME}}/.bash_profile"
+    line: 'source ~/.bashrc'
+    regexp: 'source ~/\.bashrc'
+    create: yes
+  become: False
+  when: wsl.stdout == 'yes'
+- name: source .env from .bash_profile
+  lineinfile:
+    dest: "{{ansible_env.HOME}}/.bash_profile"
+    line: 'source ~/.env'
+    regexp: '^source ~/\.env'
+    create: yes
+  become: False
+- name: set auto cd to /vagrant
+  lineinfile:
+    dest: "{{ansible_env.HOME}}/.bash_profile"
+    line: 'tty -s && cd /vagrant'
+    regexp: '^tty -s && cd /vagrant'
+    create: yes
+  become: False
+  when: vboxsf.stdout == 'yes'
+- name: make ~vagrant/bin
+  file:
+    dest: "{{ansible_env.HOME}}/bin"
+    state: directory
+  become: False
+- name: copy bin wrappers
+  copy:
+    src: "bin-wrappers/{{item}}"
+    dest: "{{ansible_env.HOME}}/bin/{{item}}"
+    mode: 0755
+  with_items:
+    - rails
+    - rake
+    - bundle
+- include: rvm.yml
+  when: use_rvm
+  become: False
+- include: nvm.yml
+  when: use_nvm
+  become: False
+- name: run bundler to install gems
+  shell: bash -lc bundle
+  args: 
+    chdir: /vagrant
+  become: False
+  when: vboxsf.stdout == 'yes'
+- name: install foreman
+  shell: bash -lc 'gem install --no-ri --no-rdoc foreman'
+  become: False
+  args:
+    creates: "{{ansible_env.HOME}}/gems/bin/foreman"
+  when: use_foreman
+- name: bind mount node_modules from ~ to /vagrant
+  shell: |
+    set -e
+    sudo -u vagrant mkdir -p /vagrant/node_modules {{ansible_env.HOME}}/node_modules
+    if mount | grep -q ' /vagrant/node_modules '; then
+      echo -n 'ok'
+    else
+      mount -o bind {{ansible_env.HOME}}/node_modules /vagrant/node_modules
+      echo -n 'changed'
+    fi
+  when: vboxsf.stdout == 'yes'
+  register: mount_node_modules
+  changed_when: mount_node_modules.stdout != 'ok'
+- name: run yarn (with nvm)
+  shell: bash -lc 'NODE_VERSION=default ~/.nvm/nvm-exec yarn'
+  args: 
+    chdir: /vagrant
+  when: vboxsf.stdout == 'yes' and use_yarn and use_nvm
+  become: False
+- name: run yarn (without nvm)
+  shell: yarn
+  args: 
+    chdir: /vagrant
+  when: vboxsf.stdout == 'yes' and use_yarn and not use_nvm
+  become: False

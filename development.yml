@@ -1,0 +1,22 @@
+---
+- hosts: localhost
+  roles:
+    - vagrant-debian-base
+    - rails-base
+    - vagrant-rails-devenv
+  vars:
+    use_apache: no
+    use_passenger: no
+    use_imagemagick: yes
+    use_rmagick: yes
+    use_mysql: no
+    use_sqlite: yes
+    use_mongoid: no
+    use_yarn: yes
+    use_node: yes
+    use_foreman: yes
+  tasks:
+    - name: install extra gem dependencies
+      apt: name={{item}}
+      with_items:
+        - libmariadbclient-dev

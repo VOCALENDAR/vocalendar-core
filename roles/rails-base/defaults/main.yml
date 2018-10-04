@@ -1,0 +1,23 @@
+prefix: /var/local
+target_dir: "{{prefix}}/{{app}}"
+rails_env: production
+server_name: "{{app}}.you-need-change.localdomain"
+use_mysql: True
+use_mysql_tune: True
+use_icu: False
+use_imagemagick: True
+use_rmagick: False
+use_passenger: True
+use_apache: True
+use_git: True
+use_rvm: False
+use_rvm_depends: False
+use_mongoid: False
+use_node: False
+use_yarn: False
+db_charset: utf8
+db_host: localhost
+db_sock: /var/run/mysqld/mysqld.sock
+db_client_pat: localhost
+ssh_keys:
+  - https://github.com/sugi.keys

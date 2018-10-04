@@ -1,0 +1,11 @@
+#!/bin/bash
+
+if [ -x ./bin/rails -a `pwd` != "$HOME" ]; then
+  exec bundle exec bin/rails "$@"
+fi
+
+if [ -x $GEM_HOME/bin/rails ]; then
+  exec $GEM_HOME/bin/rails "$@"
+fi
+
+exec /usr/bin/rails "$@"

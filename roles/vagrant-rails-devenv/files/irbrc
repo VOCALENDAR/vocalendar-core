@@ -1,0 +1,10 @@
+require 'irb/completion'
+begin
+  require 'awesome_print'
+  AwesomePrint.irb!
+rescue LoadError
+  # ignore
+end
+
+IRB.conf[:AUTO_INDENT] = true
+IRB.conf[:SAVE_HISTORY] = 1024

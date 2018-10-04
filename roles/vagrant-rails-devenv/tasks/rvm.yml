@@ -1,0 +1,16 @@
+---
+- name: add gpg key for rvm
+  shell: "gpg --keyserver hkp://keys.gnupg.net --recv-keys D39DC0E3"
+  become: False
+- name: install rvm
+  shell: "wget -q -O- https://get.rvm.io | bash -s stable"
+  become: False
+- name: install ruby by rvm
+  shell: "bash -lc 'rvm install {{rvm_ruby_version}} --autolibs=disable'"
+  become: False
+- name: set ruby2.3 to current default
+  shell: "bash -lc 'rvm use {{rvm_ruby_version}} --default'" 
+  become: False
+- name: install bundler into rvm
+  shell: "bash -lc 'gem install bundler --no-rdoc --no-ri'"
+  become: False

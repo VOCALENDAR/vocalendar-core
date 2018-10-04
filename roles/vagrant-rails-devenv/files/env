@@ -1,0 +1,6 @@
+export PATH="$HOME/bin:$HOME/gems/bin:$PATH"
+export TRUSTED_IP="${SSH_CLIENT%% *}"
+export GEM_HOME="$HOME/gems"
+export LV='-c'
+export LESS='-R'
+export PAGER=lv

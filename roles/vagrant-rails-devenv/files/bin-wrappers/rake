@@ -1,0 +1,21 @@
+#!/bin/bash
+
+if [ -x ./bin/rake -a "`pwd`" != "$HOME" ]; then
+  exec bundle exec ./bin/rake "$@"
+fi
+
+GEM_EXE=`ls -1vr  $GEM_HOME/gems/rake-*/exe/rake 2>/dev/null | head -1`
+
+if [ -x "$GEM_EXE" ]; then
+	exec $GEM_EXE "$@"
+fi
+
+if [ -x $GEM_HOME/bin/rake ]; then
+  exec $GEM_HOME/bin/rake "$@"
+fi
+
+if [ -x /usr/local/bin/rake ]; then
+  exec /usr/local/bin/rake "$@"
+fi
+
+exec /usr/bin/rake "$@"

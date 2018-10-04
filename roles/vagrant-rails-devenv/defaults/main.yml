@@ -1,0 +1,13 @@
+use_mysql: True
+use_icu: False
+use_imagemagick: True
+use_passenger: False
+use_apache: False
+use_git: True
+use_sqlite: False
+use_rvm: False
+use_rvm_depends: False
+rvm_ruby_version: 2.3
+use_foreman: False
+use_nvm: False
+use_yarn: False

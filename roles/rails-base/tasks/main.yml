@@ -1,0 +1,101 @@
+---
+- name: install packages
+  apt: name={{item}}
+  with_items:
+    - locales-all
+    - ruby
+    - ruby-dev
+    - build-essential
+    - zlib1g-dev
+    - libcurl4-openssl-dev
+- name: install rmagick dependencies
+  apt: name=libmagickwand-dev 
+  when: use_rmagick
+- name: install apache packages
+  apt: name={{item}}
+  with_items:
+    - apache2
+  when: 
+    - use_apache
+- name: install bundler gem
+  gem:
+    name: bundler
+    user_install: no
+    pre_release: no
+- name: install passenger for apache
+  apt:
+    name: libapache2-mod-passenger
+  when: use_apache and use_passenger
+- name: disable passenger on default
+  lineinfile:
+    dest: /etc/apache2/mods-available/passenger.conf
+    insertbefore: '^</IfModule>'
+    regexp: '^\s*PassengerEnabled '
+    line: '  PassengerEnabled off'
+  when: use_passenger and use_apache
+  notify: restart apache2
+- name: enable passenger module
+  args:
+    creates: /etc/apache2/mods-enabled/passenger.load
+  shell: a2enmod passenger
+  when: use_passenger and use_apache
+  notify: restart apache2
+- name: enable apache modules
+  args:
+    creates: /etc/apache2/mods-enabled/{{item}}.load
+  shell: a2enmod {{item}}
+  with_items:
+    - headers
+    - expires
+    - rewrite
+  when: use_apache
+  notify: restart apache2
+- name: setup rvm running environment without sudo
+  apt:
+    name: "{{item}}"
+  with_items:
+    - curl
+    - autotools-dev
+    - bison
+    - coreutils
+    - file
+    - libffi-dev
+    - libgdbm-dev
+    - libgmp-dev
+    - libncurses5-dev
+    - libncursesw5-dev
+    - libreadline6-dev
+    - libssl-dev
+    - libyaml-dev
+    - netbase
+    - openssl
+    - procps
+    - zlib1g-dev
+  when: use_rvm or use_rvm_depends
+- name: add yarn apt key
+  apt_key:
+    url: https://dl.yarnpkg.com/debian/pubkey.gpg
+  when: use_yarn
+- name: install apt https transport
+  apt:
+    name: apt-transport-https
+  when: use_yarn
+- name: add yarn apt line
+  apt_repository:
+    repo: 'deb https://dl.yarnpkg.com/debian/ stable main'
+  when: use_yarn
+- name: install yarn
+  apt:
+    name: yarn
+    state: latest
+  when: use_yarn
+- name: setup nodejs original package repository
+  shell: 'wget -O- -q https://deb.nodesource.com/setup_6.x | bash -'
+  args:
+    creates: /etc/apt/sources.list.d/nodesource.list
+  when: use_node
+- name: install node
+  apt:
+    name: nodejs
+    state: latest
+  when: use_node

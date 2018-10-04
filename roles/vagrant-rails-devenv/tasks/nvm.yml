@@ -1,0 +1,22 @@
+---
+- name: Get facts without become
+  setup:
+  become: False
+- name: install nvm
+  shell: "wget -qO- https://raw.githubusercontent.com/creationix/nvm/v0.33.2/install.sh | bash"
+  args:
+    creates: "{{ansible_env.HOME}}/.nvm/nvm-exec"
+- name: add source .bashrc from .bash_profile
+  lineinfile:
+    dest: "{{ansible_env.HOME}}/.bash_profile"
+    line: 'test -e ~/.bashrc && source ~/.bashrc'
+    regexp: 'source ~/\.bashrc'
+    create: yes
+- name: install node lts version
+  shell: "bash -lc 'source ~/.nvm/nvm.sh; nvm install lts/boron'"
+  args:
+    creates: "{{ansible_env.HOME}}/.nvm/alias/lts/boron"
+- name: set nvm default version to lts
+  shell: "bash -lc 'source ~/.nvm/nvm.sh; nvm alias default lts/boron'"
+  args:
+    creates: "{{ansible_env.HOME}}/.nvm/alias/default"

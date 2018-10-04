@@ -1,0 +1,22 @@
+---
+- name: change apt source to ftp.jp.debian.org
+  replace:
+    dest: /etc/apt/sources.list
+    regexp: 'http(redir)?\.debian\.(net|org)'
+    replace: 'ftp.jp.debian.org'
+- name: add contrib and non-free source
+  replace:
+    dest: /etc/apt/sources.list
+    regexp: 'main$'
+    replace: 'main contrib non-free'
+- name: add updates apt line
+  apt_repository:
+    repo: 'deb http://ftp.jp.debian.org/debian {{ ansible_distribution_release|lower }}-updates main contrib non-free'
+#- name: upgrade to current
+#  apt:
+#    upgrade: 'yes'
+- name: set timezone to Asia/Tokyo
+  shell: |
+    ln -sf /usr/share/zoneinfo/Asia/Tokyo /etc/localtime
+    dpkg-reconfigure -f noninteractive tzdata
+  when: ansible_date_time.tz != "JST"

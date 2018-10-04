@@ -1,0 +1,23 @@
+#!/bin/bash
+
+#if [ `pwd` != "$HOME" -a  -x ./bin/bundle ]; then
+#	exec ./bin/bundle "$@"
+#fi
+
+GEM_EXE=`ls -1vr  $GEM_HOME/gems/bundler-*/exe/bundle 2>/dev/null | head -1`
+
+if [ -x "$GEM_EXE" ]; then
+	export GEM_PATH=
+	export RUBYLIB=$(dirname $(dirname $GEM_EXE))/lib
+	exec $GEM_EXE "$@"
+fi
+
+if [ -x $GEM_HOME/bin/bundle ]; then
+	exec $GEM_HOME/bin/bundle "$@"
+fi
+
+if [ -x /usr/local/bin/bundle ]; then
+	exec /usr/local/bin/bundle "$@"
+fi
+
+exec /usr/bin/bundle "$@"
