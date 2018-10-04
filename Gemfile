@@ -11,7 +11,7 @@ gem 'mysql2', :group => :production
 # Gems used only for assets and not required
 # in production environments by default.
 
-gem 'bootstrap-sass'#, '< 3.0'
+gem 'bootstrap-sass', '< 3.0'
 
 group :assets do
   gem 'sass-rails' ,   '~> 4.0.0'
