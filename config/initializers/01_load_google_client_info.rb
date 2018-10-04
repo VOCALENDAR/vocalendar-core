@@ -1,7 +1,7 @@
 Rails.configuration.google_client_configured = false
 
 begin
-  gsetting = YAML.load_file "#{Rails.root}/config/google-api.yml"
+  gsetting = YAML.load(ERB.new(File.read("#{Rails.root}/config/google-api.yml")).result)
   gsetting["client_id"].blank?     and raise
   gsetting["client_secret"].blank? and raise
 

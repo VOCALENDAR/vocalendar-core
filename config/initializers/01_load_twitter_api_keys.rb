@@ -1,7 +1,7 @@
 Rails.configuration.twitter_api_key_configured = false
 
 begin
-  twsetting = YAML.load_file "#{Rails.root}/config/twitter-api.yml"
+  twsetting = YAML.load(ERB.new(File.read("#{Rails.root}/config/twitter-api.yml")).result)
   twsetting["consumer_key"].blank?    and raise
   twsetting["consumer_secret"].blank? and raise
 

@@ -1,0 +1,2 @@
+client_id: <%= ENV['GOOGLE_API_CLIENT_ID'] || '976902868327.apps.googleusercontent.com' %>
+client_secret: <%= ENV['GOOGLE_API_CLIENT_SECRET'] || '5NNafqxEBUTqKU2yPLgHq5Rm' %>
