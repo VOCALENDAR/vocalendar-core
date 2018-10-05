@@ -1,2 +1,2 @@
-consumer_key: <%= ENV['GOOGLE_API_CONSUMER_KEY'] %>
-consumer_secret: <%= ENV['GOOGLE_API_CONSUMER_SECRET'] %>
+consumer_key: <%= ENV['TWITTER_API_CONSUMER_KEY'] %>
+consumer_secret: <%= ENV['TWITTER_API_CONSUMER_SECRET'] %>
