@@ -13,4 +13,4 @@ rescue
 end
 
 Rails.configuration.twitter_api_key_configured or
-  $stderr.puts "Google API client is not configured!\nSet your client information at #{Rails.root}/config/google-api.yml."
+  $stderr.puts "Twitter API client is not configured!\nSet your client information at #{Rails.root}/config/twitter-api.yml."
