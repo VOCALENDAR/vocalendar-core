@@ -14,11 +14,11 @@ gem 'mysql2', :group => :production
 gem 'bootstrap-sass', '< 3.0'
 
 group :assets do
-  gem 'sass-rails' ,   '~> 4.0.0'
-  gem 'coffee-rails' #, '~> 3.2.1'
+  gem 'sass-rails', '~> 4.0.0'
+  gem 'coffee-rails', '~> 4.0.0'
   gem 'libv8', '~> 3.11.8', :platforms => :ruby
   gem 'therubyracer', :platform => :ruby
-  gem 'uglifier' #, '>= 1.0.3'
+  gem 'uglifier', '>= 1.3.0'
 end
 
 gem 'jquery-rails'
