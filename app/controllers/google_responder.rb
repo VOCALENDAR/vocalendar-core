@@ -1,5 +1,3 @@
-# coding: utf-8
-
 class GoogleResponder < ActionController::Responder
 
   def to_json
