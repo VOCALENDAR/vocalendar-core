@@ -40,6 +40,9 @@ VocalendarCore::Application.configure do
   # Strong Parameters
   config.action_controller.action_on_unpermitted_parameters = :raise
 
+  # Setup for devise
+  config.action_mailer.default_url_options = { host: 'localhost', port: 3000 }
+
   require 'openssl'
   OpenSSL::SSL::VERIFY_PEER = OpenSSL::SSL::VERIFY_NONE
 end
