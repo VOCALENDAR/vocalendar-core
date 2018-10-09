@@ -6,23 +6,25 @@
 
 <div class="clearfix">
 
-<% @tags.each_slice((@tags.length.to_f / 3).ceil) do |cur_tags| %>
-<table class="table table-hover pull-left tag-list">
-  <tr>
-    <th><%= Tag.human_attribute_name :name %></th>
-    <th colspan="2"><%= Tag.human_attribute_name :event_count %></th>
-  </tr>
+<% if @tags.present? %>
+  <% @tags.each_slice((@tags.length.to_f / 3).ceil) do |cur_tags| %>
+    <table class="table table-hover pull-left tag-list">
+      <tr>
+        <th><%= Tag.human_attribute_name :name %></th>
+        <th colspan="2"><%= Tag.human_attribute_name :event_count %></th>
+      </tr>
 
-<% cur_tags.each do |tag| %>
-  <tr>
-    <td>
-      <%= format_tag tag, :label => tag.name, :edit_icon => false, :url => tag %>
-    </td>
-    <td><%= link_to tag.events.active.count(:id), events_path(:tag_id => tag.id) %></td>
-    <td><%= link_to bs_icon('pencil'), edit_tag_path(tag) %></td>
-  </tr>
-<% end %>
-</table>
+      <% cur_tags.each do |tag| %>
+        <tr>
+          <td>
+            <%= format_tag tag, :label => tag.name, :edit_icon => false, :url => tag %>
+          </td>
+          <td><%= link_to tag.events.active.count(:id), events_path(:tag_id => tag.id) %></td>
+          <td><%= link_to bs_icon('pencil'), edit_tag_path(tag) %></td>
+        </tr>
+      <% end %>
+    </table>
+  <% end %>
 <% end %>
 
 </div>
