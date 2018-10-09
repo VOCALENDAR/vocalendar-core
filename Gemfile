@@ -29,7 +29,7 @@ gem 'kaminari-i18n'
 gem 'kaminari-bootstrap'
 gem 'responders'
 gem 'rails-settings-cached'
-gem 'google-api-client', :require => 'google/api_client'
+gem 'google-api-client', '~> 0.8.6', :require => 'google/api_client'
 gem 'omniauth', '~> 1.0.0'
 gem 'omniauth-google-oauth2', '=0.2.2' # 0.2.4にすると動かなくなる。
 gem 'omniauth-twitter'
