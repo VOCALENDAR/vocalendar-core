@@ -1,6 +1,6 @@
 class EventTagRelation < ApplicationRecord
-  belongs_to :event
-  belongs_to :tag
+  belongs_to :event, required: false
+  belongs_to :tag, required: false
 
   #attr_accessible :event_id, :pos, :tag_id, :target_field
 

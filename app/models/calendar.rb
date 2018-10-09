@@ -12,7 +12,7 @@ class Calendar < ApplicationRecord
     :class_name => 'History',
     :foreign_key => 'target_id'
   has_and_belongs_to_many :tags
-  belongs_to :user
+  belongs_to :user, required: false
 
   basic_allowed_attrs = [:name, :external_id, :io_type, :tag_ids,
                          :tag_names_append_str,

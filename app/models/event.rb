@@ -144,7 +144,7 @@ class Event < ApplicationRecord
     :source => :calendars
 
   has_and_belongs_to_many :related_links, :class_name => 'ExLink'
-  belongs_to :primary_link, :class_name => 'ExLink', :autosave => true
+  belongs_to :primary_link, :class_name => 'ExLink', :autosave => true, required: false
 
   has_many :favorites
   # だめだった・・・

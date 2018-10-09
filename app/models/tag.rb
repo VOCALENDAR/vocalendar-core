@@ -2,7 +2,7 @@ class Tag < ApplicationRecord
   has_many :tag_relations, :class_name => 'EventTagRelation', :dependent => :delete_all
   has_many :events, :through => :tag_relations
   has_and_belongs_to_many :calendars
-  belongs_to :link, :foreign_key => :primary_link_id,
+  belongs_to :link, :foreign_key => :primary_link_id, required: false,
     :class_name => 'ExLink', :autosave => true
 
   # rails 4 chenge strong_parameters
