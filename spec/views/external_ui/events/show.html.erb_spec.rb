@@ -1,4 +1,4 @@
-require 'spec_helper'
+require 'rails_helper'
 
 describe "events/show.html.erb" do
   pending "TODO: add some examples to #{__FILE__}"

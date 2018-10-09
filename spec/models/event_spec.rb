@@ -1,4 +1,4 @@
-require 'spec_helper'
+require 'rails_helper'
 
 describe Event do
   let(:valid_attrs) do
@@ -14,13 +14,13 @@ describe Event do
   end
 
   it "save will success with valid attributs" do
-    expect(Event.new(valid_attrs).save).to be_true
+    expect(Event.new(valid_attrs).save).to be true
   end
 
   it "save will fail without summary text" do
     attrs = valid_attrs
     attrs.delete :summary
-    expect(Event.new(attrs).save).to be_false
+    expect(Event.new(attrs).save).to be false
   end
 
   it "save with tag str" do
@@ -63,7 +63,7 @@ describe Event do
     e = an_event
     e.ical_uid = ''
     e.status = 'cancelled'
-    expect(e.save).to be_true
+    expect(e.save).to be true
   end
 
   it "raises exception on tz_min=" do
@@ -224,9 +224,9 @@ describe Event do
     expect(Event.find(e.id).created_at).to eq(google_input["created"])
 
     output = e.to_exfmt :google_v3
-    pending "Not yet decided to add 'id' for google sync" do
-      output[:id].should == google_input[:id]
-    end
+    #pending "Not yet decided to add 'id' for google sync" do
+    #  output[:id].should == google_input[:id]
+    #end
     %w(summary status start end recurrence iCalUID recurringEventId).each do |f|
       expect(output[f]).to eq(google_input[f])
     end
@@ -344,7 +344,7 @@ describe Event do
 
   it "respond recurring_instance?" do
     e = an_event
-    expect(e.recurring_instance?).to be_false
+    expect(e.recurring_instance?).to be false
     e.g_recurring_event_id = "abcdef"
     expect(e.recurring_instance?).to be_truthy
     e.g_recurring_event_id = nil

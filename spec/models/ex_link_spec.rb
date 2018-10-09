@@ -1,4 +1,4 @@
-require 'spec_helper'
+require 'rails_helper'
 
 describe ExLink do
   def valid_attrs
@@ -30,7 +30,7 @@ describe ExLink do
     l = a_link
     l.save!
     l.title = "hoge"
-    expect(l.save).to be_true
+    expect(l.save).to be true
     expect {
       l.uri = "http://www.nicovideo.jp"
     }.to raise_error(ArgumentError)

@@ -1,4 +1,5 @@
 require_relative 'boot'
+require_relative '../extras/vocalendar_core/base.rb'
 
 require 'rails/all'
 

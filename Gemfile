@@ -60,6 +60,9 @@ group :development, :test do
   gem 'listen'
   gem 'rspec-rails'
   gem 'webrat'
+  gem 'rspec-activemodel-mocks'
+  gem 'rails-controller-testing'
+end
 
 group :development do
   gem 'rails-erd'

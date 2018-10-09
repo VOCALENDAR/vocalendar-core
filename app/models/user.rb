@@ -42,10 +42,7 @@ class User < ApplicationRecord
         :google_token_issued_at  => DateTime.now,
         :google_auth_scope       => auth["scope"],
         :google_auth_valid       => true,
-      }
-      # TODO んー、外していいのか？
-      # , :without_protection => true
-      )
+      })
       u.email.blank? and u.email = auth["info"]["email"]
       u.name.blank?  and u.name  = auth["info"]["name"] || u.email
       u.auto_created = u.new_record?
@@ -67,7 +64,7 @@ class User < ApplicationRecord
         :twitter_secret => auth["credentials"]["secret"],
         :twitter_token_issued_at => DateTime.now,
         :twitter_auth_valid => true,
-      })#, :without_protection => true)
+      })
       u.auto_created = u.new_record?
       u.name.blank? and u.name = auth["info"]["name"]
       u.new_record? && count(:id) < 1 and u.role = :admin
@@ -139,7 +136,6 @@ class User < ApplicationRecord
       :google_token_issued_at  => auth.issued_at,
       :google_auth_valid       => true,
     })
-    #, :without_protection => true)
     log :debug, "Google API: access token refresh success."
   end
 

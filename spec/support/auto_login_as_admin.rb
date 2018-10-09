@@ -27,16 +27,16 @@ RSpec.configure do |config|
     },
   })
 
-  config.include Devise::TestHelpers, :type => :controller
-  config.include Devise::TestHelpers, :type => :view
+  config.include Devise::Test::ControllerHelpers, :type => :controller
+  config.include Devise::Test::ControllerHelpers, :type => :view
 
   config.before(:each, :type => :view) do
     allow(view).to receive(:user_signed_in?).and_return(true)
-    allow(view).to receive(:current_user).and_return User.create(admin_user_valid_attrs.call, :without_protection => true)
+    allow(view).to receive(:current_user).and_return User.create(admin_user_valid_attrs.call)
   end
 
   config.before(:each, :type => :controller) do
-    sign_in User.create(admin_user_valid_attrs.call, :without_protection => true)
+    sign_in User.create(admin_user_valid_attrs.call)
     subject.current_user
     subject.instance_eval {
       @current_ability = nil
@@ -45,7 +45,7 @@ RSpec.configure do |config|
 
   config.before(:all, :type => :request) do
     @session = Hashie::Mash.new({:google_oauth2_scope => google_scope})
-    get user_omniauth_callback_path(:google_oauth2)
+    get user_google_oauth2_omniauth_callback_path
   end
 
   # rspec-rails 3 will no longer automatically infer an example group's spec type

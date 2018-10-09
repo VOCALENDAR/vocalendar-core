@@ -1,4 +1,4 @@
-require 'spec_helper'
+require 'rails_helper'
 
 describe ExternalUi::EventsController do
 
@@ -21,7 +21,7 @@ describe ExternalUi::EventsController do
         status: "confirmed",
         summary: "YAMAHA VOCALOID",
       }
-      Event.create!(event_attrs, :without_protection => true)
+      Event.create!(event_attrs)
     end
 
     it "returns http success" do
