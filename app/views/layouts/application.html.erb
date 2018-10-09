@@ -86,10 +86,10 @@
                   <b class="caret"></b>
                 </a>
                 <ul class="dropdown-menu">
-                  <li><%= link_to t("general.alerts"), dashboard_path(:alerts) if can? :alerts, :dashboard %></li>
+                  <li><%= link_to t('general.alerts'), dashboard_alerts_path if can? :alerts, :dashboard %></li>
                   <li><%= link_to t('activerecord.models.setting'), settings_path if can? :index, Setting %></li>
                   <li><%= link_to t('RailsAdmin'), "#{root_path}rails_admin" if can? :access, :rails_admin %></li>
-                  <li><%= link_to 'Compare calendars', dashboard_path('compare_calendars') %></li>
+                  <li><%= link_to 'Compare calendars', dashboard_compare_calendars_path %></li>
                 </ul>
               </li>
               <% end %>
