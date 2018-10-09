@@ -24,11 +24,11 @@ class ApplicationController < ActionController::Base
   rescue_from ActiveRecord::RecordNotFound, :with => :render_ar_error
   rescue_from CanCan::AccessDenied, :with => :render_cancan_error
 
-  before_filter :check_admin_oauth_scope
-  before_filter :set_common_vars
-  before_filter :set_debug_mode
-  before_filter :post_google_analystics
-  before_filter :set_json_content_type
+  before_action :check_admin_oauth_scope
+  before_action :set_common_vars
+  before_action :set_debug_mode
+  before_action :post_google_analystics
+  before_action :set_json_content_type
 
   private
 

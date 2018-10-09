@@ -1,4 +1,5 @@
 VocalendarCore::Application.configure do
+  config.eager_load = true
   # Settings specified here will take precedence over those in config/application.rb
 
   # Code is not reloaded between requests
@@ -12,7 +13,7 @@ VocalendarCore::Application.configure do
   config.serve_static_assets = false
 
   # Compress JavaScripts and CSS
-  config.assets.compress = true
+  config.assets.js_compressor = true
 
   # Don't fallback to assets pipeline if a precompiled asset is missed
   config.assets.compile = false

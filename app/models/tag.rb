@@ -42,7 +42,7 @@ class Tag < ActiveRecord::Base
     if v.blank?
       self.link = nil
     else
-      self.link = ExLink.find_or_create_by_uri v
+      self.link = ExLink.find_or_create_by(uri: v)
     end
   end
   alias_method :uri=, :link_uri=

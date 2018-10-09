@@ -58,7 +58,7 @@ class User < ActiveRecord::Base
 
     def find_for_twitter(auth, current_user = nil)
       !auth || !auth.uid and return nil
-      u = current_user || find_or_initialize_by_twitter_uid(auth.uid)
+      u = current_user || find_or_initialize_by(twitter_uid: auth.uid)
       u.assign_attributes({
         :twitter_uid    => auth.uid, # make sure for current_user
         :twitter_name   => auth["info"]["name"],

@@ -3,7 +3,7 @@ class EventsController < ApplicationController
   #load_and_authorize_resource
   load_resource except: [:create]
 
-  before_filter :set_type_variable
+  before_action :set_type_variable
 
   # GET /events
   # GET /events.json

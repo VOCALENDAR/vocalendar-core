@@ -148,7 +148,7 @@ class Calendar < ActiveRecord::Base
       log :info, "Delete event: google event ID=#{gid}"
       gapi_event_request :delete, {:eventId => gid}
       add_history(:target    => 'event',
-                  :target_id => Event.find_by_g_id(gid).try(:id),
+                  :target_id => Event.find_by(g_id: gid).try(:id),
                   :action    => 'delete_from_google',
                   :note      => "From calenar##{id} (#{name})")
     end
@@ -183,7 +183,7 @@ class Calendar < ActiveRecord::Base
       begin
         new_item_stamp = nil
         result.data.items.each do |eitem|
-          event = Event.find_by_g_id(eitem.id) || Event.new
+          event = Event.find_by(g_id: eitem.id) || Event.new
           begin
             event.load_exfmt :google_v3, eitem,
               :calendar_id      => external_id,

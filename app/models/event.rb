@@ -19,7 +19,7 @@ class Event < ActiveRecord::Base
         self.clear
         [v].flatten.compact.map {|t| t.strip }.
           find_all {|t| !t.blank? }.each {|t|
-          push Tag.find_or_create_by_name(t.gsub(/\s+/, '_'))
+          push Tag.find_or_create_by(name: t.gsub(/\s+/, '_'))
         }
       end
     end
@@ -50,7 +50,7 @@ class Event < ActiveRecord::Base
       each do |field, tags|
         i = 1
         tags.each do |tag|
-          new_rels << EventTagRelation.find_or_create_by_tag_id_and_event_id_and_target_field(tag.id, @event.id, field, :pos => i)
+          new_rels << EventTagRelation.find_or_create_by(tag.id, @event.id, field, :pos => i)
           new_rels.last.update_attribute :pos, i
           i += 1
         end
@@ -97,7 +97,7 @@ class Event < ActiveRecord::Base
       qw = "%#{q.downcase}%"
       args += [qw, qw, qw]
       sqls << "( lower(summary) like ? or lower(description) like ? or lower(location) like ? )"
-      tag_ids << Tag.find_by_name(q).try(:id)
+      tag_ids << Tag.find_by(name: q).try(:id)
     end
     tag_ids.compact!
     unless tag_ids.empty?
@@ -237,7 +237,7 @@ class Event < ActiveRecord::Base
 
   def related_link_uris=(uris)
     self.related_link_ids = uris.map { |uri|
-      ExLink.find_or_create_by_uri(uri).id
+      ExLink.find_or_create_by(uri: uri).id
     }
   end
 
@@ -256,7 +256,7 @@ class Event < ActiveRecord::Base
     if v.blank?
       self.primary_link = nil
     else
-      self.primary_link = ExLink.find_or_create_by_uri v
+      self.primary_link = ExLink.find_or_create_by(uri: v)
     end
   end
   alias_method :uri=, :primary_link_uri=
@@ -401,7 +401,7 @@ class Event < ActiveRecord::Base
     updated_at_will_change!
     self.tags = [v].flatten.compact.map {|t| t.strip }.
       find_all {|t| !t.blank? }.map {|t|
-      Tag.find_or_create_by_name(t.gsub(/\s+/, '_'))
+      Tag.find_or_create_by(name: t.gsub(/\s+/, '_'))
     }
   end
 

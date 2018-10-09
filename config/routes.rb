@@ -1,7 +1,7 @@
 VocalendarCore::Application.routes.draw do
   use_doorkeeper
   #rails 4 add :via=>:get
-  match 'l/:short_id', :controller => :ex_links, :action => :redirect, :as => 'link_redirect', :format => false, :via=>:get
+  get 'l/:short_id', :controller => :ex_links, :action => :redirect, :as => 'link_redirect', :format => false, :via=>:get
 
   mount RailsAdmin::Engine => '/rails_admin', :as => 'rails_admin'
 
@@ -9,7 +9,7 @@ VocalendarCore::Application.routes.draw do
   devise_scope :user do
     get   'sign_in',  :to => 'devise/sessions#new',     :as => :new_user_session
     #rails 4 add :via=>:get
-    match 'sign_out', :to => 'devise/sessions#destroy', :as => :destroy_user_session, :via=>:get
+    get 'sign_out', :to => 'devise/sessions#destroy', :as => :destroy_user_session, :via=>:get
   end
 
   namespace 'external_ui', :path => 'ex' do
@@ -57,7 +57,7 @@ VocalendarCore::Application.routes.draw do
   end
 
   # rail 4 add :via=>:get
-  match 'dashboard(/:action)', :controller => 'dashboard', :as => 'dashboard', :via=>:get
+  get 'dashboard(/:action)', :controller => 'dashboard', :as => 'dashboard', :via=>:get
 
   # The priority is based upon order of creation:
   # first created -> highest priority.
