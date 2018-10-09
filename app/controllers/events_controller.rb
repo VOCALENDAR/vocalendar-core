@@ -1,4 +1,4 @@
-﻿# coding: utf-8
+# coding: utf-8
 class EventsController < ApplicationController
   include VocalendarCore::HistoryUtils::Controller
   #load_and_authorize_resource
