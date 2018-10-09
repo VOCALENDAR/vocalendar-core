@@ -49,7 +49,7 @@ GEM
     bootstrap-sass (2.3.2.2)
       sass (~> 3.2)
     builder (3.2.3)
-    cancan (1.6.10)
+    cancancan (2.3.0)
     carrierwave (1.2.3)
       activemodel (>= 4.0.0)
       activesupport (>= 4.0.0)
@@ -338,7 +338,7 @@ DEPENDENCIES
   actionpack
   addressable
   bootstrap-sass (< 3.0)
-  cancan
+  cancancan
   carrierwave
   charlock_holmes
   coffee-rails

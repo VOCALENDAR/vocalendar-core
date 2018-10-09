@@ -35,7 +35,7 @@ gem 'omniauth-google-oauth2', '=0.2.2' # 0.2.4にすると動かなくなる。
 gem 'omniauth-twitter'
 gem 'devise'
 gem 'devise-i18n'
-gem 'cancan'
+gem 'cancancan'
 gem 'doorkeeper'
 gem 'enumerize'
 gem 'rails_admin'
