@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 require 'htmlentities'
 
-class ExLink < ActiveRecord::Base
+class ExLink < ApplicationRecord
   include VocalendarCore::ModelLogUtils
 
   self.store_full_sti_class = true

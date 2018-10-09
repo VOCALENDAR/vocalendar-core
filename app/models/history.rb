@@ -1,4 +1,4 @@
-class History < ActiveRecord::Base
+class History < ApplicationRecord
   default_scope ->{ order('created_at desc') }
   belongs_to :user
   # rails 4 chenge strong_parameters

@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-class Event < ActiveRecord::Base
+class Event < ApplicationRecord
 
   class ExtraTagContainer < Hash
     class TagContainer < Array

@@ -1,4 +1,4 @@
-class EventTagRelation < ActiveRecord::Base
+class EventTagRelation < ApplicationRecord
   belongs_to :event
   belongs_to :tag
 

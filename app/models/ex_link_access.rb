@@ -1,4 +1,4 @@
-class ExLinkAccess < ActiveRecord::Base
+class ExLinkAccess < ApplicationRecord
   default_scope -> { order('created_at desc') }
   belongs_to :ex_link
 end

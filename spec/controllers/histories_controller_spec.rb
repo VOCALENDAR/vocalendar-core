@@ -40,7 +40,7 @@ describe HistoriesController do
   describe "GET index" do
     it "assigns all histories as @histories" do
       history = History.create! valid_attributes
-      get :index, {}, valid_session
+      get :index, params: {}, flash: valid_session
       assigns(:histories).should include(history)
     end
   end
