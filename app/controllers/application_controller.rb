@@ -172,7 +172,7 @@ class ApplicationController < ActionController::Base
     scope = current_user.google_auth_scope.to_s
     cs    = "https://www.googleapis.com/auth/calendar"
     scope.include?("#{cs}.readonly") && scope.include?(cs) and return true
-    redirect_to user_omniauth_authorize_path(:provider => :google_oauth2, :scope => 'userinfo.email,userinfo.profile,calendar,calendar.readonly')
+    redirect_to user_google_oauth2_omniauth_authorize_path(:scope => 'userinfo.email,userinfo.profile,calendar,calendar.readonly')
     false
   end
 end

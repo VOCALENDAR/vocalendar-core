@@ -4,10 +4,10 @@
   <%= link_to t('general.edit'), edit_user_path(@user), :class => 'btn' if can? :edit, @user %>
   <% if can?(:update, @user) && @user == current_user %>
   <%= link_to t(".add_twitter_authinfo"),
-        user_omniauth_authorize_path(:twitter),
+        user_twitter_omniauth_authorize_path,
         :class => 'btn' if !@user.twitter_auth_valid? %>
   <%= link_to t(".add_google_authinfo"),
-        user_omniauth_authorize_path(:google_oauth2),
+        user_google_oauth2_omniauth_authorize_path,
         :class => 'btn' if !@user.google_auth_valid? %>
   <% end %>
 
