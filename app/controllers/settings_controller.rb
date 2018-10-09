@@ -7,7 +7,7 @@ class SettingsController < ApplicationController
     # create default names...
     all_settings = Setting.all
     %w(amazon_tracking_id).each do |name|
-      all_settings.has_key?(name) or
+      all_settings.include?(name) or
         Setting.__send__("#{name}=", nil)
     end
 
