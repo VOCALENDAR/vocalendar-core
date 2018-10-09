@@ -4,7 +4,7 @@ describe HistoriesController do
   describe "routing" do
 
     it "routes to #index" do
-      get("/manage/histories").should route_to("histories#index")
+      expect(get("/manage/histories")).to route_to("histories#index")
     end
 
   end

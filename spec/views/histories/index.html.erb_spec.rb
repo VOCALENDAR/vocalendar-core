@@ -22,9 +22,9 @@ describe "histories/index" do
         :created_at => DateTime.now,
       )
     ]
-    histories.stub!(:current_page).and_return(1)
-    histories.stub!(:total_pages).and_return(1)
-    histories.stub!(:limit_value).and_return(nil)
+    allow(histories).to receive(:current_page).and_return(1)
+    allow(histories).to receive(:total_pages).and_return(1)
+    allow(histories).to receive(:limit_value).and_return(nil)
     assign(:histories, histories)
   end
 

@@ -26,23 +26,23 @@ describe ExternalUi::EventsController do
 
     it "returns http success" do
       get :index
-      response.should be_success
-      assigns(:events).should have(1).items
+      expect(response).to be_success
+      expect(assigns(:events).size).to eq(1)
     end
 
     it "accept search" do
       get :index, params: { :q => 'shoud_not_matched_anything' }
-      response.should be_success
-      assigns(:events).should be_empty
+      expect(response).to be_success
+      expect(assigns(:events)).to be_empty
     end
 
     it "ignore blank search" do
       get :index, params: { :q => '' }
-      response.should be_success
+      expect(response).to be_success
       ret_with_blank_query = assigns(:events)
       get :index
-      response.should be_success
-      assigns(:events).should eq ret_with_blank_query
+      expect(response).to be_success
+      expect(assigns(:events)).to eq ret_with_blank_query
     end
 
   end

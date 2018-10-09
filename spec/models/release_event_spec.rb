@@ -34,28 +34,28 @@ describe ReleaseEvent do
       "media"=>["YouTube", "Viemo"]
     }
     r = ReleaseEvent.new(rparam)
-    r.save.should be_true
+    expect(r.save).to be_truthy
 
     r = ReleaseEvent.create!(rparam)
-    r.should be_valid
+    expect(r).to be_valid
   end
 
   it "provides extra filed accessors" do
     r = a_relinfo
     %w(producers media vocaloid_chars movie_authors illust_authors).each do |f|
-      r.__send__(f).should eq []
+      expect(r.__send__(f)).to eq []
     end
   end
 
   it "can store extra fileds" do
     r = a_relinfo
     r.movie_authors = ["Michael Francis Moore", "Peter Yates"]
-    r.save.should be_true
+    expect(r.save).to be_true
 
     rn = ReleaseEvent.find(r.id)
-    rn.movie_authors.should eq ["Michael_Francis_Moore", "Peter_Yates"]
+    expect(rn.movie_authors).to eq ["Michael_Francis_Moore", "Peter_Yates"]
 
-    rn.movie_author_tags[0].name.should eq "Michael_Francis_Moore"
-    rn.movie_author_tags[1].name.should eq "Peter_Yates"
+    expect(rn.movie_author_tags[0].name).to eq "Michael_Francis_Moore"
+    expect(rn.movie_author_tags[1].name).to eq "Peter_Yates"
   end
 end

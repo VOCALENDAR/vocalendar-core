@@ -41,7 +41,7 @@ describe ExLinksController do
     it "assigns all ex_links as @ex_links" do
       ex_link = ExLink.create! valid_attributes
       get :index, params: {}, flash: valid_session
-      assigns(:ex_links).should eq([ex_link])
+      expect(assigns(:ex_links)).to eq([ex_link])
     end
   end
 
@@ -49,14 +49,14 @@ describe ExLinksController do
     it "assigns the requested ex_link as @ex_link" do
       ex_link = ExLink.create! valid_attributes
       get :show, params: {:id => ex_link.to_param}, flash: valid_session
-      assigns(:ex_link).should eq(ex_link)
+      expect(assigns(:ex_link)).to eq(ex_link)
     end
   end
 
   describe "GET new" do
     it "assigns a new ex_link as @ex_link" do
       get :new, params: {}, flash: valid_session
-      assigns(:ex_link).should be_a_new(ExLink)
+      expect(assigns(:ex_link)).to be_a_new(ExLink)
     end
   end
 
@@ -64,7 +64,7 @@ describe ExLinksController do
     it "assigns the requested ex_link as @ex_link" do
       ex_link = ExLink.create! valid_attributes
       get :edit, params: {:id => ex_link.to_param}, flash: valid_session
-      assigns(:ex_link).should eq(ex_link)
+      expect(assigns(:ex_link)).to eq(ex_link)
     end
   end
 
@@ -78,30 +78,30 @@ describe ExLinksController do
 
       it "assigns a newly created ex_link as @ex_link" do
         post :create, params: {:ex_link => valid_attributes}, flash: valid_session
-        assigns(:ex_link).should be_a(ExLink)
-        assigns(:ex_link).should be_persisted
+        expect(assigns(:ex_link)).to be_a(ExLink)
+        expect(assigns(:ex_link)).to be_persisted
       end
 
       it "redirects to the created ex_link" do
         post :create, params: {:ex_link => valid_attributes}, flash: valid_session
-        response.should redirect_to(ExLink.last)
+        expect(response).to redirect_to(ExLink.last)
       end
     end
 
     describe "with invalid params" do
       it "assigns a newly created but unsaved ex_link as @ex_link" do
         # Trigger the behavior that occurs when invalid params are submitted
-        ExLink.any_instance.stub(:save).and_return(false)
+        allow_any_instance_of(ExLink).to receive(:save).and_return(false)
         post :create, params: {:ex_link => { "uri" => "invalid value" }}, flash: valid_session
-        assigns(:ex_link).should be_a_new(ExLink)
+        expect(assigns(:ex_link)).to be_a_new(ExLink)
       end
 
       it "re-renders the 'new' template" do
         pending "do not works with responder"
         # Trigger the behavior that occurs when invalid params are submitted
-        ExLink.any_instance.stub(:save).and_return(false)
+        allow_any_instance_of(ExLink).to receive(:save).and_return(false)
         post :create, params: {:ex_link => { "uri" => "invalid value" }}, flash: valid_session
-        response.should render_template("new")
+        expect(response).to render_template("new")
       end
     end
   end
@@ -114,20 +114,20 @@ describe ExLinksController do
         # specifies that the ExLink created on the previous line
         # receives the :update_attributes message with whatever params are
         # submitted in the request.
-        ExLink.any_instance.should_receive(:update_attributes).with({ "title" => "VC" })
+        expect_any_instance_of(ExLink).to receive(:update_attributes).with({ "title" => "VC" })
         put :update, params: {:id => ex_link.to_param, :ex_link => { "title" => "VC" }}, flash: valid_session
       end
 
       it "assigns the requested ex_link as @ex_link" do
         ex_link = ExLink.create! valid_attributes
         put :update, params: {:id => ex_link.to_param, :ex_link => { "title" => ex_link.title}}, flash: valid_session
-        assigns(:ex_link).should eq(ex_link)
+        expect(assigns(:ex_link)).to eq(ex_link)
       end
 
       it "redirects to the ex_link" do
         ex_link = ExLink.create! valid_attributes
         put :update, params: {:id => ex_link.to_param, :ex_link => { "title" => ex_link.title}}, flash: valid_session
-        response.should redirect_to(ex_link)
+        expect(response).to redirect_to(ex_link)
       end
     end
 
@@ -144,7 +144,7 @@ describe ExLinksController do
     it "redirects to the ex_links list" do
       ex_link = ExLink.create! valid_attributes
       delete :destroy, params: {:id => ex_link.to_param}, flash: valid_session
-      response.should redirect_to(ex_links_url)
+      expect(response).to redirect_to(ex_links_url)
     end
   end
 
@@ -152,7 +152,7 @@ describe ExLinksController do
     it "redirect there URI" do
       link = ExLink.create! valid_attributes
       get :redirect, params: {short_id: link.short_id}
-      response.should redirect_to(link.uri)
+      expect(response).to redirect_to(link.uri)
     end
   end
 end

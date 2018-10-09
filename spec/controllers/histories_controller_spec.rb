@@ -41,7 +41,7 @@ describe HistoriesController do
     it "assigns all histories as @histories" do
       history = History.create! valid_attributes
       get :index, params: {}, flash: valid_session
-      assigns(:histories).should include(history)
+      expect(assigns(:histories)).to include(history)
     end
   end
 

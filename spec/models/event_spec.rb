@@ -14,94 +14,94 @@ describe Event do
   end
 
   it "save will success with valid attributs" do
-    Event.new(valid_attrs).save.should be_true
+    expect(Event.new(valid_attrs).save).to be_true
   end
 
   it "save will fail without summary text" do
     attrs = valid_attrs
     attrs.delete :summary
-    Event.new(attrs).save.should be_false
+    expect(Event.new(attrs).save).to be_false
   end
 
   it "save with tag str" do
     e = an_event
     e.tag_names_str = "aa/bb cc   dd//ee"
-    e.tag_names.should eql %w(aa bb cc dd ee)
-    e.save.should be_true
-    Event.find(e.id).tag_names.should eql %w(aa bb cc dd ee)
+    expect(e.tag_names).to eql %w(aa bb cc dd ee)
+    expect(e.save).to be_truthy
+    expect(Event.find(e.id).tag_names).to eql %w(aa bb cc dd ee)
   end
 
   it "saves tag relation postion" do
     e = an_event
     e.tag_names_str = "a b c d e"
     e.save!
-    e.main_tag_relations.map {|r| r.pos }.should eql (1..5).to_a
+    expect(e.main_tag_relations.map {|r| r.pos }).to eql (1..5).to_a
     e.tag_names = %w(m n o p)
     e.save!
-    e.main_tag_relations.map {|r| r.pos }.should eql (1..4).to_a
+    expect(e.main_tag_relations.map {|r| r.pos }).to eql (1..4).to_a
   end
 
   it "keeps tag order" do
     e = Event.new(valid_attrs)
     e.tag_names_str = "x y a b 0"
     e.save!
-    Event.find(e.id).tag_names.should eql %w(x y a b 0)
+    expect(Event.find(e.id).tag_names).to eql %w(x y a b 0)
     e.tag_names = %w(Z ii hhh 0000)
     e.save!
-    Event.find(e.id).tag_names.should eql %w(Z ii hhh 0000)
+    expect(Event.find(e.id).tag_names).to eql %w(Z ii hhh 0000)
   end
 
   it "mangles tentative status when save" do
     e = an_event
     e.status = "tentative"
-    e.status.should == "tentative"
+    expect(e.status).to eq("tentative")
     assert e.save
-    e.status.should == "confirmed"
+    expect(e.status).to eq("confirmed")
   end
 
   it "save sucesss without ical_uid if cancelled" do
     e = an_event
     e.ical_uid = ''
     e.status = 'cancelled'
-    e.save.should be_true
+    expect(e.save).to be_true
   end
 
   it "raises exception on tz_min=" do
-    lambda { an_event.tz_min = 30 }.should raise_error(ArgumentError, /timezone=/)
+    expect { an_event.tz_min = 30 }.to raise_error(ArgumentError, /timezone=/)
   end
 
   it "returns time zone object" do
     e = an_event
-    e.timezone.should be_instance_of(ActiveSupport::TimeZone)
+    expect(e.timezone).to be_instance_of(ActiveSupport::TimeZone)
     e.timezone = 'UTC'
-    e.timezone.should be_instance_of(ActiveSupport::TimeZone)
+    expect(e.timezone).to be_instance_of(ActiveSupport::TimeZone)
   end
 
   it ": set time zone" do
     e = an_event
     e.timezone = 'UTC'
-    e.timezone.name.should eq 'UTC'
-    e.timezone.utc_offset.should eq 0
+    expect(e.timezone.name).to eq 'UTC'
+    expect(e.timezone.utc_offset).to eq 0
     e.timezone = 'Asia/Tokyo'
-    e.timezone.name.should eq 'Asia/Tokyo'
-    e.timezone.utc_offset.should eq 32400
-    e.timezone.formatted_offset.should eq '+09:00'
+    expect(e.timezone.name).to eq 'Asia/Tokyo'
+    expect(e.timezone.utc_offset).to eq 32400
+    expect(e.timezone.formatted_offset).to eq '+09:00'
   end
 
   it "dose NOT change by start_datetime" do
     e = an_event
     e.timezone = 'UTC'
     e.start_datetime = '2012-03-09T03:09:00+09:00'
-    e.tz_min.should eq 0
-    e.timezone.utc_offset.should eq 0
+    expect(e.tz_min).to eq 0
+    expect(e.timezone.utc_offset).to eq 0
   end
 
   it "changes tz_min by setting time zone" do
     e = an_event
     e.timezone = 'UTC'
-    e.tz_min.should eq 0
+    expect(e.tz_min).to eq 0
     e.timezone = 'Asia/Tokyo'
-    e.tz_min.should eq 540
+    expect(e.tz_min).to eq 540
   end
 
   it ": Term string formatting" do
@@ -110,28 +110,28 @@ describe Event do
     e.start_datetime = now
     e.end_datetime   = now
     e.allday = false
-    e.term_str.should == now.strftime("%m-%d %H:%M")
+    expect(e.term_str).to eq(now.strftime("%m-%d %H:%M"))
 
     e.allday = true
-    e.term_str.should == now.strftime("%m-%d")
+    expect(e.term_str).to eq(now.strftime("%m-%d"))
 
     e.allday = false
     e.start_datetime = Time.new(2010, 3, 9, 15, 9)
     e.end_datetime   = Time.new(2010, 3, 9, 17, 9)
-    e.term_str.should == "2010-03-09 15:09 - 17:09"
+    expect(e.term_str).to eq("2010-03-09 15:09 - 17:09")
 
     e.allday = true
-    e.term_str.should == "2010-03-09"
+    expect(e.term_str).to eq("2010-03-09")
 
     e.allday = false
     e.end_datetime   = Time.new(2010, 3, 11, 15, 9)
-    e.term_str.should == "2010-03-09 15:09 - 2010-03-11 15:09"
+    expect(e.term_str).to eq("2010-03-09 15:09 - 2010-03-11 15:09")
 
     e = an_event
     e.allday = true
     e.start_datetime = Time.new(2010, 3, 11, 0, 0)
     e.end_datetime   = Time.new(2010, 3, 12, 0, 0)
-    e.term_str.should == "2010-03-11"
+    expect(e.term_str).to eq("2010-03-11")
   end
 
   it "endtime must be treated as open interval: [start, end)" do
@@ -140,45 +140,45 @@ describe Event do
 
     e.start_date     = Date.new(2010, 3, 9)
     e.end_date       = Date.new(2010, 3, 10)
-    e.term_str.should == "2010-03-09"
+    expect(e.term_str).to eq("2010-03-09")
 
     e.start_datetime = Date.new(2010, 3, 9)
     e.end_datetime   = Date.new(2010, 3, 10)
-    e.term_str.should == "2010-03-09"
+    expect(e.term_str).to eq("2010-03-09")
 
     e.start_datetime = Date.new(2010, 3, 9)
     e.end_datetime   = Date.new(2010, 3, 11)
-    e.term_str.should == "2010-03-09 - 2010-03-10"
+    expect(e.term_str).to eq("2010-03-09 - 2010-03-10")
 
     e.start_date     = Date.new(2010, 3, 9)
     e.end_date       = Date.new(2010, 3, 11)
-    e.term_str.should == "2010-03-09 - 2010-03-10"
+    expect(e.term_str).to eq("2010-03-09 - 2010-03-10")
 
     e.start_datetime = Time.new(2010, 3, 9, 15, 9)
     e.end_datetime   = Time.new(2010, 3, 10, 15, 9)
-    e.term_str.should == "2010-03-09 - 2010-03-10"
+    expect(e.term_str).to eq("2010-03-09 - 2010-03-10")
 
     e.start_date     = Time.new(2010, 3, 9, 15, 9)
     e.end_date       = Time.new(2010, 3, 10, 15, 9)
-    e.term_str.should == "2010-03-09"
+    expect(e.term_str).to eq("2010-03-09")
 
     e.end_datetime   = Time.new(2010, 3, 12, 15, 9)
-    e.term_str.should == "2010-03-09 - 2010-03-12"
+    expect(e.term_str).to eq("2010-03-09 - 2010-03-12")
 
     e.end_datetime   = Date.new(2010, 3, 12)
-    e.term_str.should == "2010-03-09 - 2010-03-11"
+    expect(e.term_str).to eq("2010-03-09 - 2010-03-11")
   end
 
   it "can be changed time only by set {start,end}_time " do
     e = an_event
     keepdate = e.start_date
     e.start_time = "12:30"
-    e.start_date.should eq keepdate
+    expect(e.start_date).to eq keepdate
 
     e.start_date = "2012-03-09"
-    e.start_time.should eq "00:00"
+    expect(e.start_time).to eq "00:00"
     e.start_time = "03:09"
-    e.start_datetime.should eq Time.new(2012, 3, 9, 3, 9, 0).to_datetime
+    expect(e.start_datetime).to eq Time.new(2012, 3, 9, 3, 9, 0).to_datetime
   end
 
 
@@ -213,22 +213,22 @@ describe Event do
     google_input = Hashie::Mash.new(google_input)
     e = an_event
     e.load_exfmt :google_v3, google_input, :calendar_id => 'dummy_gcal_id'
-    e.g_html_link.should   == google_input["htmlLink"]
-    e.status.should        == google_input["status"]
-    e.etag.should          == google_input["etag"]
-    e.ical_uid.should      == google_input["iCalUID"]
-    e.g_calendar_id.should == 'dummy_gcal_id'
-    e.created_at.should    == google_input["created"]
+    expect(e.g_html_link).to   eq(google_input["htmlLink"])
+    expect(e.status).to        eq(google_input["status"])
+    expect(e.etag).to          eq(google_input["etag"])
+    expect(e.ical_uid).to      eq(google_input["iCalUID"])
+    expect(e.g_calendar_id).to eq('dummy_gcal_id')
+    expect(e.created_at).to    eq(google_input["created"])
 
     e.save!
-    Event.find(e.id).created_at.should == google_input["created"]
+    expect(Event.find(e.id).created_at).to eq(google_input["created"])
 
     output = e.to_exfmt :google_v3
     pending "Not yet decided to add 'id' for google sync" do
       output[:id].should == google_input[:id]
     end
     %w(summary status start end recurrence iCalUID recurringEventId).each do |f|
-      output[f].should == google_input[f]
+      expect(output[f]).to eq(google_input[f])
     end
   end
 
@@ -279,15 +279,15 @@ describe Event do
 
     %w(id summary status start end iCalUID recurringEventId).each do |f|
       next if f == 'id' # "Not yet decided to add 'id' for google sync"
-      output[f].should == google_input[f]
+      expect(output[f]).to eq(google_input[f])
     end
 
-    output[:start][:dateTime].should == google_input[:start][:dateTime]
-    output[:start][:timeZone].should == google_input[:start][:timeZone]
-    output[:end][:dateTime].should == google_input[:end][:dateTime]
-    output[:end][:timeZone].should == google_input[:end][:timeZone]
-    output[:originalStartTime][:dateTime].should == google_input[:originalStartTime][:dateTime]
-    output[:originalStartTime][:timeZone].should == google_input[:originalStartTime][:timeZone]
+    expect(output[:start][:dateTime]).to eq(google_input[:start][:dateTime])
+    expect(output[:start][:timeZone]).to eq(google_input[:start][:timeZone])
+    expect(output[:end][:dateTime]).to eq(google_input[:end][:dateTime])
+    expect(output[:end][:timeZone]).to eq(google_input[:end][:timeZone])
+    expect(output[:originalStartTime][:dateTime]).to eq(google_input[:originalStartTime][:dateTime])
+    expect(output[:originalStartTime][:timeZone]).to eq(google_input[:originalStartTime][:timeZone])
 
     google_input[:start] = Hashie::Mash.new({:date => Date.parse("2012-03-09")})
     google_input[:end]   = Hashie::Mash.new({:date => Date.parse("2012-03-10")})
@@ -295,69 +295,69 @@ describe Event do
     e = an_event
     e.load_exfmt :google_v3, google_input, :calendar_id => 'dummy_gcal_id'
     output = e.to_exfmt :google_v3
-    output[:originalStartTime].should == google_input[:originalStartTime]
-    output[:originalStartTime][:date].should == google_input[:originalStartTime][:date]
+    expect(output[:originalStartTime]).to eq(google_input[:originalStartTime])
+    expect(output[:originalStartTime][:date]).to eq(google_input[:originalStartTime][:date])
   end
 
   it "saves extra tags" do
     e = an_event
     e.tag_names = %w(should keep ordinal tags)
-    e.extra_tags[:hoge].should eq []
-    e.extra_tags[:hoge].should be_a(Event::ExtraTagContainer::TagContainer)
+    expect(e.extra_tags[:hoge]).to eq []
+    expect(e.extra_tags[:hoge]).to be_a(Event::ExtraTagContainer::TagContainer)
     e.extra_tags[:ext1].names_str = "hoge fuga/funya"
-    e.extra_tags[:ext1].names.should eq %w(hoge fuga funya)
+    expect(e.extra_tags[:ext1].names).to eq %w(hoge fuga funya)
     e.extra_tags[:ext2].names_str = "a"
-    e.extra_tags[:ext2].names.should eq %w(a)
-    e.extra_tags[:ext1].names.should eq %w(hoge fuga funya)
+    expect(e.extra_tags[:ext2].names).to eq %w(a)
+    expect(e.extra_tags[:ext1].names).to eq %w(hoge fuga funya)
     e.save!
     en = Event.find(e.id)
-    en.extra_tags[:ext1].names.should eq %w(hoge fuga funya)
-    en.tag_names.should eq %w(should keep ordinal tags)
+    expect(en.extra_tags[:ext1].names).to eq %w(hoge fuga funya)
+    expect(en.tag_names).to eq %w(should keep ordinal tags)
 
     e.extra_tags[:ext1].names = %w(z 1)
-    e.extra_tags[:ext1].names.should eq %w(z 1)
+    expect(e.extra_tags[:ext1].names).to eq %w(z 1)
     e.extra_tags[:ext2].names = %w(z 2 1)
-    e.extra_tags[:ext2].names.should eq %w(z 2 1)
+    expect(e.extra_tags[:ext2].names).to eq %w(z 2 1)
     e.save!
 
     en = Event.find(e.id)
-    en.extra_tags[:ext1].names.should eq %w(z 1)
-    en.extra_tags[:ext2].names.should eq %w(z 2 1)
-    en.extra_tag_relations.should have(5).items
-    en.tag_names.should eq %w(should keep ordinal tags)
+    expect(en.extra_tags[:ext1].names).to eq %w(z 1)
+    expect(en.extra_tags[:ext2].names).to eq %w(z 2 1)
+    expect(en.extra_tag_relations.size).to eq(5)
+    expect(en.tag_names).to eq %w(should keep ordinal tags)
 
   end
 
   it "should accept single string as extra tag name" do
     e = an_event
     e.extra_tags[:hoge].names = "simple tag name"
-    e.extra_tags[:hoge].names.should eq ["simple_tag_name"]
+    expect(e.extra_tags[:hoge].names).to eq ["simple_tag_name"]
   end
 
   it "replaces space in tag name" do
     e = an_event
     e.tag_names = ["Hellow, World", "Good      Bye"]
-    e.tag_names.should eq ["Hellow,_World", "Good_Bye"]
-    e.tags[0].name.should eq "Hellow,_World"
-    e.tags[1].name.should eq "Good_Bye"
+    expect(e.tag_names).to eq ["Hellow,_World", "Good_Bye"]
+    expect(e.tags[0].name).to eq "Hellow,_World"
+    expect(e.tags[1].name).to eq "Good_Bye"
   end
 
   it "respond recurring_instance?" do
     e = an_event
-    e.recurring_instance?.should be_false
+    expect(e.recurring_instance?).to be_false
     e.g_recurring_event_id = "abcdef"
-    e.recurring_instance?.should be_true
+    expect(e.recurring_instance?).to be_truthy
     e.g_recurring_event_id = nil
-    e.recurring_instance?.should be_false
+    expect(e.recurring_instance?).to be_falsey
     e.g_recurring_event_id = ""
-    e.recurring_instance?.should be_false
+    expect(e.recurring_instance?).to be_falsey
   end
 
   it "generates etag automatically" do
     e = an_event
-    e.etag.should be_blank
+    expect(e.etag).to be_blank
     e.save!
-    e.etag.should_not be_blank
+    expect(e.etag).not_to be_blank
   end
 
   it "changes etag when attribute updates" do
@@ -365,17 +365,17 @@ describe Event do
     e.save!
     prev_etag = e.etag
     e.summary = "test"
-    e.etag.should eq prev_etag
+    expect(e.etag).to eq prev_etag
     e.save!
-    e.etag.should_not eq prev_etag
-    e.etag.should_not be_blank
+    expect(e.etag).not_to eq prev_etag
+    expect(e.etag).not_to be_blank
   end
 
   it "acceept conditional tag name query" do
     e = an_event
     e.tag_names = %w(Tag query test)
     e.save!
-    e.tag_names(:name => "Tag").should eq %w(Tag)
+    expect(e.tag_names(:name => "Tag")).to eq %w(Tag)
 
     t1 = Tag.create(:name => "time-#{Time.now.to_i}")
     sleep 1
@@ -383,7 +383,7 @@ describe Event do
     e.tag_ids = [t1, t2].map{|t| t.id}
     e.save!
 
-    e.tag_names(:created_at => t1.created_at).should eq [t1.name]
+    expect(e.tag_names(:created_at => t1.created_at)).to eq [t1.name]
   end
 
   it "hides hidden tags when convert to google v3 JSON" do
@@ -392,9 +392,9 @@ describe Event do
     e.save!
 
     Tag.find_by_name!("hidden").update_attribute :hidden, true
-    e.tag_names(:hidden => false).should eq %w(This is tag test)
+    expect(e.tag_names(:hidden => false)).to eq %w(This is tag test)
 
     Tag.find_by_name!("test"  ).update_attribute :hidden, true
-    e.tag_names(:hidden => false).should eq %w(This is tag)
+    expect(e.tag_names(:hidden => false)).to eq %w(This is tag)
   end
 end

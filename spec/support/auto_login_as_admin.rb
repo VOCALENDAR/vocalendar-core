@@ -31,8 +31,8 @@ RSpec.configure do |config|
   config.include Devise::TestHelpers, :type => :view
 
   config.before(:each, :type => :view) do
-    view.stub(:user_signed_in?).and_return(true)
-    view.stub(:current_user).and_return User.create(admin_user_valid_attrs.call, :without_protection => true)
+    allow(view).to receive(:user_signed_in?).and_return(true)
+    allow(view).to receive(:current_user).and_return User.create(admin_user_valid_attrs.call, :without_protection => true)
   end
 
   config.before(:each, :type => :controller) do
@@ -47,4 +47,15 @@ RSpec.configure do |config|
     @session = Hashie::Mash.new({:google_oauth2_scope => google_scope})
     get user_omniauth_callback_path(:google_oauth2)
   end
+
+  # rspec-rails 3 will no longer automatically infer an example group's spec type
+  # from the file location. You can explicitly opt-in to the feature using this
+  # config option.
+  # To explicitly tag specs without using automatic inference, set the `:type`
+  # metadata manually:
+  #
+  #     describe ThingsController, :type => :controller do
+  #       # Equivalent to being in spec/controllers
+  #     end
+  config.infer_spec_type_from_file_location!
 end

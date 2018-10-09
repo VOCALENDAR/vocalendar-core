@@ -14,26 +14,26 @@ describe ExLink do
   it "creates digest from URI" do
     l1 = a_link
     l1.save!
-    l1.should be_digest
-    l1.digest.should_not be_empty
+    expect(l1).to be_digest
+    expect(l1.digest).not_to be_empty
     l2 = a_link
     l2.save!
-    l2.hash.should_not eq l1.hash
+    expect(l2.hash).not_to eq l1.hash
   end
 
   it "scans URL from text" do
     links = ExLink.scan("hoge hoge http://test.com/#abc\n and 2nd URL is (http://vocalendar.jp/).")
-    links.should have(2).items
+    expect(links.size).to eq(2)
   end
 
   it "cannot set uri when it has been saved" do
     l = a_link
     l.save!
     l.title = "hoge"
-    l.save.should be_true
-    lambda {
+    expect(l.save).to be_true
+    expect {
       l.uri = "http://www.nicovideo.jp"
-    }.should raise_error(ArgumentError)
+    }.to raise_error(ArgumentError)
   end
 
 end
