@@ -60,9 +60,12 @@ group :development, :test do
   gem 'listen'
   gem 'rspec-rails'
   gem 'webrat'
+
+group :development do
+  gem 'rails-erd'
+  gem 'guard-rspec'
 end
 
-gem 'rails-erd', :group => :development
 
 # To use ActiveModel has_secure_password
 # gem 'bcrypt-ruby', '~> 3.0.0'
