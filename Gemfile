@@ -57,6 +57,7 @@ platforms :ruby do
 end
 
 group :development, :test do
+  gem 'listen'
   gem 'rspec-rails'
   gem 'webrat'
 end
