@@ -8,7 +8,7 @@ class Calendar < ActiveRecord::Base
   has_many :fetched_events, :class_name => 'Event',
     :foreign_key => 'g_calendar_id', :primary_key => 'external_id'
   has_many :target_events, :through => :tags, :source => :events
-  has_many :histories, ->{ where( :target => 'calendar' ) }, 
+  has_many :histories, ->{ where( :target => 'calendar' ) },
     :class_name => 'History',
     :foreign_key => 'target_id'
   has_and_belongs_to_many :tags

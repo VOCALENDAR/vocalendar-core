@@ -22,7 +22,7 @@ class AttributeUpdatesOnEvents < ActiveRecord::Migration
     change_column :events, :g_creator_display_name, :string
     change_column :events, :g_color_id, :string
     change_column :events, :g_calendar_id, :string
-    
+
     # remove
     remove_column :events, :endTimeZone
     remove_column :events, :startTimeZone
@@ -30,7 +30,7 @@ class AttributeUpdatesOnEvents < ActiveRecord::Migration
     remove_column :events, :updated
     remove_column :events, :kind
     remove_column :events, :event
-    
+
     # add cols
     add_column :events, :g_id, :string
     add_column :events, :recur_string, :string

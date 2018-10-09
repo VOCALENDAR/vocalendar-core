@@ -9,7 +9,7 @@ class CreateExLinks < ActiveRecord::Migration
       t.timestamps
     end
     add_index :ex_links, [:type, :remote_id]
-    
+
     create_table :tags_ex_links, :id => false do |t|
       t.integer :tag_id
       t.integer :ex_link_id

@@ -29,7 +29,7 @@ class ApplicationController < ActionController::Base
   before_filter :set_debug_mode
   before_filter :post_google_analystics
   before_filter :set_json_content_type
-  
+
   private
 
   LOG_LEVEL = { debug: Logger::DEBUG,
@@ -88,20 +88,20 @@ class ApplicationController < ActionController::Base
   def set_content_type(content_type)
      response.headers["Content-Type"] = content_type
   end
-  
+
   def set_json_content_type
     # jsonでなければさようなら
     request.path_info.end_with?("json") or return
-  
+
     # jsonのディフォルト
     set_content_type("application/json; charset=utf-8")
-    
+
     if request.url.index("callback") != nil
       set_content_type("application/javascript; charset=utf-8")
-      
+
       request.user_agent.index("msis") == nil or set_content_type("text/javascript; charset=utf-8")
     end
-  
+
   end
 
   def set_common_vars

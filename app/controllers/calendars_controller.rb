@@ -58,7 +58,7 @@ class CalendarsController < ApplicationController
         return params.require(:calendar).permit(:name, :user_id, :io_type, :tag_names_append_str, :tag_names_remove_str)
       end
       params.require(:calendar).permit(:name, :io_type, :tag_names_append_str, :tag_names_remove_str)
-      
+
     end
 
   def create_params
@@ -66,7 +66,7 @@ class CalendarsController < ApplicationController
       return params.require(:calendar).permit(:name, :user_id, :external_id, :io_type, :tag_names_append_str, :tag_names_remove_str, tag_ids:[])
     end
     params.require(:calendar).permit(:name, :external_id, :io_type, :tag_names_append_str, :tag_names_remove_str, tag_ids:[])
-    
+
   end
 
 end

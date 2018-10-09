@@ -13,13 +13,13 @@
 
   <%= link_to t('general.back_to_list'), users_path, :class => 'btn' if can? :index, User %>
 
-  <%= link_to %Q{<i class="icon-trash icon-white" title="#{t 'general.delete'}"></i> 
+  <%= link_to %Q{<i class="icon-trash icon-white" title="#{t 'general.delete'}"></i>
   #{t 'general.delete'}}.html_safe,
   @user,
-  method: :delete , 
+  method: :delete ,
   :class => 'btn btn-danger pull-right' if can? :destroy, @user,
   data: {confirm: t("general.delete_confirm", name: "#{@user.name} (#{@user.id})") }
-  
+
    %>
 </div>
 

@@ -13,7 +13,7 @@ module EventsHelper
       attrs[:dates] = event.start_datetime.strftime("%Y%m%d") +
         '/' + event.end_datetime.strftime("%Y%m%d")
     else
-      # Timezone workaround 
+      # Timezone workaround
       fmt = "%Y%m%dT%H%M00Z"
       attrs[:dates] = event.start_datetime.to_datetime.new_offset(0).strftime(fmt) +
         '/' + event.end_datetime.to_datetime.new_offset(0).strftime(fmt)

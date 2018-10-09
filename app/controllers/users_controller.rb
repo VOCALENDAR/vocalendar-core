@@ -37,13 +37,13 @@ class UsersController < ApplicationController
     add_history
     respond_with(@user)
   end
-  
+
   private
     def update_params
       if current_user.admin?
         return params.require(:user).permit(:name, :email, :role)
       end
       params.require(:user).permit(:name, :email)
-      
+
     end
 end

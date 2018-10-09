@@ -9,7 +9,7 @@ describe Event do
 
     t = Tag.create(:name => name)
     t.should_not be_valid
-    
+
     lambda { t.save! }.should raise_error(ActiveRecord::RecordInvalid)
     lambda {
       Tag.create!(:name => name)

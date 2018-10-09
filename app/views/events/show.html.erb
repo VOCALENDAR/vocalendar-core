@@ -13,19 +13,19 @@
 
 <h3><%= t "general.details" %></h3>
 <table class="table table-striped">
-  <% %w(id summary term_str location twitter_hash created_at updated_at 
+  <% %w(id summary term_str location twitter_hash created_at updated_at
         primary_link_uri timezone g_id g_eid etag status
         recurring_instance?).each do |field| %>
   <tr>
     <th><%= Event.human_attribute_name field %></th>
     <td><% v = @event.__send__ field %>
-      <%= 
+      <%=
          if v.kind_of?(Time) || v.kind_of?(Date)
            l(v)
          elsif v.to_s.length > 60
            content_tag :span, v.sub(/^(.{60}).*$/, '\1...'), :title => v
          else
-           v  
+           v
          end
          %>
     </td>

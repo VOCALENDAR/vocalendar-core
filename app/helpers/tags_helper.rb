@@ -34,7 +34,7 @@ module TagsHelper
     opts[:link_icon] && tag.link? and
       ret << format_ex_link(tag.link, :type_icon => false,
                             :label => bs_icon("globe", :class => "tag-link-icon"))
-    
+
     content_tag :span, ret, {:class => 'tag-link'}.merge(html_opts)
   end
 end

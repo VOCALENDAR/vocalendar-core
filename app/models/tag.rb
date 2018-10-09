@@ -50,6 +50,6 @@ class Tag < ActiveRecord::Base
   private
   def copy_link_errors
     errors.has_key? :"primary_link.uri" or return
-    errors[:uri] = errors[:primary_link_uri] = errors[:"primary_link.uri"] 
+    errors[:uri] = errors[:primary_link_uri] = errors[:"primary_link.uri"]
   end
 end

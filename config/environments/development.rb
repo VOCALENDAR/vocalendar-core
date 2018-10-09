@@ -10,7 +10,7 @@ VocalendarCore::Application.configure do
   # rails 4 change config.eager_load
   # config.whiny_nils = true
   config.eager_load = false
-  
+
   # Show full error reports and disable caching
   config.consider_all_requests_local       = true
   config.action_controller.perform_caching = false
@@ -37,10 +37,10 @@ VocalendarCore::Application.configure do
 
   # Expands the lines which load the assets
   config.assets.debug = true
-  
-  # Strong Parameters 
+
+  # Strong Parameters
   config.action_controller.action_on_unpermitted_parameters = :raise
-  
+
   require 'openssl'
   OpenSSL::SSL::VERIFY_PEER = OpenSSL::SSL::VERIFY_NONE
 end

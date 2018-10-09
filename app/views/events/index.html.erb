@@ -5,7 +5,7 @@
     <%= t "general.filter"  %>
     <span class="caret"></span>
   </a>
-  <div id="filter-main" class="collapse fade 
+  <div id="filter-main" class="collapse fade
    <%= 'in' if !params[:tag_id].blank? || !params[:g_calendar_id].blank? || !params[:q].blank?%> ">
     <%= text_field_tag :tag_id, [params[:tag_id]].compact.flatten.join(','),
         :placeholder => 'Tag ID (comma separated)', :title => 'Tag ID' %>
