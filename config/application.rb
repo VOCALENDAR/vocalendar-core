@@ -28,5 +28,8 @@ module VocalendarCore
     I18n.enforce_available_locales = true # ruby 4.0.2 over
     config.i18n.default_locale = :ja
 
+    # TODO: Disable `permit_all_parameters`. (Rails default)
+    config.action_controller.permit_all_parameters = true
+
   end
 end
