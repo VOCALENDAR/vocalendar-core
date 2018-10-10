@@ -1,3 +1,3 @@
-class Setting < RailsSettings::CachedSettings
+class Setting < RailsSettings::Base
   default_scope ->{ order('var') }
 end

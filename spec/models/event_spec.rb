@@ -1,7 +1,7 @@
 require 'spec_helper'
 
 describe Event do
-  let(:valid_attrs) do 
+  let(:valid_attrs) do
     {
       :summary => "Summary text at #{DateTime.now}",
       :start_datetime => DateTime.now,
@@ -385,7 +385,7 @@ describe Event do
 
     e.tag_names(:created_at => t1.created_at).should eq [t1.name]
   end
-    
+
   it "hides hidden tags when convert to google v3 JSON" do
     e = an_event
     e.tag_names = %w(This is hidden tag test)

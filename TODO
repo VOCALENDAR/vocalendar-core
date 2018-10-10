@@ -11,7 +11,7 @@
  * flash responder がうごいてない
  * タグなど関連モデルを変更しても etag が変わらない
  * event*_controller の @type のセットをもっとまともに。
-   親クラスで全部やること。cancan の load_resource を参考に
+   親クラスで全部やること。cancancan の load_resource を参考に
  * カレンダーの追加/削除タグが変更された時に強制反映するしくみ
  * リリース外部UIのビューを色々直す (ruby/rails style とか)
  * Google に publish するとき、description をこっちの short url 

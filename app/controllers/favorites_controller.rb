@@ -24,15 +24,15 @@ class FavoritesController < ApplicationController
     # config/initializers/quiet_assets.rb:7:in `call_with_quiet_assets'
   respond_with @favorite
 
-  
+
   end
-  
+
   # DELETE /events/:event_id/favorite
   # DELETE /events/:event_id/favorite.json
   def destroy
     respond_with favorites.first!.destroy
   end
-  
+
   # TODO move model
   private
     def favorites
@@ -40,5 +40,5 @@ class FavoritesController < ApplicationController
       # for test
       # Favorite.where(:user_id => 9, :event_id => params[:event_id])
     end
-  
+
 end

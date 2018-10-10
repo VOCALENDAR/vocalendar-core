@@ -36,10 +36,7 @@
         <%= l setting.updated_at %>
       </td>
       <td>
-        <%= link_to bs_icon('trash', :title => t('general.delete', :default => 'Delete')),
-              setting, class: 'btn btn-mini',
-              confirm: t("general.delete_confirm", name: setting.var),
-              method: :delete %>
+        <%= link_to bs_icon('trash', :title => t('general.delete', :default => 'Delete')), setting, class: 'btn btn-mini', method: :delete, data: {confirm: t("general.delete_confirm", name: setting.var)} %>
       </td>
     </tr>
     <% end %>

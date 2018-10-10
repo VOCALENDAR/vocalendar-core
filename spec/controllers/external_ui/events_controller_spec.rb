@@ -31,13 +31,13 @@ describe ExternalUi::EventsController do
     end
 
     it "accept search" do
-      get :index, :q => 'shoud_not_matched_anything'
+      get :index, params: { :q => 'shoud_not_matched_anything' }
       response.should be_success
       assigns(:events).should be_empty
     end
 
     it "ignore blank search" do
-      get :index, :q => ''
+      get :index, params: { :q => '' }
       response.should be_success
       ret_with_blank_query = assigns(:events)
       get :index

@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
-class Event < ActiveRecord::Base
-  
+class Event < ApplicationRecord
+
   class ExtraTagContainer < Hash
     class TagContainer < Array
       def names_str
@@ -19,7 +19,7 @@ class Event < ActiveRecord::Base
         self.clear
         [v].flatten.compact.map {|t| t.strip }.
           find_all {|t| !t.blank? }.each {|t|
-          push Tag.find_or_create_by_name(t.gsub(/\s+/, '_'))
+          push Tag.find_or_create_by(name: t.gsub(/\s+/, '_'))
         }
       end
     end
@@ -50,7 +50,7 @@ class Event < ActiveRecord::Base
       each do |field, tags|
         i = 1
         tags.each do |tag|
-          new_rels << EventTagRelation.find_or_create_by_tag_id_and_event_id_and_target_field(tag.id, @event.id, field, :pos => i)
+          new_rels << EventTagRelation.find_or_create_by(tag.id, @event.id, field, :pos => i)
           new_rels.last.update_attribute :pos, i
           i += 1
         end
@@ -91,13 +91,13 @@ class Event < ActiveRecord::Base
     sqls = []
     args = []
     tag_ids = []
-    tag_sql = nil 
+    tag_sql = nil
     query.strip.split(/[　 \t\n\r]+/).each do |q|
       q.blank? and next
       qw = "%#{q.downcase}%"
       args += [qw, qw, qw]
       sqls << "( lower(summary) like ? or lower(description) like ? or lower(location) like ? )"
-      tag_ids << Tag.find_by_name(q).try(:id)
+      tag_ids << Tag.find_by(name: q).try(:id)
     end
     tag_ids.compact!
     unless tag_ids.empty?
@@ -113,12 +113,12 @@ class Event < ActiveRecord::Base
     :order => 'target_field, pos',
   }
   #scope :order_target_field_pos, -> { order(:target_field, :pos) }
-  
+
   # rails 4 change lamda
   # TODO まとめる？
   has_many :all_tag_relations, -> { order(:target_field, :pos) }, class_name: "EventTagRelation",  dependent: :delete_all
   has_many :main_tag_relations,-> { where(target_field: "").order(:target_field, :pos) }, class_name: "EventTagRelation"
-  has_many :extra_tag_relations,->{ where("target_field != ''").order(:target_field, :pos) }, class_name: "EventTagRelation" 
+  has_many :extra_tag_relations,->{ where("target_field != ''").order(:target_field, :pos) }, class_name: "EventTagRelation"
 
   has_many :all_tags,  :through => :all_tag_relations, :source => :tag
   has_many :tags,      :through => :main_tag_relations
@@ -126,16 +126,16 @@ class Event < ActiveRecord::Base
   has_one  :recurrent_parent, -> {  where("g_id IS NOT NULL") },# NOTE: ...any other way?
     :primary_key =>'g_recurring_event_id', :foreign_key => 'g_id',
     :class_name => 'Event'
-    
+
   has_many :recurrent_children, -> {  where( "g_recurring_event_id IS NOT NULL" ) }, # NOTE: ...any other way?
     :foreign_key => 'g_recurring_event_id', :primary_key => 'g_id',
     :class_name => 'Event'
-    
+
   has_many :histories, -> { where( :target => 'event' ) },
     :foreign_key => 'target_id' ,
     :class_name => 'History'
-    
-  has_one  :src_calendar, 
+
+  has_one  :src_calendar,
     :foreign_key => 'external_id', :primary_key => 'g_calendar_id',
     :class_name => 'Calendar'
 
@@ -149,7 +149,7 @@ class Event < ActiveRecord::Base
   has_many :favorites
   # だめだった・・・
   #has_many :my_favorites, -> { where( user_id: current_user.id)}, class_name: 'Favorite'
-    
+
   mount_uploader :image, EventImageUploader
 
 # rails 4 chenge strong_parameters
@@ -237,7 +237,7 @@ class Event < ActiveRecord::Base
 
   def related_link_uris=(uris)
     self.related_link_ids = uris.map { |uri|
-      ExLink.find_or_create_by_uri(uri).id
+      ExLink.find_or_create_by(uri: uri).id
     }
   end
 
@@ -256,7 +256,7 @@ class Event < ActiveRecord::Base
     if v.blank?
       self.primary_link = nil
     else
-      self.primary_link = ExLink.find_or_create_by_uri v
+      self.primary_link = ExLink.find_or_create_by(uri: v)
     end
   end
   alias_method :uri=, :primary_link_uri=
@@ -401,7 +401,7 @@ class Event < ActiveRecord::Base
     updated_at_will_change!
     self.tags = [v].flatten.compact.map {|t| t.strip }.
       find_all {|t| !t.blank? }.map {|t|
-      Tag.find_or_create_by_name(t.gsub(/\s+/, '_'))
+      Tag.find_or_create_by(name: t.gsub(/\s+/, '_'))
     }
   end
 
@@ -454,7 +454,7 @@ class Event < ActiveRecord::Base
     end
     last_line.scan(/^Tag::(.+)/) if last_line != nil
     in_tags += $1.split(/\s/) if $1
-    
+
     self.tag_names = (in_tags - opts[:tag_names_remove]).uniq
 
     assign_attributes({

@@ -1,6 +1,6 @@
 source 'https://rubygems.org'
 
-gem 'rails', '4.0.2'
+gem 'rails', '~> 5.1.0'
 
 # Bundle edge Rails instead:
 # gem 'rails', :git => 'git://github.com/rails/rails.git'
@@ -14,11 +14,11 @@ gem 'mysql2', :group => :production
 gem 'bootstrap-sass', '< 3.0'
 
 group :assets do
-  gem 'sass-rails' ,   '~> 4.0.0'
-  gem 'coffee-rails' #, '~> 3.2.1'
+  gem 'sass-rails'
+  gem 'coffee-rails'
   gem 'libv8', '~> 3.11.8', :platforms => :ruby
   gem 'therubyracer', :platform => :ruby
-  gem 'uglifier' #, '>= 1.0.3'
+  gem 'uglifier', '>= 1.3.0'
 end
 
 gem 'jquery-rails'
@@ -29,13 +29,13 @@ gem 'kaminari-i18n'
 gem 'kaminari-bootstrap'
 gem 'responders'
 gem 'rails-settings-cached'
-gem 'google-api-client', :require => 'google/api_client'
+gem 'google-api-client', '~> 0.8.6', :require => 'google/api_client'
 gem 'omniauth', '~> 1.0.0'
 gem 'omniauth-google-oauth2', '=0.2.2' # 0.2.4にすると動かなくなる。
 gem 'omniauth-twitter'
-gem 'devise', '=3.2.2 '
+gem 'devise'
 gem 'devise-i18n'
-gem 'cancan'
+gem 'cancancan'
 gem 'doorkeeper'
 gem 'enumerize'
 gem 'rails_admin'
@@ -57,6 +57,7 @@ platforms :ruby do
 end
 
 group :development, :test do
+  gem 'listen'
   gem 'rspec-rails'
   gem 'webrat'
 end

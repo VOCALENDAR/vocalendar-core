@@ -59,12 +59,12 @@ class ExLinksController < ApplicationController
     end
     redirect_to @ex_link.access_uri
   end
-  
+
   private
   def update_params
     params.require(:ex_link).permit(:title, :disabled)
   end
 
-  
-  
+
+
 end

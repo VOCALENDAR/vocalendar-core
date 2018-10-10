@@ -2,7 +2,7 @@
 require 'spec_helper'
 
 describe ReleaseEvent do
-  let(:valid_attrs) do 
+  let(:valid_attrs) do
     {
       :summary => "Summary text at #{DateTime.now}",
       :start_datetime => DateTime.now,
@@ -54,7 +54,7 @@ describe ReleaseEvent do
 
     rn = ReleaseEvent.find(r.id)
     rn.movie_authors.should eq ["Michael_Francis_Moore", "Peter_Yates"]
-    
+
     rn.movie_author_tags[0].name.should eq "Michael_Francis_Moore"
     rn.movie_author_tags[1].name.should eq "Peter_Yates"
   end

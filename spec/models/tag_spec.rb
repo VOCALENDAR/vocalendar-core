@@ -9,7 +9,7 @@ describe Event do
 
     t = Tag.create(:name => name)
     t.should_not be_valid
-    
+
     lambda { t.save! }.should raise_error(ActiveRecord::RecordInvalid)
     lambda {
       Tag.create!(:name => name)
@@ -17,10 +17,10 @@ describe Event do
   end
 
   it "keeps hidden flag" do
-    t = Tag.find_or_create_by_name("hidden_test")
+    t = Tag.find_or_create_by(name: "hidden_test")
     t.update_attribute :hidden, true
     t.should be_hidden
-    Tag.find_by_name("hidden_test").should be_hidden
+    Tag.find_by(name: "hidden_test").should be_hidden
   end
 
   it '#cleanup_unused_tags returns deleted tags' do

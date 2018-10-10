@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 require 'htmlentities'
 
-class ExLink < ActiveRecord::Base
+class ExLink < ApplicationRecord
   include VocalendarCore::ModelLogUtils
 
   self.store_full_sti_class = true
@@ -39,14 +39,14 @@ class ExLink < ActiveRecord::Base
     def scan(text)
       text.to_s.scan(URI_PATTERN).map { |uri|
         uri[0..3] != 'http' and uri = 'http://' + uri
-        find_or_create_by_uri uri
+        find_or_create_by(uri: uri)
       }.select {|l| l.valid? }
     end
 
     def gsub(text, &block)
       text.to_s.gsub(URI_PATTERN) { |uri|
         uri[0..3] != 'http' and uri = 'http://' + uri
-        link = find_or_create_by_uri uri
+        link = find_or_create_by(uri: uri)
         link.valid? ? yield(link, uri) : uri
       }
     end
@@ -57,7 +57,7 @@ class ExLink < ActiveRecord::Base
     end
 
     def find_by_uri(uri)
-      find_by_digest(digest(uri))
+      find_by(digest: digest(uri))
     end
 
     def find_by_uri!(uri)
@@ -69,7 +69,7 @@ class ExLink < ActiveRecord::Base
     end
 
     def find_or_initialize_by_uri(uri)
-      find_or_initialize_by_digest(digest(uri), uri: uri)
+      find_or_initialize_by(digest(uri), uri: uri)
     end
 
     def events

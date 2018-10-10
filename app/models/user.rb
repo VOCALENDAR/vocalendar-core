@@ -1,11 +1,11 @@
-class User < ActiveRecord::Base
+class User < ApplicationRecord
   extend Enumerize
   include VocalendarCore::ModelLogUtils
 
   scope :admins, ->{ where(:role => 'admin') }
   scope :editors, ->{ where(:role => %w(admin editor))}
 
-  has_many :histories, ->{ where( :target => 'user') }, 
+  has_many :histories, ->{ where( :target => 'user') },
     :class_name => 'History',
     :foreign_key => 'target_id'
 
@@ -15,7 +15,7 @@ class User < ActiveRecord::Base
   # for enumerated_attribute
   #enum_attr :role, %w(admin editor)
   enumerize :role, in: [:admin, :editor] #, default: :editor
-      
+
   # rails 4 chenge strong_parameters
   # attr_accessible :name, :email
   # attr_accessible :name, :email, :as => :editor
@@ -29,8 +29,8 @@ class User < ActiveRecord::Base
   class << self
     def find_for_google_oauth2(auth, current_user = nil, request = nil)
       !auth || !auth.uid and return nil
-      
-      # rails 4 find_or_initialize_by_* is deprecated 
+
+      # rails 4 find_or_initialize_by_* is deprecated
       u = current_user || find_or_initialize_by( google_uid: auth.uid )
       c = auth["credentials"]
       u.assign_attributes({
@@ -58,7 +58,7 @@ class User < ActiveRecord::Base
 
     def find_for_twitter(auth, current_user = nil)
       !auth || !auth.uid and return nil
-      u = current_user || find_or_initialize_by_twitter_uid(auth.uid)
+      u = current_user || find_or_initialize_by(twitter_uid: auth.uid)
       u.assign_attributes({
         :twitter_uid    => auth.uid, # make sure for current_user
         :twitter_name   => auth["info"]["name"],

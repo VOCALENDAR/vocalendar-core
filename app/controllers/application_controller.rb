@@ -24,12 +24,12 @@ class ApplicationController < ActionController::Base
   rescue_from ActiveRecord::RecordNotFound, :with => :render_ar_error
   rescue_from CanCan::AccessDenied, :with => :render_cancan_error
 
-  before_filter :check_admin_oauth_scope
-  before_filter :set_common_vars
-  before_filter :set_debug_mode
-  before_filter :post_google_analystics
-  before_filter :set_json_content_type
-  
+  before_action :check_admin_oauth_scope
+  before_action :set_common_vars
+  before_action :set_debug_mode
+  before_action :post_google_analystics
+  before_action :set_json_content_type
+
   private
 
   LOG_LEVEL = { debug: Logger::DEBUG,
@@ -88,20 +88,20 @@ class ApplicationController < ActionController::Base
   def set_content_type(content_type)
      response.headers["Content-Type"] = content_type
   end
-  
+
   def set_json_content_type
     # jsonでなければさようなら
     request.path_info.end_with?("json") or return
-  
+
     # jsonのディフォルト
     set_content_type("application/json; charset=utf-8")
-    
+
     if request.url.index("callback") != nil
       set_content_type("application/javascript; charset=utf-8")
-      
+
       request.user_agent.index("msis") == nil or set_content_type("text/javascript; charset=utf-8")
     end
-  
+
   end
 
   def set_common_vars
@@ -172,7 +172,7 @@ class ApplicationController < ActionController::Base
     scope = current_user.google_auth_scope.to_s
     cs    = "https://www.googleapis.com/auth/calendar"
     scope.include?("#{cs}.readonly") && scope.include?(cs) and return true
-    redirect_to user_omniauth_authorize_path(:provider => :google_oauth2, :scope => 'userinfo.email,userinfo.profile,calendar,calendar.readonly')
+    redirect_to user_google_oauth2_omniauth_authorize_path(:scope => 'userinfo.email,userinfo.profile,calendar,calendar.readonly')
     false
   end
 end

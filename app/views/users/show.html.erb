@@ -4,22 +4,22 @@
   <%= link_to t('general.edit'), edit_user_path(@user), :class => 'btn' if can? :edit, @user %>
   <% if can?(:update, @user) && @user == current_user %>
   <%= link_to t(".add_twitter_authinfo"),
-        user_omniauth_authorize_path(:twitter),
+        user_twitter_omniauth_authorize_path,
         :class => 'btn' if !@user.twitter_auth_valid? %>
   <%= link_to t(".add_google_authinfo"),
-        user_omniauth_authorize_path(:google_oauth2),
+        user_google_oauth2_omniauth_authorize_path,
         :class => 'btn' if !@user.google_auth_valid? %>
   <% end %>
 
   <%= link_to t('general.back_to_list'), users_path, :class => 'btn' if can? :index, User %>
 
-  <%= link_to %Q{<i class="icon-trash icon-white" title="#{t 'general.delete'}"></i> 
+  <%= link_to %Q{<i class="icon-trash icon-white" title="#{t 'general.delete'}"></i>
   #{t 'general.delete'}}.html_safe,
   @user,
-  method: :delete , 
+  method: :delete ,
   :class => 'btn btn-danger pull-right' if can? :destroy, @user,
   data: {confirm: t("general.delete_confirm", name: "#{@user.name} (#{@user.id})") }
-  
+
    %>
 </div>
 

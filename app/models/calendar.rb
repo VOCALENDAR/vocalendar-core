@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-class Calendar < ActiveRecord::Base
+class Calendar < ApplicationRecord
   include VocalendarCore::ModelLogUtils
   include VocalendarCore::HistoryUtils::Model
 
@@ -8,7 +8,7 @@ class Calendar < ActiveRecord::Base
   has_many :fetched_events, :class_name => 'Event',
     :foreign_key => 'g_calendar_id', :primary_key => 'external_id'
   has_many :target_events, :through => :tags, :source => :events
-  has_many :histories, ->{ where( :target => 'calendar' ) }, 
+  has_many :histories, ->{ where( :target => 'calendar' ) },
     :class_name => 'History',
     :foreign_key => 'target_id'
   has_and_belongs_to_many :tags
@@ -148,7 +148,7 @@ class Calendar < ActiveRecord::Base
       log :info, "Delete event: google event ID=#{gid}"
       gapi_event_request :delete, {:eventId => gid}
       add_history(:target    => 'event',
-                  :target_id => Event.find_by_g_id(gid).try(:id),
+                  :target_id => Event.find_by(g_id: gid).try(:id),
                   :action    => 'delete_from_google',
                   :note      => "From calenar##{id} (#{name})")
     end
@@ -183,7 +183,7 @@ class Calendar < ActiveRecord::Base
       begin
         new_item_stamp = nil
         result.data.items.each do |eitem|
-          event = Event.find_by_g_id(eitem.id) || Event.new
+          event = Event.find_by(g_id: eitem.id) || Event.new
           begin
             event.load_exfmt :google_v3, eitem,
               :calendar_id      => external_id,

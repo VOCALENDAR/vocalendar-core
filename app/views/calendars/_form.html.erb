@@ -22,7 +22,7 @@
   </span>
 </div>
 <% if @calendar.new_record? || @calendar.io_type == 'dst' %>
-<%= f.label :tags %> 
+<%= f.label :tags %>
 <div class="tag-check-list">
 <% Tag.order('name').each do |tag| %>
   <span class="checkbox-set">

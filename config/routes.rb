@@ -1,118 +1,68 @@
-VocalendarCore::Application.routes.draw do
+Rails.application.routes.draw do
+  # The priority is based upon order of creation:
+  # first created -> highest priority.
+
   use_doorkeeper
-  #rails 4 add :via=>:get
-  match 'l/:short_id', :controller => :ex_links, :action => :redirect, :as => 'link_redirect', :format => false, :via=>:get
+  get 'l/:short_id', to: 'ex_links#redirect', as: 'link_redirect', format: false
 
-  mount RailsAdmin::Engine => '/rails_admin', :as => 'rails_admin'
+  mount RailsAdmin::Engine => '/rails_admin', as: 'rails_admin'
 
-  devise_for :users, :controllers => { :omniauth_callbacks => "users/omniauth_callbacks" }
+  devise_for :users, controllers: { omniauth_callbacks: 'users/omniauth_callbacks' }
   devise_scope :user do
-    get   'sign_in',  :to => 'devise/sessions#new',     :as => :new_user_session
-    #rails 4 add :via=>:get
-    match 'sign_out', :to => 'devise/sessions#destroy', :as => :destroy_user_session, :via=>:get
+    get 'sign_in', to: 'devise/sessions#new', as: :new_user_session
+    get 'sign_out', to: 'devise/sessions#destroy', as: :destroy_user_session
   end
 
-  namespace 'external_ui', :path => 'ex' do
-    scope 'events' do
-      get 'gid/:gid' => 'events#show', :as => 'event_by_gid'
-      get 'eid/:eid' => 'events#show', :as => 'event_by_eid'
-      get 'uid/:uid' => 'events#show', :as => 'event_by_uid'
+  namespace 'external_ui', path: 'ex' do
+    %w(gid eid uid).each do |xid|
+      get "events/#{xid}/:#{xid}", to: 'events#show', as: "event_by_#{xid}"
     end
-    get 'cd-releases' => 'events#cd_releases'
-    get 'cd-releases-body' => 'events#cd_releases_body'
-    resources :events, :only => [:index, :show]
-    resources :release_events, :only => [:index, :show]
+    get 'cd-releases', to: 'events#cd_releases'
+    get 'cd-releases-body', to: 'events#cd_releases_body'
+    resources :events, only: [:index, :show]
+    resources :release_events, only: [:index, :show]
   end
 
   resources :events do
-    resources :histories, :only => :index
+    resources :histories, only: :index
   end
-  resources :release_events, :path => 'release' do
-    resources :histories, :only => :index
+  resources :release_events, path: 'release' do
+    resources :histories, only: :index
   end
   resources :calendars do
-    resources :histories, :only => :index
+    resources :histories, only: :index
   end
   resources :users do
-    resources :histories, :only => :index
+    resources :histories, only: :index
   end
   resources :tags do
     resources :events
-    resources :histories, :only => :index
+    resources :histories, only: :index
   end
 
   resources :events do
-    resource :favorite, :only => [:show, :create, :destroy]
+    resource :favorite, only: [:show, :create, :destroy]
   end
 
   scope 'manage' do
     resources :ex_links do
       member do
-        put 'update_by_uri' => 'ex_links#update_by_uri'
+        put 'update_by_uri', to: 'ex_links#update_by_uri'
       end
     end
-    resources :settings, :only => [:index, :destroy]
-    put 'settings/set' => 'settings#set', :as => :set_setting
-    resources :histories, :only => :index
+    resources :settings, only: [:index, :destroy]
+    put 'settings/set', to: 'settings#set', as: :set_setting
+    resources :histories, only: :index
   end
 
-  # rail 4 add :via=>:get
-  match 'dashboard(/:action)', :controller => 'dashboard', :as => 'dashboard', :via=>:get
-
-  # The priority is based upon order of creation:
-  # first created -> highest priority.
-
-  # Sample of regular route:
-  #   match 'products/:id' => 'catalog#view'
-  # Keep in mind you can assign values other than :controller and :action
-
-  # Sample of named route:
-  #   match 'products/:id/purchase' => 'catalog#purchase', :as => :purchase
-  # This route can be invoked with purchase_url(:id => product.id)
-
-  # Sample resource route (maps HTTP verbs to controller actions automatically):
-  #   resources :products
-
-  # Sample resource route with options:
-  #   resources :products do
-  #     member do
-  #       get 'short'
-  #       post 'toggle'
-  #     end
-  #
-  #     collection do
-  #       get 'sold'
-  #     end
-  #   end
-
-  # Sample resource route with sub-resources:
-  #   resources :products do
-  #     resources :comments, :sales
-  #     resource :seller
-  #   end
-
-  # Sample resource route with more complex sub-resources
-  #   resources :products do
-  #     resources :comments
-  #     resources :sales do
-  #       get 'recent', :on => :collection
-  #     end
-  #   end
-
-  # Sample resource route within a namespace:
-  #   namespace :admin do
-  #     # Directs /admin/products/* to Admin::ProductsController
-  #     # (app/controllers/admin/products_controller.rb)
-  #     resources :products
-  #   end
+  get 'dashboard', to: 'dashboard#index'
+  %w(compare_calendars alerts).each do |action|
+    get "dashboard/#{action}", controller: 'dashboard', action: action
+  end
 
   # You can have the root of your site routed with "root"
   # just remember to delete public/index.html.
-  root :to => 'dashboard#index'
+  root to: 'dashboard#index'
 
-  # See how all your routes lay out with "rake routes"
-
-  # This is a legacy wild controller route that's not recommended for RESTful applications.
-  # Note: This route will make all actions in every controller accessible via GET requests.
-  # match ':controller(/:action(/:id))(.:format)'
+  # See how all your routes lay out with "rails routes"
 end

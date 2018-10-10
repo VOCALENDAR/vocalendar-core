@@ -1,4 +1,4 @@
-class Tag < ActiveRecord::Base
+class Tag < ApplicationRecord
   has_many :tag_relations, :class_name => 'EventTagRelation', :dependent => :delete_all
   has_many :events, :through => :tag_relations
   has_and_belongs_to_many :calendars
@@ -42,7 +42,7 @@ class Tag < ActiveRecord::Base
     if v.blank?
       self.link = nil
     else
-      self.link = ExLink.find_or_create_by_uri v
+      self.link = ExLink.find_or_create_by(uri: v)
     end
   end
   alias_method :uri=, :link_uri=
@@ -50,6 +50,6 @@ class Tag < ActiveRecord::Base
   private
   def copy_link_errors
     errors.has_key? :"primary_link.uri" or return
-    errors[:uri] = errors[:primary_link_uri] = errors[:"primary_link.uri"] 
+    errors.add(:uri, errors.add(:primary_link_uri, errors[:"primary_link.uri"]))
   end
 end

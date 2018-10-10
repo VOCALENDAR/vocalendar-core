@@ -16,7 +16,7 @@
     </td>
     <td class="target_id">
       <% if history.target_id %>
-      <%= link_to "##{history.target_id}", 
+      <%= link_to "##{history.target_id}",
           histories_path(:target => history.target, :id => history.target_id) %>
       <%=
          begin

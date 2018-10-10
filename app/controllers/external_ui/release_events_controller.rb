@@ -1,11 +1,11 @@
 class ExternalUi::ReleaseEventsController < ApplicationController
 
   layout "mainsite_dummy"
-  
+
   def index
-    
+
     # Recommendの取得
-    
+
     # Recommendデータが無い場合にはとりあえず先頭２件
     @recommends = ReleaseEvent.active.order('start_datetime').
       page(params[:page]).per( 2 ).
@@ -27,5 +27,5 @@ class ExternalUi::ReleaseEventsController < ApplicationController
     @release = ReleaseEvent.active.find(params[:id])
     respond_with @release
   end
-  
+
 end

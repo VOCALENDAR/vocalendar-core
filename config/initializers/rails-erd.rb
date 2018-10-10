@@ -9,4 +9,4 @@ if Rails.env.development?
     o.exclude = %w(RailsSettings::Settings RailsSettings::ScopedSettings RailsSettings::CachedSettings).map {|c| c.to_sym }
   }
 end
-  
+
