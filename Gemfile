@@ -16,7 +16,7 @@ gem 'bootstrap-sass', '< 3.0'
 group :assets do
   gem 'sass-rails'
   gem 'coffee-rails'
-  gem 'libv8', '~> 3.11.8', :platforms => :ruby
+  gem 'libv8', '~> 3.16.14', :platforms => :ruby
   gem 'therubyracer', :platform => :ruby
   gem 'uglifier', '>= 1.3.0'
 end
@@ -79,3 +79,5 @@ gem 'jpbuilder'
 
 # To use debugger
 # gem 'ruby-debug19', :require => 'ruby-debug'
+
+gem 'request_store'

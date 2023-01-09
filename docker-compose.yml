@@ -1,0 +1,12 @@
+version: '3.8'
+
+services:
+  web:
+    build:
+      context: .
+      dockerfile: ./docker/Dockerfile
+    volumes:
+      - ".:/app"
+    ports:
+      - 80:3000
+    init: true
