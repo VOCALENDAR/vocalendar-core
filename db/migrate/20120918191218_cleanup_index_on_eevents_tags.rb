@@ -1,4 +1,4 @@
-class CleanupIndexOnEeventsTags < ActiveRecord::Migration
+class CleanupIndexOnEeventsTags < ActiveRecord::Migration[5.1]
   def up
     remove_index :events_tags, [:tag_id, :event_id]
     remove_index :events_tags, [:event_id, :tag_id]

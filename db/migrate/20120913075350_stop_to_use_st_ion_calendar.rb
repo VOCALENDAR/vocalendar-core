@@ -1,4 +1,4 @@
-class StopToUseStIonCalendar < ActiveRecord::Migration
+class StopToUseStIonCalendar < ActiveRecord::Migration[5.1]
   def up
     rename_column :calendars, :type, :io_type
     change_column :calendars, :io_type, :string, :null => false, :default => ''

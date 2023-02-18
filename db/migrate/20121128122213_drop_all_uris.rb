@@ -1,4 +1,4 @@
-class DropAllUris < ActiveRecord::Migration
+class DropAllUris < ActiveRecord::Migration[5.1]
   def up
     drop_table    :uris
     remove_column :events, :primary_uri

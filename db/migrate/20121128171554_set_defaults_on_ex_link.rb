@@ -1,4 +1,4 @@
-class SetDefaultsOnExLink < ActiveRecord::Migration
+class SetDefaultsOnExLink < ActiveRecord::Migration[5.1]
   def up
     change_column_default :ex_links, :name, ""
     change_column_default :ex_links, :uri,  ""

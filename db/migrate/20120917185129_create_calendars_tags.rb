@@ -1,4 +1,4 @@
-class CreateCalendarsTags < ActiveRecord::Migration
+class CreateCalendarsTags < ActiveRecord::Migration[5.1]
   def change
     create_table :calendars_tags, :id => false do |t|
       t.integer :calendar_id

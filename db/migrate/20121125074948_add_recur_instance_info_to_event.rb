@@ -1,4 +1,4 @@
-class AddRecurInstanceInfoToEvent < ActiveRecord::Migration
+class AddRecurInstanceInfoToEvent < ActiveRecord::Migration[5.1]
   def change
     add_column :events, :g_recurring_event_id,      :string
     add_column :events, :recur_orig_start_date,     :date

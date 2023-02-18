@@ -1,4 +1,4 @@
-class CreateEventTagRelations < ActiveRecord::Migration
+class CreateEventTagRelations < ActiveRecord::Migration[5.1]
   def up
     create_table :event_tag_relations do |t|
       t.references :event
@@ -7,8 +7,8 @@ class CreateEventTagRelations < ActiveRecord::Migration
       t.string :target_field
       t.text :uri
     end
-    add_index :event_tag_relations, :event_id
-    add_index :event_tag_relations, :tag_id
+    # add_index :event_tag_relations, :event_id
+    # add_index :event_tag_relations, :tag_id
 
     execute "insert into event_tag_relations (event_id, tag_id) select event_id, tag_id from events_tags"
     drop_table :events_tags

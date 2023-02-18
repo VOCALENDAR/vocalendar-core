@@ -1,4 +1,4 @@
-class AddGEidToEvent < ActiveRecord::Migration
+class AddGEidToEvent < ActiveRecord::Migration[5.1]
   def up
     add_column :events, :g_eid, :string
     Event.where("g_html_link != ''").each do |e|

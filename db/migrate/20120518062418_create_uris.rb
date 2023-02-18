@@ -1,4 +1,4 @@
-class CreateUris < ActiveRecord::Migration
+class CreateUris < ActiveRecord::Migration[5.1]
   def change
     create_table :uris do |t|
       t.text :event_id

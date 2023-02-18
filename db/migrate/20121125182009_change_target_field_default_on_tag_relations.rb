@@ -1,4 +1,4 @@
-class ChangeTargetFieldDefaultOnTagRelations < ActiveRecord::Migration
+class ChangeTargetFieldDefaultOnTagRelations < ActiveRecord::Migration[5.1]
   def up
     remove_index :event_tag_relations, :event_id
     change_column_default :event_tag_relations, :target_field, ""

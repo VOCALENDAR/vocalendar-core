@@ -1,4 +1,4 @@
-class CreateExLinks < ActiveRecord::Migration
+class CreateExLinks < ActiveRecord::Migration[5.1]
   def change
     create_table :ex_links do |t|
       t.string :type

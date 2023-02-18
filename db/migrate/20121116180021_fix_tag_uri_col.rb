@@ -1,4 +1,4 @@
-class FixTagUriCol < ActiveRecord::Migration
+class FixTagUriCol < ActiveRecord::Migration[5.1]
   def up
     add_column :tags, :uri, :text
     remove_column :event_tag_relations, :uri

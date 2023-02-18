@@ -1,4 +1,4 @@
-class AddLatestSyncItemUpdatedAtToCalendars < ActiveRecord::Migration
+class AddLatestSyncItemUpdatedAtToCalendars < ActiveRecord::Migration[5.1]
   def change
     add_column :calendars, :latest_synced_item_updated_at, :datetime
     rename_column :calendars, :synced_at, :sync_started_at

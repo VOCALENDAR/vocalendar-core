@@ -1,4 +1,4 @@
-class DropTagLinkHabtm < ActiveRecord::Migration
+class DropTagLinkHabtm < ActiveRecord::Migration[5.1]
   def up
     drop_table :ex_links_tags
   end

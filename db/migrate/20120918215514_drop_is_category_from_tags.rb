@@ -1,4 +1,4 @@
-class DropIsCategoryFromTags < ActiveRecord::Migration
+class DropIsCategoryFromTags < ActiveRecord::Migration[5.1]
   def up
     remove_index :tags, :is_category
     remove_column :tags, :is_category

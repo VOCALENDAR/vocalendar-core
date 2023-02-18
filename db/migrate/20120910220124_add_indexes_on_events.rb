@@ -1,4 +1,4 @@
-class AddIndexesOnEvents < ActiveRecord::Migration
+class AddIndexesOnEvents < ActiveRecord::Migration[5.1]
   def change
     add_index :events, [:start_datetime, :status]
     add_index :events, [:end_datetime, :status]

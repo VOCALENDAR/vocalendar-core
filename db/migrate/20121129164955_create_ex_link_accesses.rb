@@ -1,4 +1,4 @@
-class CreateExLinkAccesses < ActiveRecord::Migration
+class CreateExLinkAccesses < ActiveRecord::Migration[5.1]
   def change
     create_table :ex_link_accesses do |t|
       t.integer :ex_link_id, :null => false

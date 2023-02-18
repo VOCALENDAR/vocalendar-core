@@ -1,4 +1,4 @@
-class AttributeUpdatesOnEvents < ActiveRecord::Migration
+class AttributeUpdatesOnEvents < ActiveRecord::Migration[5.1]
   def up
     # Use underscore with ruby-izm and add "g_" prefix for google specific attributes
     rename_column :events, :htmlLink, :g_html_link

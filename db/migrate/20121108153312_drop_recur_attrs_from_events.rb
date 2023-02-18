@@ -1,4 +1,4 @@
-class DropRecurAttrsFromEvents < ActiveRecord::Migration
+class DropRecurAttrsFromEvents < ActiveRecord::Migration[5.1]
   def up
     remove_column :events, :recur_freq
     remove_column :events, :recur_count

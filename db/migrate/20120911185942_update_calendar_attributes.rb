@@ -1,4 +1,4 @@
-class UpdateCalendarAttributes < ActiveRecord::Migration
+class UpdateCalendarAttributes < ActiveRecord::Migration[5.1]
   def up
     remove_column :calendars, :calendar
     change_column :calendars, :name, :string, :null => false, :default => ''

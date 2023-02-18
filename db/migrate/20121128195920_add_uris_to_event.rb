@@ -1,4 +1,4 @@
-class AddUrisToEvent < ActiveRecord::Migration
+class AddUrisToEvent < ActiveRecord::Migration[5.1]
   def change
     add_column :events, :primary_link_id, :integer
     add_column :tags,   :primary_link_id, :integer
