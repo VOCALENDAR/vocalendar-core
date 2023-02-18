@@ -2,6 +2,7 @@ FROM debian:bullseye
 
 RUN apt-get update \
  && apt-get install -y \
+    sqlite3 \
     ruby \
     ruby-dev \
     build-essential \
