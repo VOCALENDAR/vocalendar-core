@@ -1,7 +1,13 @@
 version: '3.8'
 
+networks:
+  vocalendar:
+
+volumes:
+  database-data:
+
 services:
-  web:
+  app:
     build:
       context: .
       dockerfile: ./docker/Dockerfile
@@ -10,3 +16,19 @@ services:
     ports:
       - 80:3000
     init: true
+    networks:
+      - vocalendar
+
+  db:
+    image: 'mariadb:10.1'
+    volumes:
+      - database-data:/var/lib/mysql/
+      - ./docker/conf/my-custom.cnf:/etc/mysql/conf.d/my-custom.cnf
+      - ./docker/data/:/tmp/data/
+    environment:
+      - MYSQL_ROOT_PASSWORD=root
+      - MYSQL_DATABASE=vocalendar
+      - MYSQL_USER=vocalendar
+      - MYSQL_PASSWORD=3939
+    networks:
+      - vocalendar
