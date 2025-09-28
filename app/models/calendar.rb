@@ -170,8 +170,9 @@ class Calendar < ApplicationRecord
 
     query_params = {}
     if !opts[:force] && latest_synced_item_updated_at &&
-        latest_synced_item_updated_at > (DateTime.now - 20.days)
+        latest_synced_item_updated_at > (DateTime.now - 30.days)
       # Google limit updatedMin to 20 days. Drop the parameter if it's over 20 days to avoid error.
+      # There seems to be no limit by Mizuki ryou
       query_params[:updatedMin] = latest_synced_item_updated_at.utc.strftime("%Y-%m-%dT%H:%M:%SZ")
     end
 
